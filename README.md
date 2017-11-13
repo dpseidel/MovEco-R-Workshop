@@ -6,7 +6,7 @@ please make sure you have installed:
 
 - R
 - Rstudio
-- packages:
+- The following packages:
     - tidyverse
     - sf
     - sp
@@ -20,4 +20,7 @@ please make sure you have installed:
     - raster
   
 # Files
+
+- The proposed schedule is found in the [Suggested_Schedule.md](https://github.com/dpseidel/MovEco-R-Workshop/blob/master/Suggested_Schedule.md), produced by the `Suggested_Schedule.Rmd`, both found in the main directory. 
+- All files, including slides, live coding scripts, and activities are found sorted into directories according to workshop day in the `materials/` directory.
 
