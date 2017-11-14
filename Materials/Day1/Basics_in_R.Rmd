@@ -1,0 +1,162 @@
+---
+title: "Basics_in_R"
+author: "Dana Seidel & Eric Dougherty"
+date: "1/3/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+library("printr") ## devtools::install_github("yihui/printr")
+```
+
+
+# Introducing R studio
+    - Git, Build, Environment, Console, v. Source
+
+
+# The TidyVerse
+
+# Importing Data
+## Importing Data
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">In Data Science, 80% of time spent prepare data, 20% of time spent complain about need for prepare data.</p>&mdash; Big Data Borat (@BigDataBorat) <a href="https://twitter.com/BigDataBorat/status/306596352991830016">February 27, 2013</a></blockquote>
+
+## Importing Data
+
+Our first task is to read this data into our R environment.  To this, we will use the `read_csv` function. Reading in a data file is called *parsing*, which sounds much more sophisticated.  For good reason too -- parsing different data files and formats is a cornerstone of all pratical data science research, and can often be the hardest step.
+
+## Importing Data
+
+So what do we need to know about this file in order to read it into R?
+
+```{r, message=FALSE}
+library("tidyverse")
+```
+
+
+```{r, render=print}
+## Let's try:
+co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt")
+co2
+```
+
+
+## Importing Data
+
+hmm... no luck.  Let's try defining the comment symbol:
+
+
+```{r , render=print}
+co2 <- read_tsv("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
+                comment = "#")
+co2
+```
+
+
+## Importing Data
+
+Getting there, but not quite done. Our first row is being interpreted as column names.  The documentation also notes that certain values are used to indicate missing data, which we would be better off converting to explicitly missing so we don't get confused.
+
+
+```{r}
+co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
+                  sep = "", comment = "#",
+                  col.names = c("year", "month", "decimal_date", 
+                                "average", "interpolated", 
+                                "trend", "days"),
+                  na.strings = c("-1", "-99.99"))
+co2 %>% head()
+```
+
+
+## Importing Data
+
+Alternately, with `readr::read_table` from `tidyverse` 
+
+```{r eval=FALSE}
+#devtools::install_github("tidyverse/readr")
+co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt", 
+                  comment = "#",
+                  col_names = c("year", "month", "decimal_date", 
+                                "average", "interpolated", "trend", "days"),
+                  col_types = c("iiddddi"),
+                  na = c("-1", "-99.99"))
+```
+
+No luck, see: <https://github.com/tidyverse/readr/pull/563>
+
+## Importing Data
+
+ Seems that `comment` arg is not fully implemented in CRAN version of `readr` so we must rely on `skip` to avoid the comment block:
+
+```{r message=FALSE, warning=FALSE}
+co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
+                  col_names = c("year", "month", "decimal_date", 
+                                "average", "interpolated", "trend", "days"),
+                  col_types = c("iiddddi"),
+                  na = c("-1", "-99.99"),
+                  skip = 72)
+co2 
+```
+
+Success! We have read in the data. Now we're ready to rock and roll.
+
+
+## Viewing data
+
+## Subsetting data
+
+## Sorting data
+### Mutating
+### GroupBy
+### summarizing data
+
+## Writing Out Data
+
+## Plotting data
+
+## Plotting Data with `ggplot`
+
+Effective visualizations are an integral part of data science, poorly organized or poorly labelled figures can be as much a source of peril as understanding.  Nevertheless, the ability to generate plots quickly with minimal tinkering is an essential skill.  As standards for visualizations have increased, too often visualization is seen as an ends rather than a means of data analysis. See [Fox & Hendler (2011)](http://science.sciencemag.org/content/331/6018/705.short) for more discussion of this.
+
+## Plotting Data with `ggplot`
+
+
+```{r}
+ggplot(co2, aes(decimal_date, average)) + geom_line()
+```
+
+
+## Plotting multiple series
+
+We often would like to plot several data values together for comparison,
+for example the average, interpolated and trend co2 data. We can do
+this in three steps:
+
+1) subsetting the dataset to the columns desired for plotting
+
+```{r}
+co2_sub <- co2 %>%
+    select(decimal_date, average, interpolated, trend)
+co2_sub %>% head()
+```
+
+
+## Plotting multiple series
+
+2) rearranging the data into a "long" data table where the data values
+are stacked together in one column and there is a separate column that
+keeps track of the whether the data came from the average,
+interpolated, or trend column. Notice by using the same name,
+we overwrite the original co2_sub
+
+
+```{r}
+co2_sub <- co2_sub %>%
+    gather(series, ppmv, -decimal_date)
+co2_sub %>% head()
+```
+
+# Your turn
