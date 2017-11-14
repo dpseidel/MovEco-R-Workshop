@@ -11,7 +11,7 @@ Day 1, Jan 3
 ### Topics to Cover
 
 -   R studio
--   Git, Build, Environment, Console, v. Source
+    -   Git, Build, Environment, Console, v. Source
 -   Tidy verse
 -   reading in data
 -   Viewing data
@@ -22,7 +22,7 @@ Day 1, Jan 3
 -   Writing out data
 -   Custom Functions
 -   Flexible arguments
--   For loops (mention apply functions?)
+-   For loop, apply functions
 -   Simulation.
 
 ### Schedule
