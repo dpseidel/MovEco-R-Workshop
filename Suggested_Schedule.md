@@ -201,7 +201,7 @@ Day 3, Jan 5
 <td>10:45 – 12:00</td>
 <td>Livecode</td>
 <td>DPS/ERD</td>
-<td>RSF and SSF (obtaining environmental variables, conducting regressions)</td>
+<td>MCP and UD (constructing home ranges, comparing results)</td>
 </tr>
 <tr class="even">
 <td>12:00 – 13:30</td>
@@ -213,7 +213,7 @@ Day 3, Jan 5
 <td>13:30 – 14:45</td>
 <td>Livecode</td>
 <td>DPS/ERD</td>
-<td>MCP and UD (constructing home ranges, comparing results)</td>
+<td>RSF and SSF (obtaining environmental variables, conducting regressions)</td>
 </tr>
 <tr class="even">
 <td>14:45 – 15:00</td>
@@ -299,7 +299,7 @@ Day 4, Jan 8
 </tbody>
 </table>
 
-Jan 9, Day 5
+Day 5, Jan 9
 ------------
 
 ### Schedule
@@ -323,7 +323,7 @@ Jan 9, Day 5
 <tr class="odd">
 <td>9:00 – 10:30</td>
 <td>Lecture</td>
-<td>DPS/ERD/WMG</td>
+<td>WMG</td>
 <td>Behavioral analysis; FME, CAM, and movement syndromes</td>
 </tr>
 <tr class="even">
@@ -335,7 +335,7 @@ Jan 9, Day 5
 <tr class="odd">
 <td>10:45 – 12:00</td>
 <td>Livecode</td>
-<td>DPS/ERD</td>
+<td>ERD</td>
 <td>Extracting behavioral state from movement tracks (BCPA, HMM)</td>
 </tr>
 <tr class="even">
@@ -347,7 +347,7 @@ Jan 9, Day 5
 <tr class="odd">
 <td>13:30 – 14:45</td>
 <td>Livecode</td>
-<td>DPS/ERD</td>
+<td>DPS</td>
 <td>Identifying movement syndromes; metrics for classification</td>
 </tr>
 <tr class="even">
@@ -365,8 +365,8 @@ Jan 9, Day 5
 </tbody>
 </table>
 
-Jan 10 Day 6
-------------
+Day 6, Jan 10
+-------------
 
 ### Schedule
 
@@ -431,8 +431,8 @@ Jan 10 Day 6
 </tbody>
 </table>
 
-Jan 11 Day 7
-------------
+Day 7, Jan 11
+-------------
 
 ### Schedule
 
@@ -497,8 +497,8 @@ Jan 11 Day 7
 </tbody>
 </table>
 
-Jan 12 Day 8
-------------
+Day 8, Jan 12
+-------------
 
 ### Schedule
 

@@ -17,16 +17,19 @@ knitr::opts_chunk$set(comment=NA, message=FALSE, dev="svg", fig.height = 4, fig.
 
 ```
 
-## Unit I: Climate Change Module
+# Introduction & Goals
 
-## { .cover }
+##
+<img src="../../images/bird.jpg" place = cover>
 
+# { .cover }
+<img src="../../images/dolphin.jpg">
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Mauna_Loa_Solar_Observatory.jpg" class="cover height">
+# { .cover }
+<img src="../../images/sheep.jpg">
 
-
-# Introduction: 
-
+# { .cover }
+<img src="../../images/leopard.jpeg">
 
 <!-- Lesson Overview -->
 

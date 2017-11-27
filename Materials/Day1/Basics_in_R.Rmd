@@ -15,10 +15,14 @@ library("printr") ## devtools::install_github("yihui/printr")
 # Introducing R studio
     - Git, Build, Environment, Console, v. Source
 
-
 # The TidyVerse
 
+```{r}
+library(tidyverse)
+```
+
 # Importing Data
+
 ## Importing Data
 
 <blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">In Data Science, 80% of time spent prepare data, 20% of time spent complain about need for prepare data.</p>&mdash; Big Data Borat (@BigDataBorat) <a href="https://twitter.com/BigDataBorat/status/306596352991830016">February 27, 2013</a></blockquote>

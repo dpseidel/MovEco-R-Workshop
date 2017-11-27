@@ -63,9 +63,9 @@ output: github_document
 | ------------- | --------------- | --- | ------------------------------------ |
 | 9:00 – 10:30 | Lecture | DPS/ERD | Selection methods; Home ranges and utilization distributions |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Livecode | DPS/ERD | RSF and SSF (obtaining environmental variables, conducting regressions) | 
+| 10:45 – 12:00 | Livecode | DPS/ERD | MCP and UD (constructing home ranges, comparing results) | 
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 | Livecode| DPS/ERD | MCP and UD (constructing home ranges, comparing results) |
+| 13:30 – 14:45 | Livecode| DPS/ERD | RSF and SSF (obtaining environmental variables, conducting regressions) |
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | | From path to presence: transforming tracks into knowledge |
 
@@ -84,20 +84,20 @@ output: github_document
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | | Personal projects |
 
-## Jan 9, Day 5  
+## Day 5, Jan 9
 
 ### Schedule
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | --- | ------------------------------------ |
-| 9:00 – 10:30 | Lecture | DPS/ERD/WMG  | Behavioral analysis; FME, CAM, and movement syndromes |
+| 9:00 – 10:30 | Lecture | WMG  | Behavioral analysis; FME, CAM, and movement syndromes |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Livecode | DPS/ERD | Extracting behavioral state from movement tracks (BCPA, HMM) | 
+| 10:45 – 12:00 | Livecode | ERD | Extracting behavioral state from movement tracks (BCPA, HMM) | 
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 | Livecode| DPS/ERD | Identifying movement syndromes; metrics for classification |
+| 13:30 – 14:45 | Livecode| DPS | Identifying movement syndromes; metrics for classification |
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | | Personal projects |
 
-## Jan 10 Day 6
+## Day 6, Jan 10
 ### Schedule
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | --- | ------------------------------------ |
@@ -109,7 +109,7 @@ output: github_document
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | | Personal projects |
 
-## Jan 11 Day 7
+## Day 7, Jan 11
 ### Schedule
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | --- | ------------------------------------ |
@@ -122,7 +122,7 @@ output: github_document
 | 15:00 – 16:30 | LiveCode | WMG | Modeling Epidemics in Nova and fitting parameters |
 
 
-## Jan 12 Day 8
+## Day 8, Jan 12
 
 ### Schedule
 | Time | Activity | Speaker | Topic |
