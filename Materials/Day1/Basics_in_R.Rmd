@@ -13,36 +13,35 @@ library("tidyverse")
 
 
 # Introducing R studio
-    - Git, Build, Environment, Console, v. Source
 - What is the console? 
 - What is the source?
 - what is your environment?
 - Using git within Rstudio
 
 # The TidyVerse
+The tidyverse is an opinionated collection of R packages designed for data science.
+All packages share an underlying philosophy and common APIs. 
 
+Install the packages: `install.packages("tidyverse")`
+
+Load the packages each time you open a new session:
 ```{r}
 library(tidyverse)
 ```
 
-# Importing Data
-
-## Importing Data
-The tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying philosophy and common APIs. 
-
-Install the packages: `install.packages("tidyverse")`
-
 Access the book! [R for Data Science](http://r4ds.had.co.nz/)
 
 Other Resources:
+
 - [Cheat sheets!](https://www.rstudio.com/resources/cheatsheets/)
+
 - [More Books & online courses](https://www.tidyverse.org/learn/)
 
 # Importing Data
 
 > In Data Science, 80% of time spent prepare data, 20% of time spent complain about need for prepare data. 
 
-Big Data Borat [@BigDataBorat](https://twitter.com/BigDataBorat/status/306596352991830016), February 27, 2013
+Big Data Borat [\@BigDataBorat](https://twitter.com/BigDataBorat/status/306596352991830016), February 27, 2013
 
 ## Parsing
 
@@ -128,8 +127,8 @@ summary(co2)  # here we can get a good sense of the missing values in the days c
 head(co2) # check out r help - shows us that the default argument is 10 lines
 tail(co2, 20)
 
-# to see the whole table in a Rstudio window
-View(co2)
+# to see the whole table in a Rstudio window, run the following line, uncommented. 
+# View(co2)
 # also double click from the environment
 ```
 
@@ -196,17 +195,21 @@ This is super useful in the early stages of exploring and visualizing your data.
 More information about pipes and the alternatives found [here](http://r4ds.had.co.nz/pipes.html)
 
 # Sorting data
+Often data is not in the exact form we want or we need additional information from our data. 
+When this is the case, the tidyverse library has some helpful functions that, when combined, 
+are powerful tools for rearranging and summarizing our data. 
+
 ## Mutating
 ```{r}
 
 ```
 
-## GroupBy
+## Group By
 ```{r}
 
 ```
 
-## summarizing data
+## Summarizing data
 ```{r}
 
 ```
@@ -218,11 +221,9 @@ Effective visualizations are an integral part of data science, poorly organized 
 
 ## Plotting Data with `ggplot`
 
-
 ```{r}
 ggplot(co2, aes(decimal_date, average)) + geom_line()
 ```
-
 
 ## Plotting multiple series
 
@@ -230,29 +231,66 @@ We often would like to plot several data values together for comparison,
 for example the average, interpolated and trend co2 data. We can do
 this in three steps:
 
-1) subsetting the dataset to the columns desired for plotting
+1. subsetting the dataset to the columns desired for plotting
 
-```{r}
+    ```{r}
 co2_sub <- co2 %>%
     select(decimal_date, average, interpolated, trend)
 co2_sub %>% head()
-```
+    ```
 
-
-2) rearranging the data into a "long" data table where the data values
+2. rearranging the data into a "long" data table where the data values
 are stacked together in one column and there is a separate column that
 keeps track of the whether the data came from the average,
 interpolated, or trend column. Notice by using the same name,
 we overwrite the original co2_sub
 
 
-```{r}
+    ```{r}
 co2_sub <- co2_sub %>%
     gather(series, ppmv, -decimal_date)
 co2_sub %>% head()
+    ```
+
+
+3) plotting
+
+```{r}
+co2_sub %>%
+ ggplot(aes(decimal_date, ppmv, col = series)) + 
+  geom_line()
 ```
 
-3)
+
+## Plotting multiple series
+
+Or, even better, we can take advantage of dplyr's nifty pipping abilities and
+accomplish all of these steps in one block of code. Beyond being more
+succinct, this has the added benefit of avoiding creating a new object
+for the subsetted data.
+
+```{r fig.height=3}
+co2 %>%
+  select(decimal_date, average, interpolated, trend) %>%
+  gather(series, ppmv, -decimal_date) %>%
+  ggplot(aes(decimal_date, ppmv, col = series)) +  geom_line()
+```
 
 
 # Writing out Data or objects
+
+Often after doing all the work to clean up your data you want to write out the clean file, this is simple
+with the `write_*` functions. 
+
+```{r}
+write_csv(co2_sub, "co2clean")
+```
+
+We can even write out our ggplot images:
+
+```{r}
+# defaults to saving your last plot. can be specified
+ggsave("plot1", device = "eps")
+```
+
+

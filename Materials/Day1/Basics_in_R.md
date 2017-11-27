@@ -18,16 +18,26 @@ The tidyverse is an opinionated collection of R packages designed for data scien
 
 Install the packages: `install.packages("tidyverse")`
 
+Load the packages each time you open a new session:
+
+``` r
+library(tidyverse)
+```
+
 Access the book! [R for Data Science](http://r4ds.had.co.nz/)
 
-Other Resources: - [Cheat sheets!](https://www.rstudio.com/resources/cheatsheets/) - [More Books & online courses](https://www.tidyverse.org/learn/)
+Other Resources:
+
+-   [Cheat sheets!](https://www.rstudio.com/resources/cheatsheets/)
+
+-   [More Books & online courses](https://www.tidyverse.org/learn/)
 
 Importing Data
 ==============
 
 > In Data Science, 80% of time spent prepare data, 20% of time spent complain about need for prepare data.
 
-Big Data Borat \[@BigDataBorat\](<https://twitter.com/BigDataBorat/status/306596352991830016>), February 27, 2013
+Big Data Borat [@BigDataBorat](https://twitter.com/BigDataBorat/status/306596352991830016), February 27, 2013
 
 Parsing
 -------
@@ -156,7 +166,7 @@ co2
 Success! We have read in the data. Now we're ready to rock and roll.
 
 Viewing data
-------------
+============
 
 Once parsed and imported, it's a good idea to take a look at your data, both to get a sense of it's size, names, and shape but also to keep an eye out for missing value or errors.
 
@@ -217,7 +227,7 @@ ncol(co2)
 
 ``` r
 # to get a summary of the object
-summary(co2)
+summary(co2)  # here we can get a good sense of the missing values in the days column and average column. 
 ```
 
     ##       year          month       decimal_date     average     
@@ -281,13 +291,13 @@ tail(co2, 20)
     ## 20  2017    10     2017.792  403.64       403.64 407.06    27
 
 ``` r
-# to see the whole table in a Rstudio window
-View(co2)
+# to see the whole table in a Rstudio window, run the following line, uncommented. 
+# View(co2)
 # also double click from the environment
 ```
 
 Subsetting data
----------------
+===============
 
 Subsetting can be done a variety of ways through baseR and tidyverse. Here we are going to cover the following ways: - `select()`, tidyverse - `filter()` , tidyverse - bracket `[]` notation, baseR - dollar sign `$` notation, baseR - subset function, baseR
 
@@ -656,19 +666,21 @@ It's also worth noting that the piped version does not create an additional obje
 More information about pipes and the alternatives found [here](http://r4ds.had.co.nz/pipes.html)
 
 Sorting data
-------------
+============
 
-### Mutating
+Often data is not in the exact form we want or we need additional information from our data. When this is the case, the tidyverse library has some helpful functions that, when combined, are powerful tools for rearranging and summarizing our data.
 
-### GroupBy
+Mutating
+--------
 
-### summarizing data
+Group By
+--------
 
-Writing Out Data
+Summarizing data
 ----------------
 
 Plotting data
--------------
+=============
 
 Plotting Data with `ggplot`
 ---------------------------
@@ -682,7 +694,7 @@ Plotting Data with `ggplot`
 ggplot(co2, aes(decimal_date, average)) + geom_line()
 ```
 
-![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
+![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 Plotting multiple series
 ------------------------
@@ -691,39 +703,80 @@ We often would like to plot several data values together for comparison, for exa
 
 1.  subsetting the dataset to the columns desired for plotting
 
-``` r
-co2_sub <- co2 %>%
+    ``` r
+    co2_sub <- co2 %>%
     select(decimal_date, average, interpolated, trend)
-co2_sub %>% head()
+    co2_sub %>% head()
+    ```
+
+        ## # A tibble: 6 x 4
+        ##   decimal_date average interpolated  trend
+        ##          <dbl>   <dbl>        <dbl>  <dbl>
+        ## 1     1958.208  315.71       315.71 314.62
+        ## 2     1958.292  317.45       317.45 315.29
+        ## 3     1958.375  317.50       317.50 314.71
+        ## 4     1958.458      NA       317.10 314.85
+        ## 5     1958.542  315.86       315.86 314.98
+        ## 6     1958.625  314.93       314.93 315.94
+
+2.  rearranging the data into a "long" data table where the data values are stacked together in one column and there is a separate column that keeps track of the whether the data came from the average, interpolated, or trend column. Notice by using the same name, we overwrite the original co2\_sub
+
+    ``` r
+    co2_sub <- co2_sub %>%
+    gather(series, ppmv, -decimal_date)
+    co2_sub %>% head()
+    ```
+
+        ## # A tibble: 6 x 3
+        ##   decimal_date  series   ppmv
+        ##          <dbl>   <chr>  <dbl>
+        ## 1     1958.208 average 315.71
+        ## 2     1958.292 average 317.45
+        ## 3     1958.375 average 317.50
+        ## 4     1958.458 average     NA
+        ## 5     1958.542 average 315.86
+        ## 6     1958.625 average 314.93
+
+<!-- -->
+
+1.  plotting
+
+``` r
+co2_sub %>%
+ ggplot(aes(decimal_date, ppmv, col = series)) + 
+  geom_line()
 ```
 
-    ## # A tibble: 6 x 4
-    ##   decimal_date average interpolated  trend
-    ##          <dbl>   <dbl>        <dbl>  <dbl>
-    ## 1     1958.208  315.71       315.71 314.62
-    ## 2     1958.292  317.45       317.45 315.29
-    ## 3     1958.375  317.50       317.50 314.71
-    ## 4     1958.458      NA       317.10 314.85
-    ## 5     1958.542  315.86       315.86 314.98
-    ## 6     1958.625  314.93       314.93 315.94
+![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
 
 Plotting multiple series
 ------------------------
 
-1.  rearranging the data into a "long" data table where the data values are stacked together in one column and there is a separate column that keeps track of the whether the data came from the average, interpolated, or trend column. Notice by using the same name, we overwrite the original co2\_sub
+Or, even better, we can take advantage of dplyr's nifty pipping abilities and accomplish all of these steps in one block of code. Beyond being more succinct, this has the added benefit of avoiding creating a new object for the subsetted data.
 
 ``` r
-co2_sub <- co2_sub %>%
-    gather(series, ppmv, -decimal_date)
-co2_sub %>% head()
+co2 %>%
+  select(decimal_date, average, interpolated, trend) %>%
+  gather(series, ppmv, -decimal_date) %>%
+  ggplot(aes(decimal_date, ppmv, col = series)) +  geom_line()
 ```
 
-    ## # A tibble: 6 x 3
-    ##   decimal_date  series   ppmv
-    ##          <dbl>   <chr>  <dbl>
-    ## 1     1958.208 average 315.71
-    ## 2     1958.292 average 317.45
-    ## 3     1958.375 average 317.50
-    ## 4     1958.458 average     NA
-    ## 5     1958.542 average 315.86
-    ## 6     1958.625 average 314.93
+![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
+
+Writing out Data or objects
+===========================
+
+Often after doing all the work to clean up your data you want to write out the clean file, this is simple with the `write_*` functions.
+
+``` r
+write_csv(co2_sub, "co2clean")
+```
+
+We can even write out our ggplot images:
+
+``` r
+# defaults to saving your last plot. can be specified
+ggsave("plot1", device = "eps")
+```
+
+    ## Saving 7 x 5 in image
