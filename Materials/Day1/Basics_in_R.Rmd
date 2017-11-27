@@ -1,5 +1,5 @@
 ---
-title: "Basics_in_R"
+title: "Basics in R"
 author: "Dana Seidel & Eric Dougherty"
 date: "1/3/2018"
 output: github_document
@@ -14,6 +14,10 @@ library("printr") ## devtools::install_github("yihui/printr")
 
 # Introducing R studio
     - Git, Build, Environment, Console, v. Source
+- What is the console? 
+- What is the source?
+- what is your environment?
+- Using git within Rstudio
 
 # The TidyVerse
 
@@ -24,16 +28,24 @@ library(tidyverse)
 # Importing Data
 
 ## Importing Data
+The tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying philosophy and common APIs. 
 
-<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">In Data Science, 80% of time spent prepare data, 20% of time spent complain about need for prepare data.</p>&mdash; Big Data Borat (@BigDataBorat) <a href="https://twitter.com/BigDataBorat/status/306596352991830016">February 27, 2013</a></blockquote>
+Install the packages: `install.packages("tidyverse")`
 
-## Importing Data
+Access the book! [R for Data Science](http://r4ds.had.co.nz/)
+
+
+# Importing Data
+
+> In Data Science, 80% of time spent prepare data, 20% of time spent complain about need for prepare data. 
+
+Big Data Borat [@BigDataBorat](https://twitter.com/BigDataBorat/status/306596352991830016), February 27, 2013
+
+## Parsing
 
 Our first task is to read this data into our R environment.  To this, we will use the `read_csv` function. Reading in a data file is called *parsing*, which sounds much more sophisticated.  For good reason too -- parsing different data files and formats is a cornerstone of all pratical data science research, and can often be the hardest step.
 
-## Importing Data
-
-So what do we need to know about this file in order to read it into R?
+#### So what do we need to know about this file in order to read it into R?
 
 ```{r, message=FALSE}
 library("tidyverse")
@@ -47,19 +59,13 @@ co2
 ```
 
 
-## Importing Data
-
-hmm... no luck.  Let's try defining the comment symbol:
-
+**hmm... no luck.  Let's try defining the comment symbol:**
 
 ```{r , render=print}
 co2 <- read_tsv("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
                 comment = "#")
 co2
 ```
-
-
-## Importing Data
 
 Getting there, but not quite done. Our first row is being interpreted as column names.  The documentation also notes that certain values are used to indicate missing data, which we would be better off converting to explicitly missing so we don't get confused.
 
@@ -75,25 +81,11 @@ co2 %>% head()
 ```
 
 
-## Importing Data
+## Importing Data with tidyverse
 
 Alternately, with `readr::read_table` from `tidyverse` 
 
-```{r eval=FALSE}
-#devtools::install_github("tidyverse/readr")
-co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt", 
-                  comment = "#",
-                  col_names = c("year", "month", "decimal_date", 
-                                "average", "interpolated", "trend", "days"),
-                  col_types = c("iiddddi"),
-                  na = c("-1", "-99.99"))
-```
-
-No luck, see: <https://github.com/tidyverse/readr/pull/563>
-
-## Importing Data
-
- Seems that `comment` arg is not fully implemented in CRAN version of `readr` so we must rely on `skip` to avoid the comment block:
+It seems that `comment` arg is not fully implemented in CRAN version of `readr` so we must rely on `skip` to avoid the comment block:
 
 ```{r message=FALSE, warning=FALSE}
 co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
@@ -102,11 +94,11 @@ co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
                   col_types = c("iiddddi"),
                   na = c("-1", "-99.99"),
                   skip = 72)
-co2 
+
+head(co2) 
 ```
 
 Success! We have read in the data. Now we're ready to rock and roll.
-
 
 ## Viewing data
 
@@ -163,4 +155,3 @@ co2_sub <- co2_sub %>%
 co2_sub %>% head()
 ```
 
-# Your turn
