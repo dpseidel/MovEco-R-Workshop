@@ -8,7 +8,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library("tidyverse")
-library("printr") ## devtools::install_github("yihui/printr")
+#library("printr") ## devtools::install_github("yihui/printr")
 ```
 
 
@@ -27,6 +27,9 @@ Install the packages: `install.packages("tidyverse")`
 
 Access the book! [R for Data Science](http://r4ds.had.co.nz/)
 
+Other Resources:
+- [Cheat sheets!](https://www.rstudio.com/resources/cheatsheets/)
+- [More Books & online courses](https://www.tidyverse.org/learn/)
 
 # Importing Data
 
@@ -45,7 +48,7 @@ library("tidyverse")
 ```
 
 
-```{r, render=print}
+```{r}
 ## Let's try:
 co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt")
 co2
@@ -54,7 +57,7 @@ co2
 
 **hmm... no luck.  Let's try defining the comment symbol:**
 
-```{r , render=print}
+```{r }
 co2 <- read_tsv("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
                 comment = "#")
 co2
@@ -70,7 +73,7 @@ co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
                                 "average", "interpolated", 
                                 "trend", "days"),
                   na.strings = c("-1", "-99.99"))
-co2 %>% head()
+head(co2)
 ```
 
 
@@ -88,14 +91,102 @@ co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
                   na = c("-1", "-99.99"),
                   skip = 72)
 
-head(co2) 
+co2
 ```
 
 Success! We have read in the data. Now we're ready to rock and roll.
 
 ## Viewing data
 
+Once parsed and imported, it's a good idea to take a look at your data, both to 
+get a sense of it's size, names, and shape but also to keep an eye out for missing
+value or errors. 
+
+For this stage, using a combination of `str`, `names`, `summar`, `View`, `head` and `tail`
+functions can be helpful. 
+
+```{r}
+# to get the names of the columns
+names(co2)
+
+# to check out the full structure of the R object
+str(co2)
+nrow(co2)
+ncol(co2)
+
+# to get a summary of the object
+summary(co2)
+
+# for the first or last `n` lines of the data frame
+head(co2) # check out r help - shows us that the default argument is 10 lines
+tail(co2, 20)
+
+# to see the whole table in a Rstudio window
+View(co2)
+# also double click from the environment
+```
+
 ## Subsetting data
+
+Subsetting can be done a variety of ways through baseR and tidyverse. Here we are going
+to cover the following ways:
+- `select()`, tidyverse
+- `filter()` , tidyverse
+- bracket `[]` notation, baseR
+- dollar sign `$` notation, baseR
+- subset function, baseR
+
+```{r}
+co2[,"year"] 
+co2[,1]
+co2$year  # what's the difference here?
+
+
+co2 %>% select(year, average) 
+co2[, c("year", "average")] 
+co2[, c(1,4)]
+
+co2 %>% select(-days)# select all columns except year
+co2[,-7]
+co2 %>% filter(year >= 1980, month == 12) # comma functions as "and" in the filter function
+co2 %>% subset(year >= 1980 & month == 12)  # but and must be explicit in the subset function
+
+co2 %>% filter(month == 11 | month == 11) # | is equivalent to "or"
+
+co2[co2$month==12,] 
+co2[co2$year>=1980 & co2$month==12,]
+co2[co2$month==12 | co2$month==11,] 
+
+# Note: logical operations (those that produce True or False) require the double equal sign `==`
+```
+
+### SideNote: Whats that little `c()` do?
+Try running `?c` in your R console to find out. We use this function regularly
+to create vectors or lists of objects. 
+
+### SideNote: The Power of the Pipe `%>%`
+You might be thinking what is that weird symbol we just used? 
+This is a pipe, a function in the `magittr` package loaded in the tidyverse, 
+Pipes are a powerful way
+to perform sequential operations on an R object. Using the pipe, allows use to push 
+the output of our first operation into our next operation seamlessly, without using
+intermediate objects or overwriting our original object. 
+
+```{r}
+co2 %>% 
+  filter(year >= 1980, month == 12) %>%
+  select(year, average)
+
+# This is the same but much more readable and much cleaner than the following:
+
+co2_filter <- filter(co2, year >= 1980, month == 12)
+co2_subset <- select(co2_filter, year, average)
+co2_subset
+```
+It's also worth noting that the piped version does not create an additional object unless you ask it to. 
+This is super useful in the early stages of exploring and visualizing your data.
+
+More information about pipes and the alternatives found [here](http://r4ds.had.co.nz/pipes.html)
 
 ## Sorting data
 ### Mutating
