@@ -96,7 +96,7 @@ co2
 
 Success! We have read in the data. Now we're ready to rock and roll.
 
-## Viewing data
+# Viewing data
 
 Once parsed and imported, it's a good idea to take a look at your data, both to 
 get a sense of it's size, names, and shape but also to keep an eye out for missing
@@ -115,7 +115,7 @@ nrow(co2)
 ncol(co2)
 
 # to get a summary of the object
-summary(co2)
+summary(co2)  # here we can get a good sense of the missing values in the days column and average column. 
 
 # for the first or last `n` lines of the data frame
 head(co2) # check out r help - shows us that the default argument is 10 lines
@@ -126,7 +126,7 @@ View(co2)
 # also double click from the environment
 ```
 
-## Subsetting data
+# Subsetting data
 
 Subsetting can be done a variety of ways through baseR and tidyverse. Here we are going
 to cover the following ways:
@@ -188,15 +188,23 @@ This is super useful in the early stages of exploring and visualizing your data.
 
 More information about pipes and the alternatives found [here](http://r4ds.had.co.nz/pipes.html)
 
-## Sorting data
-### Mutating
-### GroupBy
-### summarizing data
+# Sorting data
+## Mutating
+```{r}
 
-## Writing Out Data
+```
 
-## Plotting data
+## GroupBy
+```{r}
 
+```
+
+## summarizing data
+```{r}
+
+```
+
+# Plotting data
 ## Plotting Data with `ggplot`
 
 Effective visualizations are an integral part of data science, poorly organized or poorly labelled figures can be as much a source of peril as understanding.  Nevertheless, the ability to generate plots quickly with minimal tinkering is an essential skill.  As standards for visualizations have increased, too often visualization is seen as an ends rather than a means of data analysis. See [Fox & Hendler (2011)](http://science.sciencemag.org/content/331/6018/705.short) for more discussion of this.
@@ -224,8 +232,6 @@ co2_sub %>% head()
 ```
 
 
-## Plotting multiple series
-
 2) rearranging the data into a "long" data table where the data values
 are stacked together in one column and there is a separate column that
 keeps track of the whether the data came from the average,
@@ -239,3 +245,7 @@ co2_sub <- co2_sub %>%
 co2_sub %>% head()
 ```
 
+3)
+
+
+# Writing out Data or objects
