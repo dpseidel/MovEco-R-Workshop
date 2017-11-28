@@ -204,13 +204,12 @@ are powerful tools for rearranging and summarizing our data.
 
 ```
 
-## Group By
+
+## Group By & Summarise
+`group_by` allows us to invisibly partition our data into groups. And `summarise`/`summarize`
 ```{r}
 
-```
 
-## Summarizing data
-```{r}
 
 ```
 
