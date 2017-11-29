@@ -199,19 +199,50 @@ Often data is not in the exact form we want or we need additional information fr
 When this is the case, the tidyverse library has some helpful functions that, when combined, 
 are powerful tools for rearranging and summarizing our data. 
 
-## Mutating
-```{r}
-
-```
-
-
 ## Group By & Summarise
-`group_by` allows us to invisibly partition our data into groups. And `summarise`/`summarize`
+`group_by` allows us to invisibly partition our data into groups which can be powerful when we later want to applied functions or look at statistics on groups together. Take a look, you'll notice the only thing that changes 
+when group_by years in the co2 dataframe, is the addition of a small line in 
+the tibble header: "# Groups:   year [60]"
 ```{r}
 
+co2 %>% group_by(year)
+```
 
+Everything else appears the same! We still have 716 rows and 10 columns. All the names are the same. 
+BUT.... if we pass this new grouped dataframe into another function like `summarise`, check out what happens:
+
+```{r}
+co2 %>% group_by(year) %>% summarise(`Number of measurements` = n(), `Average year's trend` = mean(trend))
+```
+
+The `summarise` function allows you to build a new table with completely new columns,
+based upon any operations you want to run on your original table. Without the group by, 
+this same `summarise` command would return only 1 line:
+
+```{r}
+co2 %>% summarise(`Number of measurements` = n(), `Average trend` = mean(trend))
+```
+
+But once we "group" the dataframe, R knows to compute our functions across the groups 
+we specify. 
+
+## Mutating
+
+The `mutate` function is similar to `summarise` in that it allows you to take values from within a data table, compute something new, but in this case, the R will append it as a new column to the original dataframe.
+For instance, perhaps we wanted to make a column combining the year and month for our dataset
+```{r}
+co2 %>% mutate(month_year = paste0(month,"/", year))
 
 ```
+
+`group by` functions also work to group things before`mutate` functions. FOr instance, if we wanted a column
+that averaged the temperature across each year?
+
+```{r}
+co2 %>% group_by(year) %>% mutate(year_average= mean(average, na.rm=TRUE))
+```
+
+Together, group_by, mutate, and summarise are some of your most powerful tools for data manipulation. 
 
 # Plotting data
 ## Plotting Data with `ggplot`
@@ -252,13 +283,13 @@ co2_sub %>% head()
     ```
 
 
-3) plotting
+3. plotting
 
-```{r}
+    ```{r}
 co2_sub %>%
  ggplot(aes(decimal_date, ppmv, col = series)) + 
   geom_line()
-```
+    ```
 
 
 ## Plotting multiple series

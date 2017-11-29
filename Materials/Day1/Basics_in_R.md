@@ -670,14 +670,112 @@ Sorting data
 
 Often data is not in the exact form we want or we need additional information from our data. When this is the case, the tidyverse library has some helpful functions that, when combined, are powerful tools for rearranging and summarizing our data.
 
+Group By & Summarise
+--------------------
+
+`group_by` allows us to invisibly partition our data into groups which can be powerful when we later want to applied functions or look at statistics on groups together. Take a look, you'll notice the only thing that changes when group\_by years in the co2 dataframe, is the addition of a small line in the tibble header: "\# Groups: year \[60\]"
+
+``` r
+co2 %>% group_by(year)
+```
+
+    ## # A tibble: 716 x 7
+    ## # Groups:   year [60]
+    ##     year month decimal_date average interpolated  trend  days
+    ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>
+    ##  1  1958     3     1958.208  315.71       315.71 314.62    NA
+    ##  2  1958     4     1958.292  317.45       317.45 315.29    NA
+    ##  3  1958     5     1958.375  317.50       317.50 314.71    NA
+    ##  4  1958     6     1958.458      NA       317.10 314.85    NA
+    ##  5  1958     7     1958.542  315.86       315.86 314.98    NA
+    ##  6  1958     8     1958.625  314.93       314.93 315.94    NA
+    ##  7  1958     9     1958.708  313.20       313.20 315.91    NA
+    ##  8  1958    10     1958.792      NA       312.66 315.61    NA
+    ##  9  1958    11     1958.875  313.33       313.33 315.31    NA
+    ## 10  1958    12     1958.958  314.67       314.67 315.61    NA
+    ## # ... with 706 more rows
+
+Everything else appears the same! We still have 716 rows and 10 columns. All the names are the same. BUT.... if we pass this new grouped dataframe into another function like `summarise`, check out what happens:
+
+``` r
+co2 %>% group_by(year) %>% summarise(`Number of measurements` = n(), `Average year's trend` = mean(trend))
+```
+
+    ## # A tibble: 60 x 3
+    ##     year `Number of measurements` `Average year's trend`
+    ##    <int>                    <int>                  <dbl>
+    ##  1  1958                       10               315.2830
+    ##  2  1959                       12               315.9742
+    ##  3  1960                       12               316.9075
+    ##  4  1961                       12               317.6367
+    ##  5  1962                       12               318.4500
+    ##  6  1963                       12               318.9942
+    ##  7  1964                       12               319.6217
+    ##  8  1965                       12               320.0433
+    ##  9  1966                       12               321.3833
+    ## 10  1967                       12               322.1567
+    ## # ... with 50 more rows
+
+The `summarise` function allows you to build a new table with completely new columns, based upon any operations you want to run on your original table. Without the group by, this same `summarise` command would return only 1 line:
+
+``` r
+co2 %>% summarise(`Number of measurements` = n(), `Average trend` = mean(trend))
+```
+
+    ## # A tibble: 1 x 2
+    ##   `Number of measurements` `Average trend`
+    ##                      <int>           <dbl>
+    ## 1                      716        352.7969
+
+But once we "group" the dataframe, R knows to compute our functions across the groups we specify.
+
 Mutating
 --------
 
-Group By
---------
+The `mutate` function is similar to `summarise` in that it allows you to take values from within a data table, compute something new, but in this case, the R will append it as a new column to the original dataframe. For instance, perhaps we wanted to make a column combining the year and month for our dataset
 
-Summarizing data
-----------------
+``` r
+co2 %>% mutate(month_year = paste0(month,"/", year))
+```
+
+    ## # A tibble: 716 x 8
+    ##     year month decimal_date average interpolated  trend  days month_year
+    ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>      <chr>
+    ##  1  1958     3     1958.208  315.71       315.71 314.62    NA     3/1958
+    ##  2  1958     4     1958.292  317.45       317.45 315.29    NA     4/1958
+    ##  3  1958     5     1958.375  317.50       317.50 314.71    NA     5/1958
+    ##  4  1958     6     1958.458      NA       317.10 314.85    NA     6/1958
+    ##  5  1958     7     1958.542  315.86       315.86 314.98    NA     7/1958
+    ##  6  1958     8     1958.625  314.93       314.93 315.94    NA     8/1958
+    ##  7  1958     9     1958.708  313.20       313.20 315.91    NA     9/1958
+    ##  8  1958    10     1958.792      NA       312.66 315.61    NA    10/1958
+    ##  9  1958    11     1958.875  313.33       313.33 315.31    NA    11/1958
+    ## 10  1958    12     1958.958  314.67       314.67 315.61    NA    12/1958
+    ## # ... with 706 more rows
+
+`group by` functions also work to group things before`mutate` functions. FOr instance, if we wanted a column that averaged the temperature across each year?
+
+``` r
+co2 %>% group_by(year) %>% mutate(year_average= mean(average, na.rm=TRUE))
+```
+
+    ## # A tibble: 716 x 8
+    ## # Groups:   year [60]
+    ##     year month decimal_date average interpolated  trend  days year_average
+    ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>        <dbl>
+    ##  1  1958     3     1958.208  315.71       315.71 314.62    NA     315.3313
+    ##  2  1958     4     1958.292  317.45       317.45 315.29    NA     315.3313
+    ##  3  1958     5     1958.375  317.50       317.50 314.71    NA     315.3313
+    ##  4  1958     6     1958.458      NA       317.10 314.85    NA     315.3313
+    ##  5  1958     7     1958.542  315.86       315.86 314.98    NA     315.3313
+    ##  6  1958     8     1958.625  314.93       314.93 315.94    NA     315.3313
+    ##  7  1958     9     1958.708  313.20       313.20 315.91    NA     315.3313
+    ##  8  1958    10     1958.792      NA       312.66 315.61    NA     315.3313
+    ##  9  1958    11     1958.875  313.33       313.33 315.31    NA     315.3313
+    ## 10  1958    12     1958.958  314.67       314.67 315.61    NA     315.3313
+    ## # ... with 706 more rows
+
+Together, group\_by, mutate, and summarise are some of your most powerful tools for data manipulation.
 
 Plotting data
 =============
@@ -694,7 +792,7 @@ Plotting Data with `ggplot`
 ggplot(co2, aes(decimal_date, average)) + geom_line()
 ```
 
-![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
+![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
 
 Plotting multiple series
 ------------------------
@@ -737,17 +835,15 @@ We often would like to plot several data values together for comparison, for exa
         ## 5     1958.542 average 315.86
         ## 6     1958.625 average 314.93
 
-<!-- -->
+3.  plotting
 
-1.  plotting
+    ``` r
+    co2_sub %>%
+     ggplot(aes(decimal_date, ppmv, col = series)) + 
+      geom_line()
+    ```
 
-``` r
-co2_sub %>%
- ggplot(aes(decimal_date, ppmv, col = series)) + 
-  geom_line()
-```
-
-![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
+    ![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-18-1.png)
 
 Plotting multiple series
 ------------------------
@@ -761,7 +857,7 @@ co2 %>%
   ggplot(aes(decimal_date, ppmv, col = series)) +  geom_line()
 ```
 
-![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
+![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
 
 Writing out Data or objects
 ===========================
