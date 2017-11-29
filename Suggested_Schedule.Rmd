@@ -20,7 +20,7 @@ This is an excellent resource for anyone wrangling data in R.
 ### Schedule 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | --- | ------------------------------------ |
-| 9:00 – 10:30 | Lecture | DPS, ERD |  Introductions and Goals |
+| 9:00 – 10:30 | Lecture | DPS/ERD |  Introductions and Goals |
 | 10:30 – 10:45 | Morning Break | | |
 | 10:45 – 12:00 | Livecode | DPS | Basics in R (R Studio; importing, exporting, cleaning data; data classes) | 
 | 12:00 – 13:30 | Lunch | | |
@@ -96,7 +96,7 @@ This is an excellent resource for anyone wrangling data in R.
 ### Schedule
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | --- | ------------------------------------ |
-| 9:00 – 10:30 | Lecture | ERD | Simulating movement; why, when? |
+| 9:00 – 10:30 | Lecture | DPS | Simulating movement; why, when? |
 | 10:30 – 10:45 | Morning Break | | |
 | 10:45 – 12:00 | Livecode | ERD | Coding principles of random walks, Levy flights, other movement types | 
 | 12:00 – 13:30 | Lunch | | |
