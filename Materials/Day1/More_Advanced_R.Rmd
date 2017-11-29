@@ -14,16 +14,34 @@ library("printr")
 In our earlier section, we discussed the basics of importing, manipulating, 
 and visualizing vector data in R, specifically focused on using the "tidyverse".
 In this section we want to review some additional powerful tools that we will need
-as we dive into simulations in R later in the week.
-
+as we dive into simulations in R later in the week. Fundamentals in coding such as functions,
+loops, creating/representing data in a `data.frame` / `tibble` objects, and random number generation
+will be covered here.
 
 ## Custom functions
+Writing your own functions is one way to reduce duplication in your code or to 
+create custom models for simulation. 
+
+From the Data Science for R Chapter 19: 
+
+*Functions allow you to automate common tasks in a more powerful and general way*
+*than copy-and-pasting. Writing a function has three big advantages over using copy-and-paste:*
+
+*1. You can give a function an evocative name that makes your code easier to understand.*
+
+*2. As requirements change, you only need to update code in one place, instead of many.*
+
+*3. You eliminate the chance of making incidental mistakes when you copy and paste (i.e. updating a variable name in one place, but not in another).*
 
 ### if Statements
 
+
 ### Flexible arguments
 
+Every custom function takes arguments
+
 ## Loops
+
 
 ### for
 
@@ -32,4 +50,7 @@ as we dive into simulations in R later in the week.
 ### the `apply` functions
 
 ## Simulation
+### Initialize
+### Simulate
+### Return
 
