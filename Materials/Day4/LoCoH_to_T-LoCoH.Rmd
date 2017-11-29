@@ -1,0 +1,89 @@
+---
+title: "From LoCoH to T-LoCoH"
+author: "Eric Dougherty & Dana Seidel"
+date: "November 29, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Our walkthrough today will generally follow the guideline laid out by Andy Lyons (an alum of the Getz lab) when he first published his T-LoCoH paper in Movement Ecology. The PDF of that tutorial can be found in our Day 4 folder and also at: [T-LoCoH Tutorial](http://tlocoh.r-forge.r-project.org/tlocoh_tutorial_2014-08-17.pdf)
+
+Just like we have been doing for the past few days, the first step will be installing the tlocoh package and getting it loaded into our R session. Unlike some of our previous examples, though, this particular package is housed on R-Forge rather than CRAN. This means we will need to use an additional argument or two:
+
+```{r}
+install.packages("tlocoh", dependencies=T, repos=c("http://R-Forge.R-project.org"))
+library(tlocoh)
+```
+
+The first step for us will be to load in one of the datasets included in the package. All we need to do is:
+
+```{r}
+data(toni)
+```
+
+Toni is the name that researchers from the Getz Lab gave to one of the African buffalo they studied in the Kruger National Park in South Africa during a study of bovine tuberculosis. Let's take a look at her data using the `base::head` command:
+
+```{r}
+dim(toni)
+head(toni)
+```
+
+We can see that we have 6371 data points for Toni. We can also see that the positional fixes are in the form of latitude and longitude. In order to use these data for our analyses here, we will need to convert these lat-long points into a meaningful geographic projection such as UTM, which will transform the points from degrees to meters. Knowing that these data are from South Africa, we can determine the UTM zone in which these data were collection (Zone 36S). In order to reproject the data, we will need two more packages that we have dealt with in the past, sp and rgdal. The first order of business is to create a SpatialPoints object with a defined projection (longlat, in this case). Then, we will transform the underlying projection to one more suited to our needs:
+
+```{r}
+library(sp)
+library(rgdal)
+
+toni.sp.latlong <- SpatialPoints(toni[ , c("long","lat")], proj4string=CRS("+proj=longlat +ellps=WGS84"))
+toni.sp.utm <- spTransform(toni.sp.latlong, CRS("+proj=utm +south +zone=36 +ellps=WGS84")) 
+```
+
+Now we can take a look at the coordinates to make sure they are no longer in degrees:
+
+```{r}
+toni.mat.utm <- coordinates(toni.sp.utm)
+head(toni.mat.utm)
+```
+
+Looks like we were successful! The only thing left to do is change the column labels from 'long' and 'lat' to 'x' and 'y'
+
+```{r}
+colnames(toni.mat.utm) <- c("x", "y")
+```
+
+Now we have a matrix (with two columns) of all of the positional fixes obtained from Toni during the study. One more thing we will need to check is the timestamp on these points. We have already seen the POSIX class in action, but one of the important arguments for defining that class is the timezone in which the points were taken. While some researchers collect their data in the local timezone, others prefer to standardize to UTC. In this case, the latter was selected, and we can tell by the name of the column in the original toni data file! Let's use the `base::as.POSIXct` command to define the time zone and the class of the timestamps:
+
+```{r}
+ toni.gmt <- as.POSIXct(toni$timestamp.utc, tz="UTC")
+```
+
+Now that the timezone has been set, we may want to transform it into the time zone where the animal was actually located, as the time of day (as experienced by the animal) may be important for our understanding of their movement. For example, it would be really difficult to determine if an animal is nocturnal or diurnal or crespuscular (active at sunrise and sunset) if you don't know when sunrise and sunset are relative to the time at which the points were collected. In this case, POSIX recognizes the timezone of Kruger as "Africa/Johannesburg"
+
+```{r}
+local.tz <- "Africa/Johannesburg"
+toni.localtime <- as.POSIXct(format(toni.gmt, tz=local.tz), tz=local.tz)
+```
+
+We now have everything we need (in the correct formats) to move on to an actual LoCoH analysis!
+
+The first step in using LoCoH is the creation of the fundamental LoCoH object: lxy. To do this, we use the `tlocoh::xyt.lxy` command. This unique object requires a few inputs, including the UTM coordinates (and the associated projection), the timestamps of the points, and the ID (name) of the individual.
+
+```{r}
+toni.lxy <- xyt.lxy(xy=toni.mat.utm, dt=toni.localtime, id="toni", proj4string=CRS("+proj=utm +south +zone=36 +ellps=WGS84"))
+```
+
+It turns out there were 595 instances in the dataset of 6371 points where the timestamp and the coordinates were duplicated. In the creation of the lxy object, these points were removed, leaving a total of 5776 points. You could tell this from digging into our new lxy object which currently consists of 5 elements (in the form of a list): pts, dt.int, rw.params, anv, and comment.
+
+```{r}
+nrow(toni.lxy$pts)
+```
+
+
+
+
+
+
+
