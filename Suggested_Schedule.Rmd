@@ -56,11 +56,11 @@ This is an excellent resource for anyone wrangling data in R.
 ### Schedule
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | --- | ------------------------------------ |
-| 9:00 – 10:30 | Lecture | DPS/ERD | Selection methods; Home ranges and utilization distributions |
+| 9:00 – 10:30 | Lecture | ERD | Selection methods; Home ranges and utilization distributions |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Livecode | DPS/ERD | MCP and UD (constructing home ranges, comparing results) | 
+| 10:45 – 12:00 | Livecode | DPS | MCP and UD (constructing home ranges, comparing results) | 
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 | Livecode| DPS/ERD | RSF and SSF (obtaining environmental variables, conducting regressions) |
+| 13:30 – 14:45 | Livecode| DPS | RSF and SSF (obtaining environmental variables, conducting regressions) |
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | | From path to presence: transforming tracks into knowledge |
 
@@ -71,11 +71,11 @@ This is an excellent resource for anyone wrangling data in R.
 ### Schedule
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | --- | ------------------------------------ |
-| 9:00 – 10:30 | Lecture | ERD/WMG | Space-time considerations |
+| 9:00 – 10:30 | Lecture | WMG | Space-time considerations |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Lecture | ERD/WMG | From LoCoH to T-LoCoH (and a-LoCoH) | 
+| 10:45 – 12:00 | Lecture | ERD | From LoCoH to T-LoCoH (and a-LoCoH) | 
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 | Livecode| DPS/ERD | T-LoCoH derived metrics; alternative methods (Brownian bridges, AKDE) |
+| 13:30 – 14:45 | Livecode| ERD | T-LoCoH derived metrics; alternative methods (Brownian bridges, AKDE) |
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | | Personal projects |
 
@@ -96,7 +96,7 @@ This is an excellent resource for anyone wrangling data in R.
 ### Schedule
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | --- | ------------------------------------ |
-| 9:00 – 10:30 | Lecture | ERD/DPS | Simulating movement; why, when? |
+| 9:00 – 10:30 | Lecture | ERD | Simulating movement; why, when? |
 | 10:30 – 10:45 | Morning Break | | |
 | 10:45 – 12:00 | Livecode | ERD | Coding principles of random walks, Levy flights, other movement types | 
 | 12:00 – 13:30 | Lunch | | |
