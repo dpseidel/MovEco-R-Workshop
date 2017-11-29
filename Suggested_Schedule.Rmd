@@ -7,20 +7,15 @@ output: github_document
 # Week 1
 ## Day 1,  Jan 3
 ### Topics to Cover
-- R studio
-    - Git, Build, Environment, Console, v. Source
-- Tidy verse
-- reading in data
-- Viewing data
-- Subsetting data
-- Sorting data
-- Mutating/summarizing data
-- Plotting data
-- Writing out data
+- Basic Workflow
+- Data manipulation & visualization with tidyverse
 - Custom Functions
-- Flexible arguments
-- For loop, apply functions
-- Simulation. 
+- For loops, apply functions
+- Intro to Simulation 
+
+### Supplement Reading:
+Much of the days workflow is a much abbreviated version of the [Data Science for R book](http://r4ds.had.co.nz/).
+This is an excellent resource for anyone wrangling data in R. 
 
 ### Schedule 
 | Time | Activity | Speaker | Topic |

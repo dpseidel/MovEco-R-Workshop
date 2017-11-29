@@ -25,7 +25,9 @@ temp <- read_csv("station.csv", na = "999.90")
 ```
 
 
-## Custom functions
+# Custom functions
+[**Supplemental Reading**](http://r4ds.had.co.nz/functions.html)
+
 Writing your own functions is one way to reduce duplication in your code or to 
 create custom models for simulation. 
 
@@ -95,7 +97,7 @@ necessary arguments have been specified.
 As you have seen above, to run our function we simply call it like any other function from R packages:
 `celsius_to_kelvin()`
 
-### if Statements
+## Conditions
 
 Often when coding, especially in more complex function, we want to doing an operation
 only when a certain condition is met. This is when we need if and if/else statements!
@@ -160,10 +162,10 @@ temp %>%
   select(YEAR, JAN, JAN_kelvin) 
 ```
 
-## For Loops
+# For Loops
+[**Supplemental Reading**](http://r4ds.had.co.nz/iteration.html)
 
-
-### the `apply` functions
+## the `apply` and `map` functions
 
 ## Simulation
 ### Initialize

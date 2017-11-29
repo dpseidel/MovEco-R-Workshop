@@ -1,4 +1,4 @@
-More Advanced R
+Slighty More Advanced R
 ================
 Dana Seidel & Eric Dougherty
 1/3/2018
@@ -12,7 +12,9 @@ temp <- read_csv("station.csv", na = "999.90")
 ```
 
 Custom functions
-----------------
+================
+
+[**Supplemental Reading**](http://r4ds.had.co.nz/functions.html)
 
 Writing your own functions is one way to reduce duplication in your code or to create custom models for simulation.
 
@@ -82,7 +84,8 @@ Now obviously, this is a very simple example but is useful for showing us the gu
 
 As you have seen above, to run our function we simply call it like any other function from R packages: `celsius_to_kelvin()`
 
-### if Statements
+Conditions
+----------
 
 Often when coding, especially in more complex function, we want to doing an operation only when a certain condition is met. This is when we need if and if/else statements!
 
@@ -177,9 +180,14 @@ temp %>%
     ## # ... with 71 more rows
 
 For Loops
----------
+=========
 
-### the `apply` functions
+[**Supplemental Reading**](http://r4ds.had.co.nz/iteration.html)
+
+Often
+
+the `apply` functions
+---------------------
 
 Simulation
 ----------
