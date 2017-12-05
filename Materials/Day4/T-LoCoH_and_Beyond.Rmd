@@ -1,0 +1,202 @@
+---
+title: "T-LoCoH and Beyond"
+author: "Eric Dougherty & Dana Seidel"
+date: "December 4, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Let's continue where we left off with our earlier exercise by loading in one of our existing hullsets. We've already done the hard work of selecting parameters, so we'll bring in the temporally-dependent hullset using a simple `base::file.choose` command, which lets you select a file via a browser window. We'll want to click on the one that has an *s* of 0.03 in the file name rather than 0. I have the `file.choose` command commented out for the sake of 'knitting' this document (where you cannot interact with the code, so user-based commands will cause it to spit an error. You may see a few more instances of commented out code; just remove the '#' from the front to run them):
+
+```{r}
+#load(file.choose())
+load('toni.n5775.s0.03.k15.iso.lhs.01.RData')
+```
+
+Now we have the object we created earlier, called `toni.lhs.time.k15`. The rest of this exercise will revolve around investigating some of the metrics that we can derive directly from this unique lhs object. Then, we're going to move on to calculating the isopleth overlap. Finally, we will look into another alternative method, known as Brownian bridges, that also account for some of the unique features of movement data.
+
+We're going to run this bit of code and then I'll talk about it while it performs all of the compuations:
+
+```{r}
+library(tlocoh)
+toni.lhs.time.k15 <- lhs.ellipses.add(toni.lhs.time.k15)
+```
+
+The first metics we are going to examine is called 'Elongation.' This is essentially a measure of the eccentircity of the bounding ellipsoid around each hull. For hulls that exhibit high elongation, we can assume the movement summmarized by that hull was directional in nature. On the other hand, hulls that are approximately circular may be more suggestive of foraging or resting behaviors. This is the first example of extracting some behavioral information from our movement trajectories, but it is far from the last example! As you can see from above, we used the `tlocoh::lhs.ellipses.add` command to do this and on my computer, it took a bit over 3 minutes.
+
+That's all very nice in theory, but let's see what it looks like in practice. First, we'll plot all of the ellipses we just created:
+
+```{r}
+plot(toni.lhs.time.k15, ellipses=TRUE)
+```
+
+That looks pretty neat! We can see ellipses of all different shapes and sizes, but its a bit difficult to make out what is happening with any specfic hull. We can get a bit better resolution on exactly what is happeneing here using a few additional arguments in our `plot` call:
+
+```{r}
+plot(toni.lhs.time.k15, hulls=T, ellipses=T, allpts=T, nn=T, ptid="auto")
+```
+
+Here we can see the parent point around which the hull is built, the hull itself, and the ellipse that is contructed around it. The circle points that are within the hull are the nearest neighbor points of this particular parent point. One thing you can see is that the hull is clearly not built around only the closest points in terms of spatial proximity (there are a bunch a much closer points). If we call the same line of code again, we will (almost definitely) see a different parent point and its associated neighbors, hull, and ellipse (the `ptid="auto"` argument leads to the selection of a random point to look at up close). 
+
+There are two more important metrics that we will calculate before we look at any in more depth. Both revisitation and visit duration can be derived using the hullset we created. Revisitation represents the number of times that an animal visits the area inside of a given hull whereas duration represents the number of times that an animal was within the hull during a given 'visit.' We need to define the inter-visit gap (IVG) period (the unit of time that must pass before another occurrence in the hull is considered a separte visit) in order to calcualte these metrics. Both of these are calculated using the `tlocoh::lhs.visit.add`. We will use 12 hours as our IVG, which will control for instances where an animal steps out of a hull for a short period before returning to the hull. This must be inputted in terms of seconds, so we will multiply by 3600:
+
+```{r}
+toni.lhs.time.k15 <- lhs.visit.add(toni.lhs.time.k15, ivg=3600*12)
+```
+
+If we use the `summary` command, we can see all of the metrics that we have calculated so far, which should include the `ecc` (from our ellipses), `mnlv.43200` (duration), and `nsv.43200` (revistitation):
+
+```{r}
+summary(toni.lhs.time.k15)
+```
+
+There they are! Now we're ready to examine these hull metrics a bit more closely. Earlier, we plotted isopleths based on the density of points (essentially a utilization distribution). What we can do now is create isopleths sorted by something other than density, for example, eccentricity or revisitation. This creates a behavioral map of sorts. Let's begin by sorting on eccentricity:
+
+```{r}
+toni.lhs.time.k15 <- lhs.iso.add(toni.lhs.time.k15, sort.metric="ecc")
+plot(toni.lhs.time.k15, iso=T, iso.sort.metric="ecc")
+```
+
+This plot shows some of the areas where Toni moved in the most directed fashion. These could represent efficient routes through the home range (i.e., areas with the least resistance). It should be noted that these home ranges look a bit different from the ones we created earlier because we are sorting by a different metric. Often, this will result in core areas looking a bit more like Swiss cheese than they did when sorting by density. That is to be expected because we are looking, once again, at only the 95-percent isopleth. The 5 percent of points with the lowest eccentricity (which are likely portions of the core area where the animal was not moving in a directional manner) are excluded from this isopleth plot.
+
+Next, lets look at the spatial patterns of revisitation. Let's look at both the histogram of revisitation, as well as a map of hull parent points colored by revisitation rate (nsv):
+
+```{r}
+hist(toni.lhs.time.k15, metric="nsv")
+plot(toni.lhs.time.k15, hpp=T, hpp.classify="nsv", ivg=3600*12, col.ramp="rainbow")
+```
+
+The histogram shows that the majority of hulls were revisted fewer than 10 times, though there are some hulls that are visited almost 30 times! When we look at the plot of the movement track colored by the revistation rate, we can see where these areas of high revisitation are. Unexpectedly, these points are located in the core area, whereas the parent points of hulls with relatively few revisitations are along the periphery. These core areas likely represent regions that contain resources that Toni needed repeatedly. If we wanted to zoom in on a certain portion of the plot, we could use the area of interest command (`tlocoh::aoi`). Once we type this, we need to click on two points that represent the corners of the box we want to zoom in on (once again, these are commented out because they require active user input, so for the sake of 'knitting' they have been removed):
+
+```{r}
+#toni.aoi <- aoi()
+#plot(toni.lhs.time.k15, hpp=T, hpp.classify="nsv", col.ramp="rainbow", aoi=toni.aoi)
+```
+
+It could be interesting to lay an NDVI or some other GIS layer under these points to see if these hotspots of revistation correspond to some environmental component. 
+
+Let's take a look at duration of each visit now. 
+
+```{r}
+hist(toni.lhs.time.k15, metric="mnlv", ivg=3600*12)
+plot(toni.lhs.time.k15, hpp=T, hpp.classify="mnlv", col.ramp="rainbow")
+```
+
+This plot is almost the inverse of the previous. The points that were in the vicinity of the high revisitation areas exhibit lower durations of visit. The latter pattern is often associated with the presence of a watering hole in the home range. The  higher values of duration appear to occur along the periphery, but this is a bit misleading; it may actually be an artefact of the fact that we used the *k* method. Because we used *k*=15, every hull is constructed from 15 nearest neighors. Furthermore if there are no repeat visits to the area, the hull will consist of 15 temporally contiguous points -- a single 'visit' with 15 locations. This indicates that the *a* method may have been better, as it may have accounted for these outlying areas more effectively (i.e., there would be fewer neighbors for those points, and thus, lower durations of visits).
+
+The last thing we'll look at is a scatterplot of the hull revisitation and duration. We can use this as a map
+legend. Note how we use a spiral color pattern (instead of rainbow) to help us see where the points fall in the scatterplot, and we've also given the scatter plot a black background to make the colors stand out more. When we create the hull metric scatterplot, we save it as an object (hull.scatter) and then feed that object into the plot function for the hull parent points.
+
+```{r}
+hull.scatter <- lhs.plot.scatter(toni.lhs.time.k15, x="nsv", y="mnlv", col="spiral", bg="black")
+plot(toni.lhs.time.k15, hpp=T, hsp=hull.scatter, hpp.classify="hsp")
+```
+
+This map illustrates that the measures of time use are not randomly distributed. Rather, these two dimensions of time use do a pretty good job of dividing the landscape into discrete areas.
+
+We can also take a look at a bunch of alternative scatter plots (48 in total) to see if there are any other metrics that might be more helpful for splitting space. 
+
+```{r}
+#lhs.plot.scatter.auto(toni.lhs.time.k15)
+```
+
+Now lets use this beautiful hullset that we created for Toni and take a look at its overlap with another one of the buffalo that the team tracked over the same time period, Pepper. Home range overlap is a common analysis for determining the potential for contact between two individuals, which is particularly important when you are interested in disease transmission. To do this, we'll load in an existing hullset that Andy has created and has placed on the R-Forge server for others to use:
+
+```{r}
+mycon <- url("http://tlocoh.r-forge.r-project.org/pepper.n4571.s0.003.k15.iso.lhs.01.RData")
+load(mycon); close(mycon)
+```
+
+This loads in an lhs object called `pepper.lhs.k15` which you can now see in your environment. Let't take a look at this new individual's movement path:
+
+```{r}
+summary(pepper.lhs.k15)
+plot(pepper.lhs.k15, iso=TRUE)
+```
+
+You'll notice that this object does not have the eccentricity, revisitation, or duration metrics saves like our more complete hullset for Toni, but we could easily add these (though it wont be necessary for this particular analysis):
+
+```{r}
+#pepepr.lhs.k15 <- lhs.ellipses.add(pepper.lhs.k15)
+#pepper.lhs.k15 <- lhs.visit.add(pepper.lhs.k15, ivg=3600*12)
+```
+
+The important part for this analysis will be extracting the (density) isopleths from this lhs object. We can isolate this aspect using the `tlocoh::isopleths` command, which will create a list of SpatialPolygonDataFrame objects:
+
+```{r}
+pepper.isos <- isopleths(pepper.lhs.k15)
+```
+
+We can take a look at what this object looks like by delving into our new `pepper.isos` object just like any other list:
+
+```{r}
+pepper.isos[[1]]@data
+```
+
+As we have mentioned previously, the 50% isopleth is often associated with the so-called core area of an animal, whereas the 95% isopleth is frequently used to represent the broader home range. We are going to pull these two polygons from our set (which you can see also includes the 10%, 25%, and 75% isopleths):
+
+```{r}
+pepper.core <- pepper.isos[[1]][ pepper.isos[[1]][["iso.level"]]==0.5, ]
+pepper.hr <- pepper.isos[[1]][ pepper.isos[[1]][["iso.level"]]==0.95, ]
+
+plot(pepper.hr, border="blue")
+plot(pepper.core, border="red", add=T)
+```
+
+Now we'll go through the same steps to extract the core area and home range from the Toni lhs that we created:
+
+```{r}
+toni.isos <- isopleths(toni.lhs.time.k15)
+toni.core <- toni.isos[[1]][ toni.isos[[1]][["iso.level"]]==0.5, ]
+toni.hr <- toni.isos[[1]][ toni.isos[[1]][["iso.level"]]==0.95, ]
+plot(pepper.hr, border="blue")
+plot(pepper.core, border="red", add=T)
+plot(toni.hr, border="green", add=T)
+plot(toni.core, border="purple", add=T)
+```
+
+Now we can see there is some potential overlap between these two individuals. We'll want to be able to quantify that, though, so let's see if we can extract a value for that region of overlap. We'll start with the core areas, as these are the areas that both individual use most frequently, which means contact would be most likely in these portions of the ranges. First we'll plot just these core areas to see if there's any evidence of overlap at all:
+
+```{r}
+plot(pepper.core, border="red")
+plot(toni.core, border="purple", add=T)
+```
+
+Next, we’ll find the area of intersection of the core areas of Toni and Pepper using the `gIntersection` function from the `rgeos` package. Then we can visualize these regions on the plot we just made:
+
+```{r}
+library(rgeos)
+
+tp.core.common <- gIntersection(pepper.core, toni.core)
+plot(pepper.core, border="red")
+plot(toni.core, border="purple", add=T)
+plot(tp.core.common, col="black", add=T)
+```
+
+But we wanted an actual metric that we could use to describe this area. Though there is no simple function to determine the polygon area, we can delve into the SpatialPolygon object to get such a value:
+
+```{r}
+tp.core.common@polygons[[1]]@area
+```
+
+That wasn't too hard! And now we have an idea of the scale of the overlap between the core areas of these two animals. Though this is the region to the highest probability of the two individuals overlapping, there is still some chance of encounter in the rest of the home range. Let's use the other polygons that we extracted to define the area of overlap between the 95% isopleths. This will also serve to put this area value that we just extracted into context (i.e., is the core area overlap a large proportion of the home range overlap?)
+
+```{r}
+plot(pepper.hr, border="blue")
+plot(toni.hr, border="green", add=T)
+tp.hr.common <- gIntersection(pepper.hr, toni.hr)
+plot(tp.hr.common, col="black", add=T)
+tp.hr.common@polygons[[1]]@area
+```
+
+Clearly this is quite a bit larger than the core overlap area. But just for reference, let's see what proportion of the overlap is in core areas:
+
+```{r}
+tp.core.common@polygons[[1]]@area / tp.hr.common@polygons[[1]]@area
+```
+
+Interesting! Only about 3% of the potential overlap lies in the core areas. That is important to note if we are considering the probability of direct contact between the individuals. From an epidemiological perspective, the home range overlap could be very important for an indirectly transmitted pathogen (such as anthrax) where spatiotemporal overlap is not required, only spatial overlap. In this sense, a much larger area holds potential for transmission.
+
