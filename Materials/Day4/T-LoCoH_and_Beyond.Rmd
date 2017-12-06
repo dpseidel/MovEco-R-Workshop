@@ -200,3 +200,132 @@ tp.core.common@polygons[[1]]@area / tp.hr.common@polygons[[1]]@area
 
 Interesting! Only about 3% of the potential overlap lies in the core areas. That is important to note if we are considering the probability of direct contact between the individuals. From an epidemiological perspective, the home range overlap could be very important for an indirectly transmitted pathogen (such as anthrax) where spatiotemporal overlap is not required, only spatial overlap. In this sense, a much larger area holds potential for transmission.
 
+Next, we'll take a look at an alternative method for creating a utilization distribution that explicitly incorporates the temporal autocorrelation inherent in movement data. The Brownian Bridge movement model has been a popular means of accounting for some of the uncertainty around each of the sampled position locations (as well as the area in between sampled points).
+
+We'll start by loading in the fresh `toni` data and format it appropriately for Brownian Bridge analysis. This will involve loading the data, eliminating duplicate time stamps (something tlocoh did for us automatically), projecting the data into lat-long and then converting it into UTM, and formatting the time as we did earlier. One additional step requires determining the time difference between steps, which we can do quite easily using the `base:diff` command:
+
+```{r}
+data(toni)
+toni <- toni[!duplicated(toni$timestamp.utc),]
+toni.sp <- SpatialPoints(toni[ , c("long","lat")], proj4string=CRS("+proj=longlat +ellps=WGS84"))
+toni.sp <- spTransform(toni.sp, CRS("+proj=utm +south +zone=36 +ellps=WGS84"))
+toni.coords <- data.frame(toni.sp@coords)
+colnames(toni.coords) <- c("x", "y")
+toni.gmt <- as.POSIXct(toni$timestamp.utc, tz="UTC")
+time.diff <- diff(toni.gmt)*60
+toni <- toni[-1,]
+toni$timelag <- as.numeric(abs(time.diff))
+```
+
+Now on to some more advanced things we'll need as inputs to create our Brownian bridge layer. We are going to create an empty raster with the resolution that we want our resulting UD to have. To do this, we are going to first extract the extent of Toni's movements. This can be done easily using the `raster::extent` command. Then, we're going to create our own raster that has at least this extent (we will want a buffer just in case the Brownian Bridge highlights areas beyond the bounding box of the movement path). We can do this with the `raster::raster` command, wherein we will also set the resolution (100 m2 cells) and the projection (to match the rest of our work with Toni). Once we have the raster, we will extract the coordinates of the center points from each cell. The resulting grid will be the basis of the Brownian Bridge.
+
+```{r}
+library(raster)
+toni.ext <- extent(toni.sp)
+r <- raster(resolution=c(100,100), 
+            xmn = round((toni.ext@xmin - 1000), -2), xmx = round((toni.ext@xmax + 1000), -2),
+            ymn = round((toni.ext@ymin - 1000), -2), ymx = round((toni.ext@ymax + 1000), -2),
+            crs = "+proj=utm +south +zone=36 +ellps=WGS84")
+r[] <- 0
+grid <- coordinates(r)[!is.na(values(r)),]
+```
+
+Now we are ready to implement the Brownian Bridge in the BBMM package using the ``BBMM::brownian.bridge` command. Unfortunately, this takes quite a while to run, so we are actually going to skip that line and instead, we'll load in a .tif file of the raster that I created when I initially ran the code on my computer.
+
+```{r}
+library(BBMM)
+#toni.BBMM <- brownian.bridge(x=toni.coords$x, y=toni.coords$y, time.lag=toni$timelag, location.error=34, area.grid=grid)
+toni.BBMM <- raster('Toni.BBMM.tif')
+plot(toni.BBMM)
+toni.vals <- getValues(toni.BBMM)
+```
+
+Alternatively, we can plot it using the `BBMM::bbmm.contour` command, but because we did not create a proper `bbmm` object, we will have to use a long work-around:
+
+```{r}
+#contours <- bbmm.contour(toni.BBMM, levels=c(50, 95), locations=toni, plot=TRUE)
+contours <- list(Contour = c("50%", "95%"), Z=c(8.878191e-05, 1.300024e-05))
+```
+
+Next, we can isolate the core area (50%) and home range (95%) for plotting:
+
+```{r}
+library(maptools)
+library(PBSmapping)
+
+toni.df <- data.frame(x=data.frame(matrix(grid, ncol=2))[,1], y=data.frame(matrix(grid, ncol=2))[,2], probability=data.frame(matrix(toni.vals, ncol=1))[,1])
+
+bbmm.50 = data.frame(x = toni.df$x, y = toni.df$y, probability = toni.df$probability)
+bbmm.50 = bbmm.50[bbmm.50$probability >= contours$Z[1],]
+core <- SpatialPixelsDataFrame(points = bbmm.50[c("x", "y")], data=bbmm.50)
+core <- as(core, "SpatialGridDataFrame")
+core <- as(core, "SpatialPolygonsDataFrame")
+map.core <- SpatialPolygons2PolySet(core)
+map.core <- joinPolys(map.core, operation = 'UNION')
+#Set Projection information
+map.core <- as.PolySet(map.core, projection = 'UTM', zone = '36')
+#Re-assign the PolySet to Spatial Polygons and Polygon ID (PID) to 1
+map.core <- PolySet2SpatialPolygons(map.core, close_polys = TRUE)
+data.core <- data.frame(PID = 1)
+map.core <- SpatialPolygonsDataFrame(map.core, data = data.core)
+plot(map.core)
+
+bbmm.95 = data.frame(x = toni.df$x, y = toni.df$y, probability = toni.df$probability)
+bbmm.95 = bbmm.95[bbmm.95$probability >= contours$Z[2],]
+hr = SpatialPixelsDataFrame(points = bbmm.95[c("x", "y")], data=bbmm.95)
+hr = as(hr, "SpatialGridDataFrame")
+hr <- as(hr, "SpatialPolygonsDataFrame")
+map.hr <- SpatialPolygons2PolySet(hr)
+map.hr <- joinPolys(map.hr, operation = 'UNION')
+#Set Projection information
+map.hr <- as.PolySet(map.hr, projection = 'UTM', zone = '36')
+#Re-assign the PolySet to Spatial Polygons and Polygon ID (PID) to 1
+map.hr <- PolySet2SpatialPolygons(map.hr, close_polys = TRUE)
+data.hr <- data.frame(PID = 1)
+map.hr <- SpatialPolygonsDataFrame(map.hr, data = data.hr)
+plot(map.hr)
+plot(map.core, col='black', add=TRUE)
+```
+
+Now we are going to look into one other aspect of the T-LoCoH package that may make various analyses more straightforward or directly comparable. We have seen other forms of utilization distribution (like the BBMM) that take the form of a raster surface, and we can rasterize the isopleths we made earlier in order to compare the T-LoCoH-based UDs to the outputs from alternative methods.
+
+We'll begin by loading in a few of the packages we will need (`raster`, `tlocoh`, and `tlocoh.dev` which is a version of the package that has some experimental functions). Then we will load in yet another of the buffalo that the Getz Lab tracked in South Africa (named Queen). When we plot this individual, you will see a nice GIS layer plotted beneath it (this is called using the `gmap="hybrid"` command).
+
+```{r}
+#install.packages('tlocoh.dev', repos="http://R-Forge.R-project.org")
+library(tlocoh)
+library(tlocoh.dev)
+
+mycon <- url("http://tlocoh.r-forge.r-project.org/queen.n4545.s0.003.k13.lhs.01.RData")
+load(mycon); close(mycon)
+plot(queen.lhs, allpts=T, gmap="hybrid", cex.allpts=0.2)
+```
+
+Next, we will build a set of isopleths for Queen, but unlike previous calls, we are going to specify the isopleth levels that we want, and we will select every percentile from 1 to 100 in order to create a near-continuous UD:
+
+```{r}
+queen.lhs <- lhs.iso.add(queen.lhs, iso.levels=1:100/100, status=FALSE)
+plot(queen.lhs, iso=TRUE)
+```
+
+Now, we will rasterize this set of isopleths (this may take a while). We define the resolution of the underlying raster cells using the `cell.size` argument within the `tlocoh::lhs.iso.rast` command:
+
+```{r}
+queen.lhs <- lhs.iso.rast(queen.lhs, cell.size=100, status=FALSE)
+```
+
+Then we can verify that the raster that we have created sums to 1 (like all other utilization distributions)
+
+```{r}
+r <- queen.lhs[[1]]$isos[[1]]$rast
+sum(getValues(r))
+```
+
+Once we know that the rasterization was successful, we can plot it:
+
+```{r}
+plot(queen.lhs, rast=T, iso.legend=FALSE, desc=0, title="queen UD")
+```
+
+This layer can now be used in any function that requires a raster input (e.g., `adehabitatHR::kerneloverlap` which calculates the utilization distribution overlap index ('UDOI') or volume of intersection ('VI') between home ranges)
+
