@@ -1,14 +1,14 @@
 ---
 title: "Slighty More Advanced R"
 author: "Dana Seidel & Eric Dougherty"
-date: "1/3/2018"
+date: "1/4/2018"
 output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library("tidyverse")
-#library("printr") 
+library("printr") 
 ```
 
 In our earlier section, we discussed the basics of importing, manipulating, 
@@ -18,12 +18,105 @@ as we dive into simulations in R later in the week. Fundamentals in coding such 
 loops, creating/representing data in a `data.frame` / `tibble` objects, and random number generation
 will be covered here.
 
-During this activity we will use the following [temperature dataset](https://data.giss.nasa.gov/cgi-bin/gistemp/stdata_show.cgi?id=403718030000&dt=1&ds=5):
+# Random Number Generation
 
-```{r message=FALSE}
-temp <- read_csv("station.csv", na = "999.90")
+For this section, instead of importing a data set, we are going to create our own example data set 
+using random number generation. Knowing how to do this can be very powerful when you want to 
+test your code, build reproducible examples, or most importantly for our case, build stochastic simulations. 
+
+The base functions necessary for random number generation in R are tied to probability distributions. The 
+most commonly used  distributions being:
+
+- Uniform 
+- Normal (Guassian)
+- Binominal
+
+R is built around, by, and for statistics professionals so there are many other 
+distributions (e.g. Poisson, Weibull, Gamma, etc. ) built into the `stats` package. 
+We're going to focus on the
+most basic distributions for now but should you need a specific obscure one,
+know that it's probably already built into R for your use. 
+
+To generate random numbers according to these distributions there are a set of functions,
+all with the prefix `r`, i.e. `runif()` `rnorm()`, `rbinom()`
+
+Within these functions you can specify the necessary variables for the specific distribution you want to pull from. 
+For example, if we want 10 numbers pulled randomly from between 0 and 2000:
+
+```{r} 
+runif(n = 10, min = 0, max = 2000)
 ```
 
+Now you'll notice that this returns fractional values, if you want whole numbers, the `sample` function can handle this:
+
+```{r}
+sample(0:2000, 10, replace=T)
+
+# this is the same as 
+sample.int(2000, 10)
+```
+
+**Keep in mind, `sample` is an especially powerful function because you can use it to randomly sample
+any empirical dataset you have.**
+
+Often when we are simulating a process, we want to pull our numbers not from a uniform distribition 
+but instead from a distribution that matches the process we are trying to siumulate. For example, 
+if we wanted to simulate coin flips, all we have to do is generate "flips" from the Bernoulli distribution
+(otherwise known as a Binomial distribution with size = 1 and p = .5). 
+
+Let's flip this (even) coin 20 times:
+```{r}
+rbinom(20, 1, .5)
+```
+
+Or perhaps we need to pull 10 samples from a process that by the law of large numbers, probably has
+a normal distribution with a mean of 50 and a sd of 12, with the `rnorm` function that's simple!
+
+```{r}
+rnorm(10, 50, 12)
+
+# want those to be intergers?
+round(rnorm(10,50,12))
+
+```
+
+## Build some fake data:
+
+So, hopefully you get a sense of just how useful random numbers can be for simulations. 
+Sometime we use random number generation, not for simulation but just to produce
+fake datasets to use for testing or reproducible examples. 
+
+As practice, let's try building a data frame of fake temperatures in HongKong 
+through the 12 months of the year for 10 years from 2000-2010. 
+
+From a quick web search I can get the [mean temperatures through the year](http://www.holiday-weather.com/hong_kong/averages/) in Celsius:
+```
+	Jan	Feb	Mar	Apr	May	Jun	Jul	Aug	Sep	Oct	Nov	Dec
+	16	18	20	24	26	28	29	29	27	26	22	17
+```
+
+Using the normal distribution assuming 2 degrees deviation in all months, let's build a dataframe combining our tidyverse 
+functions from earlier and by randomly generating 10 samples around these mean temperatures by month. 
+
+```{r}
+temp <- data.frame(YEAR = 2001:2010,
+               JAN = rnorm(10, 16, 2), 
+               FEB = rnorm(10, 18, 2),
+               MAR = rnorm(10, 20, 2),
+               APR = rnorm(10, 24, 2),
+               MAY = rnorm(10, 26, 2),
+               JUN = rnorm(10, 28, 2),
+               JUL = rnorm(10, 29, 2),
+               AUG = rnorm(10, 29, 2),
+               SEP = rnorm(10, 27, 2),
+               OCT = rnorm(10, 26, 2),
+               NOV = rnorm(10, 22, 2),
+               DEC = rnorm(10, 17, 2))
+
+temp
+```
+
+Great! Now that we have some data to work with, let's get to building our own functions to play with it. 
 
 # Custom functions
 [**Supplemental Reading**](http://r4ds.had.co.nz/functions.html)
@@ -47,55 +140,55 @@ From the Data Science for R Chapter 19:
 As a general rule of thumb, you should consider writing a function if you need to run the same
 operations more than twice. I.e. don't go copying and pasting things 3 or more times.  
 
-For instance if I need to convert every concentration in the `co2` dataframe from
-ppm to mg/m3, I might consider writing out the conversion equation:
+For instance if I need to convert every concentration in the `temp` dataframe from
+Celsius to Farenheight I might consider writing out the conversion equation:
 
-$$K = C + 273.15 $$
+$$F = 1.8*C + 32 $$
 into a custom function of my own:
 ```{r}
-celsius_to_kelvin <- function(C){
-C + 273.15
+celsius_to_faren <- function(C){
+1.8*C + 32
 }
 ```
 
 Rather than doing something repetitive like: 
 ```{r, results='hide'}
-temp$JAN + 273.15
-temp$FEB + 273.15
+1.8*temp$JAN + 32
+1.8*temp$FEB + 32
 # all the way to...
-temp$metANN + 273.15
+1.8*temp$DEC + 32
 ```
 
 
 Now obviously, this is a very simple example but is useful for showing us the guts
 of the R function environment. Notice 3 important things about the structure of our function:
 
-1. all custom functions should be assigned a **name** (i.e. kelvin_to_celsius). Keep in mind, your
+1. all custom functions should be assigned a **name** (i.e. celsius_to_faren). Keep in mind, your
 code has 2 audiences, the computer that needs to be able to run it, and the humans
 that need to be able to read it (your future self included!). Keep code clean and 
 your naming style consistent to facilitate readbility. 
 
-2. functions take flexibly named arguments (i.e. K) in the paratheses before the operation. Our function would run the exact same way if it was written as:
+2. functions take flexibly named arguments (i.e. C) in the paratheses before the operation. Our function would run the exact same way if it was written as:
     ```{r}
-      celsius_to_kelvin <- function(x = 35){
-        x + 273.15
-        }
+      celsius_to_faren <- function(x=15){
+      1.8*x + 32
+      }
     ```
-    - Note also that function arguments can be given defaults (e.g. x = 35), allowing 
+    - Note also that function arguments can be given defaults (e.g. x = 15), allowing 
     them to run with or without that argument newly specified. For example:
     ```{r}
     # it will revert to the default
-    celsius_to_kelvin()
+    celsius_to_faren()
     
     # or we can specify a different value to run the conversion on
-    celsius_to_kelvin(50)
+    celsius_to_faren(50)
     ```
 
 3. The guts of the function, the operation, goes in between two curly brackets, after the
 necessary arguments have been specified. 
 
 As you have seen above, to run our function we simply call it like any other function from R packages:
-`celsius_to_kelvin()`
+`celsius_to_faren()`
 
 ## Conditions
 
@@ -117,19 +210,25 @@ For example we could adapt our above simple function to do something special whe
 it encountered a missing value simply by including an `if` statement:
 
 ```{r}
-celsius_to_kelvin <- function(x = 35){
-  if(is.na(x)){
+celsius_to_faren <- function(x = 15){
+  if (is.na(x)){
     return(-999)  # telling the function to return -999 every time it encounters an NA
     }
-  x + 273.15 # but to still do the regular conversion other times 
+  1.8*x + 32 # but to still do the regular conversion other times 
   }
+```
+
+Now let's throw in a missing value to our table, for testing! Maybe we didn't sample in January of 2002 for some reason:
+
+```{r}
+temp[2,2] <- NA
 
 # combine this function with the `mutate` function we learned earlier
 
 temp %>% 
   rowwise %>% 
-  mutate(JAN_kelvin = celsius_to_kelvin(JAN)) %>% 
-  select(YEAR, JAN, JAN_kelvin)
+  mutate(JAN_F = celsius_to_faren(JAN)) %>% 
+  select(YEAR, JAN, JAN_F)
 
 # note! the `rowwise` command works to group the dataframe by each row. 
 # because our function is written to take a single value, not a full vector, 
@@ -141,11 +240,11 @@ temp %>%
 One can string a bunch of `if` statements together using the nested `if/else` structure:
 
 ```{r, eval=FALSE}
-if ( test_expression1) {
+if (test_expression1) {
    statement1
-} else if ( test_expression2) {
+} else if (test_expression2) {
    statement2
-} else if ( test_expression3) {
+} else if (test_expression3) {
    statement3
 } else
    statement4
@@ -156,19 +255,176 @@ Alternatively, R has a nifty `ifelse()` function that simplifies this into one l
 `ifelse(test, yes, no)`
 
 For instance, adapting our above function directly into a mutate command:
+
 ```{r}
 temp %>% 
-  mutate(JAN_kelvin = ifelse(is.na(JAN), -999, JAN + 273)) %>% 
-  select(YEAR, JAN, JAN_kelvin) 
+  mutate(JAN_F = ifelse(is.na(JAN), -999, JAN*1.8 + 32)) %>% 
+  select(YEAR, JAN, JAN_F) 
 ```
 
-# For Loops
-[**Supplemental Reading**](http://r4ds.had.co.nz/iteration.html)
+# Loops
+*Much of this section is modelled after the iteration chapter of R for Data Science. 
+Read more in [**Supplemental Reading**](http://r4ds.had.co.nz/iteration.html)*
 
-## the `apply` and `map` functions
+Loops are used in programming to repeat a specific block of code. Though loops are
+used less often in R than many other programming languages, the loops we
+cover today are very important for learning to simulate movement 
+paths later in the workshop. 
 
-## Simulation
-### Initialize
-### Simulate
-### Return
+## For loops
+In R, For loops are used to repeat a chunk of code, over all the values held inside the given vector. 
+
+There are 3 parts to a simple for loop:
+
+1. The **initialization**: before you start the loop, you need a place to put the results. 
+2. The **iteration** vector: this part, i.e. `(i in 1:10)` determines what values we loop over. In this case, the loop would run over 10 different values, 1,2,3,4,5,6,7,8,9,10 
+3. The **body** of the loop: the meat of it - the code that actually does the work. Whatever we want to calculate over all those different numbers, goes here. 
+
+
+So for instance, maybe we want to calculate the annual mean temperature for each of our years of data. 
+We can do this with a for loop! 
+
+```{r}
+# first we initialize!
+averages  <- vector()      # an empty vector for our averages to go
+
+# the we iterate:
+for(i in 1:10){         
+  averages[i] <- mean(as.numeric(temp[i,]))       # take the mean of row i of temp dataframe and put it the averages vector
+}
+
+# Now we can read out results
+averages
+```
+
+Once you understand the basic for loop it's useful to consider some important variations, namely:
+
+1. Modifying an existing object, instead of creating a new object.
+2. Looping over names or values, instead of indices.
+3. Handling sequences of unknown length ("while" loops, covered in the next section)
+
+Consider the following loops and their outputs for examples of these variations, 
+for more information see the readings. Note the consitent syntax of these loops. 
+
+```{r}
+# Modifying an existing object
+
+
+```
+
+```{r}
+# Looping over names or indices rather than sequences.
+
+# print the 5th row of just a few specific columns
+months <- c("JAN", "MAY", "SEP")
+for (i in months){
+  print(temp[,i])
+}
+```
+
+## While loops
+
+In a combination of the conditionals introduced earlier and the for loops we saw above, 
+in R programming, while loops are used to loop until a specific condition is met.
+These can be especially useful if you don't know the length of the input sequence needed 
+for you task: a common occurence when doing simulations. 
+
+For example, you might want to loop until you get three heads in a row. 
+You can’t do that sort of iteration with the for loop. Instead, you can use a while loop. 
+A while loop is simpler than for loop because it only has two components, a condition and a body:
+
+The syntax of a while expression is as follows: 
+```{r, eval=FALSE}
+while (condition)
+{
+   body
+}
+```
+
+Here, `condition` is evaluated first. If the condition is TRUE, than the body of 
+the loop is entered and the calculations inside the loop are executed. Once executed, 
+the flow returns to evaluate the `condition` for the next element. This is repeated 
+each time until the `condition` evaluates to FALSE, in which case, the loop exits.
+
+
+So, for example, a while loop using a random number generator to simulate flips of an even coin: 
+
+How many flips does it take to get 3 heads in a row?
+```{r}
+flip <- function(){ # randomly sample 1 "flip" from a bernoulli dist. 
+  rbinom(1, 1, .5)
+  } 
+
+flips <- 0        # intialize
+nheads <- 0
+
+while (nheads < 3) {  # continue loop until nheads is 3. 
+  if (flip() == 1) {  # conditional if else statement.
+    nheads <- nheads + 1  # IF the flip is a 1 (head) add it to the nheads vector
+  } else {            #  If NOT, reset the nheads vector to 0
+    nheads <- 0
+  }
+  flips <- flips + 1  # track the number of flips by adding each iteration to flip vector
+}
+
+flips
+```
+
+## The `apply` and `map` functions
+
+This same pattern of looping over a vector, in other words, implementing some 
+computation or function over 
+many elements is so common both baseR and tidyverse have families of functions to 
+do it for you: the apply family of functions (baseR) 
+or the map family of functions from the purrr library in (baseR)
+
+These functions make iteration much simpler and your code a lot more concise and
+readable but may take some time to wrap your head around. We introduce them here just for you 
+to be aware of but if you're just starting out, you may find that for loops 
+are easier for you to understand. That's okay! Loops work just as well, they 
+just take more time and text to code.  
+
+### Apply: Base R
+
+`lapply()` takes arguments `x`, and `FUN` as inputs. `x` is equivalent to the vector you would 
+iterate over in a for loop and `FUN` is equivalent to whatever you would put into
+the body of the for loop. `lapply` always returns a list. 
+
+```{r}
+
+```
+
+You may also see, `sapply()` or `vapply()`, these do the same thing but return the output
+in different formats. 
+
+In a slightly different flavor, `apply()` takes the additional `MARGIN` argument, 
+which allows you to specify, when x is a matrix
+or dataframe, wether you want a function to be run over just the rows, `1`, just the columns, `2`,
+or both, `c(1,2)`. 
+
+```{r}
+
+```
+
+### Map: tidyverse and the purrr package
+
+The `purrr` package provides a similar family of functions to do this same iterative computation
+with the added clarity of providing one funtion each type of output and the benefit of playing
+nicely with all the other tidyverse functions
+we introduced earlier e.g. `group_by` & the pipe operator `%>%`. 
+
+Just as before, each function takes a vector as input, applies a function to each piece, 
+and then returns a new vector that’s the same length (and has the same names) as the input. 
+The type of the vector is determined by the suffix to the map function.
+
+map() makes a list.  (equivalent to `lapply`)
+map_df() makes a dataframe. 
+map_lgl() makes a logical vector.
+map_int() makes an integer vector.
+map_dbl() makes a double vector.
+map_chr() makes a character vector.
+
+```{r}
+
+```
 
