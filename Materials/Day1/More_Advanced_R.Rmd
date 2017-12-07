@@ -69,7 +69,7 @@ Let's flip this (even) coin 20 times:
 rbinom(20, 1, .5)
 ```
 
-Or perhaps we need to pull 10 samples from a process that by the law of large numbers, probably has
+Or perhaps we need to pull 10 samples from a process that due to the central limit theorem, probably has
 a normal distribution with a mean of 50 and a sd of 12, with the `rnorm` function that's simple!
 
 ```{r}
