@@ -289,9 +289,9 @@ We can do this with a for loop!
 averages  <- vector()      # an empty vector for our averages to go
 
 # the we iterate:
-for(i in 1:10){         
-  averages[i] <- mean(as.numeric(temp[i,]))       # take the mean of row i of temp dataframe and put it the averages vector
-}
+for(i in 1:10){                 # take the mean of row i of temp dataframe and put it the averages vector
+  averages[i] <- mean(as.numeric(temp[i,2:13]), na.rm=TRUE)       #drop Nas, and drop column 1 to leave out year.
+}                                             
 
 # Now we can read out results
 averages
@@ -309,7 +309,22 @@ for more information see the readings. Note the consitent syntax of these loops.
 ```{r}
 # Modifying an existing object
 
+jan <- as.vector(temp$JAN)  # make a simple vector of January column
 
+for(i in seq(1,5,1)){
+  jan <- append(jan, rnorm(1,16,2))     # add 5 more years temperatures, 1 at a time. 
+}
+
+jan
+
+
+# Or maybe we want to round every column to integers
+
+for(i in 1:length(temp)){
+  temp[i] <- round(temp[i])
+}
+
+temp
 ```
 
 ```{r}
@@ -318,7 +333,7 @@ for more information see the readings. Note the consitent syntax of these loops.
 # print the 5th row of just a few specific columns
 months <- c("JAN", "MAY", "SEP")
 for (i in months){
-  print(temp[,i])
+ print(mean(temp[,i]), na.rm=TRUE)
 }
 ```
 
@@ -390,9 +405,20 @@ just take more time and text to code.
 iterate over in a for loop and `FUN` is equivalent to whatever you would put into
 the body of the for loop. `lapply` always returns a list. 
 
-```{r}
+So for instance, let's try applying a custom function using `lapply` to take our temp back to celsius. Note that the output is a list. 
 
+```{r, warnings = FALSE}
+
+ celsius_to_faren <- function(x=15){
+      1.8*x + 32
+ }
+
+lapply(temp[,2:13], celsius_to_faren)
+
+# we can use bind_rows(), to bind this list to a dataframe
+lapply(temp[,2:13], celsius_to_faren) %>% bind_rows()
 ```
+
 
 You may also see, `sapply()` or `vapply()`, these do the same thing but return the output
 in different formats. 
@@ -402,9 +428,17 @@ which allows you to specify, when x is a matrix
 or dataframe, wether you want a function to be run over just the rows, `1`, just the columns, `2`,
 or both, `c(1,2)`. 
 
-```{r}
+For example, maybe we want the mean temperature of each year:
 
+```{r}
+apply(temp[2:13], 1, mean, na.rm=TRUE)  #drop Nas, and drop column 1 to leave out year. 
 ```
+
+Or instead the average by month:
+```{r}
+apply(temp[2:13], 2, mean, na.rm=TRUE)  #drop Nas, and drop column 1 to leave out year. 
+```
+
 
 ### Map: tidyverse and the purrr package
 
@@ -417,14 +451,35 @@ Just as before, each function takes a vector as input, applies a function to eac
 and then returns a new vector that’s the same length (and has the same names) as the input. 
 The type of the vector is determined by the suffix to the map function.
 
-map() makes a list.  (equivalent to `lapply`)
-map_df() makes a dataframe. 
-map_lgl() makes a logical vector.
-map_int() makes an integer vector.
-map_dbl() makes a double vector.
-map_chr() makes a character vector.
+- map() makes a list.  (equivalent to `lapply`)
+- map_df() makes a dataframe. 
+- map_lgl() makes a logical vector.
+- map_int() makes an integer vector.
+- map_dbl() makes a double vector.
+- map_chr() makes a character vector.
 
+Take for example the same operation using between `map`, `lapply`, & `map_df`
 ```{r}
+lapply(temp[,2:13], celsius_to_faren)
 
+map(temp[,2:13], celsius_to_faren)
+
+map_df(temp[,2:13], celsius_to_faren)
 ```
+
+To do the same thing with for loops requires the following code (& nesting!):
+```{r}
+faren <- data_frame()
+for (i in 2:length(temp)){
+  for (j in 1:nrow(temp)){
+    faren[j,i-1] <- celsius_to_faren(temp[j,i])
+  }
+}
+
+names(faren) <- names(temp)[2:13]
+faren
+```
+
+Makes `map_df` seem pretty handy right?!
+
 
