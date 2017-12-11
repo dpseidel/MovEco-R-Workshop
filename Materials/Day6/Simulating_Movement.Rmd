@@ -160,3 +160,197 @@ multi.move2 <- function(N, x, start.pts) {
   return(all.paths)
 }
 ```
+
+Hopefully your attempt looked something like that! I think you can start to see the flexibility of functions. That is a pretty simple movement function with a few basic user inputs, but we may want to complicate things a bit more in order to make our function reflect real movement patterns more closely. We spent a lot of time talking about behavioral state analysis, so maybe we can implement some of these concepts in a new function.
+
+This function is going to act similarly to the first, but instead of drawing all of the steps and angles randomly from the same normal or uniform distribution, we are going to have three separate distributions for three different behavioral states, which we will think of as resting, foraging, and directional travel. We can get the parameters defining these distributions from the outputs of our HMM analysis. If you remember our three-state zebra model, we ended up with estimates that looked like this:
+
+| State | Parameter | Mean | SD |
+| --------- | --------------- | ---------- | -------------------- |
+| State 1 | Step Length (m) | 1.115 | 0.805 |
+| State 2 | Step Length (m) | 8.404 | 4.232 |
+| State 3 | Step Length (m) | 192.855 | 242.964 |
+
+| State | Parameter | Mean | Concentration |
+| --------- | --------------- | ---------- | -------------------- |
+| State 1 | Turning Angle | -3.115 | 0.436 |
+| State 2 | Turning Angle | 2.845 | 0.120 |
+| State 3 | Turning Angle | -3.098 | 0.386 |
+
+This gives us a really good idea of how to parameterize steps and turning angles that more accurately reflect zebra movement, but we'll need to create some framework whereby we select which behavioral state the animal is in before we assign certain step lengths and turning angles. We also used the HMM we built to determine the probability of being in each of the three states (as well as more complex functions to determine the probability of transitioning between states). Lets try that now using our `multi.move` function as a starting point:
+
+```{r}
+library(CircStats)
+
+multi.state <- function(N, x) {
+  all.paths <- list()
+  
+  for (j in 1:N) {
+    steps.df <- data.frame(matrix(0,100,5))
+    colnames(steps.df) <- c("x", "y", "step.length", "turn.angle", "behav.state")
+
+    for (i in 2:x[j]) {
+      rand <- runif(1,0,1) #select the behavioral state for this step
+      if (rand < 0.584) { #probability of state 1
+        step <- rgamma(n=1, shape=((1.115^2)/(0.805^2)), rate=((1.115)/(0.805^2)))
+        heading <- rvm(n=1, mean=-3.115, k=0.436)
+        behave.state <- 1
+      } else if (rand > 0.583 && rand < (0.583 + 0.112)) { #probability of state 2
+        step <- rgamma(n=1, shape=((8.404^2)/(4.232^2)), rate=((8.404)/(4.232^2)))
+        heading <- rvm(n=1, mean=2.845, k=0.120)
+        behave.state <- 2
+      } else { #probability of state 3
+        step <- rgamma(n=1, shape=((192.855^2)/(242.964^2)), rate=((192.855)/(242.964^2)))
+        heading <- rvm(n=1, mean=-3.098, k=0.386)
+        behave.state <- 3
+      }
+      
+      next.pt <- movement(steps.df[(i-1),1:2], step, heading)
+      steps.df[i,1:4] <- next.pt
+      steps.df[i,5] <- behave.state
+      
+    }
+    
+    all.paths[[j]] <- steps.df
+  }
+  return(all.paths)
+}
+```
+
+Let's run our new function and see how a path of 200 points looks:
+
+```{r}
+multi.states <- multi.state(1, c(200))
+dim(multi.states[[1]])
+plot(multi.states[[1]]$x, multi.states[[1]]$y, pch=19, type='b')
+```
+
+Now you'll notice that these paths cover a smaller area than when we used the normal distribution with a mean of 500 and an SD of 100 even though we transformed the values from kilometers to meters. We can take a look at what the gamma distributions of the steps from our different beahvioral states look like to illustrate the relative magnitude of the steps we're defining now:
+
+```{r}
+hist(rgamma(10000,  shape=((1.115^2)/(0.805^2)), rate=((1.115)/(0.805^2))))
+hist(rgamma(10000, shape=((8.404^2)/(4.232^2)), rate=((8.404)/(4.232^2))))
+hist(rgamma(10000, shape=((192.855^2)/(242.964^2)), rate=((192.855)/(242.964^2))))
+```
+
+It is not especailly surprising that, even over twice as long of a path, our animal doesn't cover quite as much space. Our longest steps (which are the only ones that are at the same order of magnitude as our previous normal distribution) only occur about one-third of the time. The other ~70% of points are much smaller step sizes. But, but incorporating these behavioral states, we have simulated a much more realistic trajectory than what we had with our arbitrary distirbutions earlier.
+
+Now, if you really want a challenge, we could redesign our `multi.state` function such that an initial behavioral state is assigned at the first step, and the animal transitions between states according to the functions we extracted during the HMM analysis. In order to do this, we are going to have to keep track of the time too, because these transition probability functions were based on a temporal covariate. You may remember that the zebra data were collected at a fix rate of 20 minutes, meaning that we will have sets of three points all with the same temporal covariate value (i.e., 3:00, 3:20, and 3:40 will all be given a value of 3). You should also note that the regression coefficient values given in the HMM output should be treated as values in a logistic regression, meaning that they should be used in the form: exp(intercept + (slope * Time)). Also, you'll probably want to use the `base::rbinom` command to determine whether the behavioral state will shift based on the resulting probabilities.
+
+```{r}
+multi.state2 <- function(N, x) {
+  all.paths <- list()
+  
+  for (j in 1:N) {
+    steps.df <- data.frame(matrix(0,100,5))
+    colnames(steps.df) <- c("x", "y", "step.length", "turn.angle", "behav.state")
+    
+    rand <- runif(1,0,1)
+    if (rand < 0.584) {
+      prev.state <- 1
+    } else if (rand > 0.583 && rand < (0.583 + 0.112)) {
+      prev.state <- 2
+    } else {
+      prev.state <- 3
+    }
+
+    for (i in 2:x[j]) {
+      time <- i %/% 3
+      if (time > 23) {
+        days <- i %/% 72
+        time <- time - (23 * days)
+      }
+      
+      if (prev.state == 1) {
+        prob.1to2 <- exp(-26.60932 + (-14.95058 * time))
+        if (prob.1to2 > 0 && prob.1to2 < 1) {
+          trans.1to2 <- rbinom(1,1,prob.1to2)
+        } else {
+          trans.1to2 <- 0
+        }
+        prob.1to3 <- exp(-0.322320591 + (0.006167341 * time))
+        if (prob.1to3 > 0 && prob.1to3 < 1) {
+          trans.1to3 <- rbinom(1,1,prob.1to3)
+        } else {
+          trans.1to3 <- 0
+        }
+        if (trans.1to2 == 1) {
+          behave.state <- 2
+        } else if (trans.1to3 == 1) {
+          behave.state <- 3
+        } else {
+          behave.state <- 1
+        }
+      } else if (prev.state == 2) {
+        prob.2to1 <- exp(-28.69674 + (-25.59005 * time))
+        if (prob.2to1 > 0 && prob.2to1 < 1) {
+          trans.2to1 <- rbinom(1,1,prob.2to1)
+        } else {
+          trans.2to1 <- 0
+        }
+        prob.2to3 <- exp(-0.06090729 + (0.01266957 * time))
+        if (prob.2to3 > 0 && prob.2to3 < 1) {
+          trans.2to3 <- rbinom(1,1,prob.2to3)
+        } else {
+          trans.2to3 <- 0
+        }
+        if (trans.2to1 == 1) {
+          behave.state <- 1
+        } else if (trans.2to3 == 1) {
+          behave.state <- 3
+        } else {
+          behave.state <- 2
+        }
+      } else {
+        prob.3to1 <- exp(-4.0900426 + (0.0139786 * time))
+        if (prob.3to1 > 0 && prob.3to1 < 1) {
+          trans.3to1 <- rbinom(1,1,prob.3to1)
+        } else {
+          trans.3to1 <- 0
+        }
+        prob.3to2 <- exp(-2.68617245 + (0.00969897 * time))
+        if (prob.3to2 > 0 && prob.3to2 < 1) {
+          trans.3to2 <- rbinom(1,1,prob.3to2)
+        } else {
+          trans.3to2 <- 0
+        }
+        if (trans.3to1 == 1) {
+          behave.state <- 1
+        } else if (trans.3to2 == 1) {
+          behave.state <- 2
+        } else {
+          behave.state <- 3
+        }
+      }
+      
+      if (behave.state == 1) { #probability of state 1
+        step <- rgamma(n=1, shape=((1.115^2)/(0.805^2)), rate=((1.115)/(0.805^2)))
+        heading <- rvm(n=1, mean=-3.115, k=0.436)
+      } else if (behave.state == 2) { #probability of state 2
+        step <- rgamma(n=1, shape=((8.404^2)/(4.232^2)), rate=((8.404)/(4.232^2)))
+        heading <- rvm(n=1, mean=2.845, k=0.120)
+      } else { #probability of state 3
+        step <- rgamma(n=1, shape=((192.855^2)/(242.964^2)), rate=((192.855)/(242.964^2)))
+        heading <- rvm(n=1, mean=-3.098, k=0.386)
+      }
+      
+      next.pt <- movement(steps.df[(i-1),1:2], step, heading)
+      steps.df[i,1:4] <- next.pt
+      steps.df[i,5] <- behave.state
+      
+      prev.state <- behave.state
+    }
+    
+    all.paths[[j]] <- steps.df
+  }
+  return(all.paths)
+}
+```
+
+```{r}
+multi.states2 <- multi.state2(1, c(200))
+plot(multi.states2[[1]]$x, multi.states2[[1]]$y, pch=19, type='b')
+```
+
+
+
