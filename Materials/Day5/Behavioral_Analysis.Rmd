@@ -1,0 +1,286 @@
+---
+title: "Behavioral_Analysis"
+author: "Eric Dougherty & Dana Seidel"
+date: "December 5, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Behavioral analysis has become one of the most important new ideas in the movement ecology literature. Due to the importance of the internal state in individual movement decisions, analyses such as the ones we will go through today offer an opportunity to understand the motivations underlying space-use more clearly than most of the broader scale analyses we've seen thus far. We are going to begin by considering Hidden Markov Models (HMM) as a means of exploring the behavioral states of our focal animals. Then, we will explore some methods in behavioral change point analysis (BCPA), before ending with a quick survey of some other novel methods in this space.
+
+We will begin by loading in a dataset that comes with the moveHMM package, an elk movement track that is analyzed in the Morales et al. 2004 that introduces many of the concepts with which we will be working.
+
+```{r}
+library(moveHMM)
+head(elk_data)
+```
+
+We can see that the data consists of four columns: an ID row (we actually have 4 different elk), and Easting and Northing coordinate, and an auxillary variable of dist_water. Whenever we see "Easting" and "Northing" as opposed to "Longitude" and "Latitude", we know that the coordinates are in UTM (meaning that the units are in meters). For the sake of this analysis, we are actually going to transform these into kilometers, which represents a more reasonable scale when considering steps of this magnitude. Simply dividing each coordinate column by 1000 will do just that:
+
+```{r}
+elk_data$Easting <- elk_data$Easting/1000
+elk_data$Northing <- elk_data$Northing/1000
+```
+
+Notice that this data set is missing the time stamps of these steps. We actually have no idea what the fix rate is for this dataset, meaning that analyses built around a temporal component (like T-LoCoH or Brownian Bridges) could not be performed on these data.
+
+Fortuantely, the spatial data are perfectly usable for a hidden Markov model analysis. Now that we have the correct units (km), we can move on to prepping the data for the moveHMM package. This requires the use of the `moveHMM::prepData` command. We will specify our data, the type of projection (in our case 'UTM', though if our data were latlong coordinates, we could use 'LL'), and the names of the columns representing our coordinates (Easting and Northing):
+
+```{r}
+data <- prepData(elk_data, type="UTM", coordNames=c("Easting","Northing"))
+```
+
+Now we have an object (`data`) with 6 variables instead of 4. The two new variables are 'step' (step length, calculated in km) and 'angle' (in radians; i.e., ranging from -pi to pi). Let's take a look at the distributions of these two new variables:
+
+```{r}
+hist(data$step)
+hist(data$angle)
+```
+
+Note that these histograms include all four elk. We can also take a look at a summary of our newly created dataset to see the number of observations associated with each elk as well as a distbution of our covariate (distance to water):
+
+```{r}
+summary(data)
+```
+
+We can also visualize the paths using the plot command. This will give us the path itself and time series plots of the step length and turning angle. This is a good way to check for outliers in the data:
+
+```{r}
+plot(data[data$ID == "elk-115",])
+```
+
+Now it is time to fit an HMM to the data. To do this, we will use the `moveHMM::fitHMM` command. This is a pretty complex function, however, that requires quite a few inputs to make it run smoothly. Ultimately, our goal is to build a two-state model that relates the behavioral state to the distance from water covariate.
+
+Our first choice will be to use `nbStates=2` which specifies that we want to fit a two-state model to the data. Then we will offer a formula to guide the calculation of the function regarding transitions between states (`formula=~dist_water`). Next we want to define the distrbutions that we want to use to characterize both the step lengths and turning angles. We are going to use a gamma distribution for the former (`stepDist="gamma"`) and a vonMises distribution for the latter (`angleDist="vm"`). That takes care of that, but we're still not ready to run our function just yet. We want to define some initial values for the state-dependent functions so that the optimization algorithm has a starting point. In this case, the initial parameters should be specified in two vectors, `stepPar0` (for the step distribution) and `anglePar0` (for the angle distribution). The exact parameters for each can be found in the documentation, but for a gamma distribution, we will need a mean, SD, and zero-mass and for the vonMises, we will need a mean and concentration parameter:
+
+```{r}
+mu0 <- c(0.1,1) # step mean (two parameters: one for each state)
+sigma0 <- c(0.1,1) # step SD
+zeromass0 <- c(0.1,0.05) # step zero-mass
+stepPar0 <- c(mu0,sigma0,zeromass0)
+
+angleMean0 <- c(pi,0) # angle mean
+kappa0 <- c(1,1) # angle concentration
+anglePar0 <- c(angleMean0,kappa0)
+```
+
+The final bit of preparation is to standardize our covariate (i.e., subtract the mean and divide by the standard deviation):
+
+```{r}
+data$dist_water <- (data$dist_water - mean(data$dist_water)) / sd(data$dist_water)
+```
+
+Finally, we can put all of these things together in our `moveHMM::fitHMM` command:
+
+```{r}
+m <- fitHMM(data=data, nbStates=2, stepPar0=stepPar0, anglePar0=anglePar0, formula=~dist_water)
+```
+
+Fortunately, that doesn't take too longe even though there are some pretty intense calcualtions going on in the background. This is primarily because we are fitting relatively few data points (only 735 in total). We can take a look at the resulting model `m`:
+
+```{r}
+m
+```
+
+This output has all sorts of interesting information for us. The first thing we can see is a log-likelihood value. Good to know, but not especially meaningful by itself. Next, we have the step length parameters. The model has explored parameter space for the mean, SD, and zero-mass parameters and returned optimal values of each for both of our (as-yet-unnamed) behavioral states. We can see right off the bat that the mean step size of state 1 is an order of magnitude smaller than that of state 2, so we have some idea about what kind of activities may be occuring in each. We may have something like foraging during state 1 and more directional movement during state 2. The next section defines the turning angle parameter estimates. Next, we can see the regression coefficients for the simple formula we set up to calculate state transition probabilities based on the distance from water. This suggests that an increase in distance from water makes it more likely that an animal that it in state 2 (i.e., moving relatively long distances) will switch to state 1. Conversely, greater distance from water are unlikley to shift an individual from state 1 to state 2.
+
+We can also use the `moveHMM::plot` command to visualize all of these things, beginning with the distributions of step lengths and turning angles in the two states, illustrating the transition proababilities between states, and then showing each of the four paths with each point assigned to the most likely state. 
+
+```{r}
+plot(m)
+```
+
+We've officially built our first hidden Markov model! That was pretty exciting. Let's see some ways that we can use the model outputs. The first is to 'decode' the behavioral states along the paths. This was done for us when we plotted each track above, but if we wanted to see the most likley states for each point, we could use the `moveHMM::viterbi` command, which uses the Viterbi algorithm to predict the most likely sequence of states that generated these paths:
+
+```{r}
+states <- viterbi(m)
+states
+```
+
+Thats pretty neat! From this, we can determine the proportion of time that elk spent in one state versus the other:
+
+```{r}
+prop.table(table(states))
+```
+
+It turns out these animals were in the foraging state nearly three times as frequently as they were in the directional movement state.
+
+If we wanted to get a little bit more information of the probabilities of each animal being in a particular state at a given time, we could use the `moveHMM::stateProbs` command on our model. In this case, rather than extracting one most likely state for each point, the actual probabilities of both states are displayed for each point. The state with highest probability according to `stateProbs` might not be the same as the state in the most probable sequence returned by the Viterbi algorithm. This is because the Viterbi algorithm performs 'global decoding', whereas the state probabilities are 'local decoding'
+
+```{r}
+state.probs <- stateProbs(m)
+head(state.probs)
+```
+
+We can also visualize these probabiities using `moveHMM::plotStates`, and can specify whether we want to view a specific animal:
+
+```{r}
+plotStates(m, animals="elk-115")
+```
+
+Now you may be wondering why we chose a two-state model rather than a three- or four-state model. Well, there was no great reason, so let's evaluate whether this was a decent decision for us to have made and determine whether we want to move forward with this particular HMM.
+
+Here, we'll carry out the same procedure, but initialize and fit a three-state model. Then, we can use the `moveHMM::AIC` command to compare the likelihood values (or more accurately, the information criterion values derived from the liklihoods) and determine which model performed better.
+
+```{r}
+# initial parameters
+mu0 <- c(0.1,0.5,3)
+sigma0 <- c(0.05,0.5,1)
+zeromass0 <- c(0.05,0.0001,0.0001)
+stepPar3 <- c(mu0,sigma0,zeromass0)
+
+angleMean0 <- c(pi,pi,0)
+kappa0 <- c(1,1,1)
+anglePar3 <- c(angleMean0,kappa0)
+
+m3 <- fitHMM(data=data, nbStates=3, stepPar0=stepPar3, anglePar0=anglePar3, formula=~dist_water)
+  
+AIC(m, m3)
+```
+
+This model took a little longer to run than the two-state model, but it turns out its actually more accurate (lower AIC is better; it indicates that we got additional information that was more beneficial than the additional cost of adding a a few parameters). Now we can take a look at our more accurate model:
+
+```{r}
+plot(m3)
+```
+
+One other cool feature of the `moveHMM` package is the ability to plot it on satelite data using the `moveHMM::plotSat` command. In order to do this, we need the coordinates to be in LatLong rather than UTM. Remember, we'll also need to multiply our UTM coordinates by 1000 to make sure the elk are plotted in the right place:
+
+```{r}
+library(rgdal)
+utmcoord <- SpatialPoints(cbind(data$x*1000, data$y*1000), proj4string=CRS("+proj=utm +zone=17"))
+llcoord <- spTransform(utmcoord, CRS("+proj=longlat"))
+lldata <- data.frame(ID=data$ID, x=attr(llcoord, "coords")[,1], y=attr(llcoord, "coords")[,2])
+
+#plotSat(lldata, zoom=8)
+```
+
+Now lets try to create our own HMM using empirical zebra data collected by the Getz Lab. We know how important time is when it comes to movement data, so rather than using a spatial covariate, let's use a temporal one to see if there is any effect on the transition probabilities.
+
+First, we will bring in the data on Zebra AG062:
+
+```{r}
+zebra <- read.csv('Zebra_AG062.csv')
+```
+
+As you can see, we have a lot more observations for this zebra than our elk example. For the sake of time, lets reduce this dataset to a smaller, but still substantial, subset of 8000 points:
+
+```{r}
+zebra <- zebra[2001:10000,]
+```
+
+Now we have some cleaning to do. We can see that we have LatLong rather than UTM, so we'll need to take care of that. We also need to derive our own temporal covariate using the time stamps.
+
+```{r}
+#Project and transform points into UTM
+coords <- SpatialPoints(zebra[,c("Longitude", "Latitude")], proj4string = CRS("+proj=longlat + datum=WGS84"))
+coords <- spTransform(coords, CRS("+proj=utm +south +zone=33 +ellps=WGS84"))
+
+#Create an object that splits apart the date from the time in our DateTime column
+TOD <- strsplit(as.character(zebra$DateTime), " ")
+#Make a data frame with only the hour (extracted from the time)
+TOD2 <- data.frame(matrix(0,length(TOD),1))
+for (i in 1:length(TOD)) {
+  TOD2[i,1] <- strsplit(TOD[[i]][2], ":")[[1]][1]
+}
+
+#Once again, we divide our units by 1000 to convert from meter to kilometers
+x <- as.numeric(coords@coords[,1]/1000)
+y <- as.numeric(coords@coords[,2]/1000)
+ID <- zebra[,c("Unit.ID")]
+TimeOfDay <- data.frame(TOD2)
+colnames(TimeOfDay) <- c("TimeOfDay")
+
+#Create one data frame with all of the necessary data for the rest of our analyses
+all.data <- data.frame("Easting" = x, "Northing" = y, "ID" = ID, "TimeOfDay" = TimeOfDay)
+all.data$TimeOfDay <- as.numeric(all.data$TimeOfDay)
+```
+
+Now we have a nice data frame with 8000 observations and 4 columns that looks a lot like the elk_data we imported:
+
+```{r}
+head(all.data)
+```
+
+From here, we'll need to prep the data (i.e., calculate step size and turning angle), make some decisions about the model(s) we want to create and define various initial values to parameterize the model(s). Let's try two alternatives, just like before, one with 2 states and one with 3 states. In both, we will use the time of day as a covariate:
+
+```{r}
+dataHMM <- prepData(all.data, type="UTM", coordNames=c("Easting","Northing"))
+summary(dataHMM)
+plot(dataHMM,compact=T)
+
+mu0 <- c(0.1,1) # step mean (two parameters: one for each state)
+sigma0 <- c(0.1,1) # step SD
+zeromass0 <- c(0.1,0.05) # step zero-mass
+stepPar2 <- c(mu0,sigma0,zeromass0)
+
+angleMean0 <- c(pi,0) # angle mean
+kappa0 <- c(1,1) # angle concentration
+anglePar2 <- c(angleMean0,kappa0)
+
+z <- fitHMM(data=dataHMM, nbStates=2, stepPar0=stepPar2, anglePar0=anglePar2,
+            formula=~TimeOfDay)
+
+
+mu0 <- c(0.01,0.1,1) # step mean (three parameters: one for each state)
+sigma0 <- c(.001,.05,.5) # step SD
+zeromass0 <- c(0.01,0.05,0.1) 
+stepPar3 <- c(mu0,sigma0,zeromass0)
+
+angleMean0 <- c(0,0,0) # angle mean
+kappa0 <- c(0.01,0.5,1) # angle concentration
+anglePar3 <- c(angleMean0,kappa0)
+
+z3 <- fitHMM(data=dataHMM, nbStates=3, stepPar0=stepPar3, anglePar0=anglePar3,
+            formula=~TimeOfDay)
+```
+
+These took a bit longer than the elk example, but now we have two potential HMMs. Before we delve into either one, let's take a look at the AIC of each to decide which one we want to investigate in more detail:
+
+```{r}
+AIC(z, z3)
+```
+
+Well now we know that the three-state model performs better, so lets look at that in a bit more detail. We could also decode the states based on this model, but becasue there are so many points in the time series, it will be a little more difficult to see what is happening. Instead, let's see what kind of proportion of time our zebra spends in each of the behavioral states:
+
+```{r}
+z3
+plotStates(z3)
+
+states <- viterbi(z3)
+prop.table(table(states))
+```
+
+There we have it: over very own temporally-dependent HMM analysis! Based on the output of model z3, try to come up with some potential behaviors that we could associate with each of the three states.
+
+The next method we're going to take a look at is the behavioral change point analysis (BCPA), which looks for the points in a time series during which an animal transitions between behavioral states. We can even compare these results to the projected change points based on the HMM to see how closely they align.
+
+Just as with all other packages, `bcpa` has its own data format that it prefers, so we will use the `bcpa::MakeTrack` command to translate a set of 100 coordinates (from our 8000 point zebra path) into a usable format:
+
+```{r}
+library(bcpa)
+
+X <- as.numeric(coords@coords[301:400,1])
+Y <- as.numeric(coords@coords[301:400,2])
+Time <- 301:400
+mytrack <- MakeTrack(X,Y,Time)
+plot(mytrack)
+```
+
+To obtain the step length and turning angles, use the `bcpa::GetVT` command, which decomposes the data into single steps and calculates all the statistics:
+
+```{r}
+zebra.VT <- GetVT(mytrack)
+head(zebra.VT)
+```
+
+```{r}
+zebra.ws <- WindowSweep(zebra.VT, "V*cos(Theta)", windowsize=50, progress=FALSE, K=2)
+plot(zebra.ws, type="smooth")
+plot(zebra.ws, type="smooth", threshold=7)
+plot(zebra.ws, type="flat")
+plot(zebra.ws, type="flat", clusterwidth=3)
+```
