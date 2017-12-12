@@ -324,3 +324,89 @@ table(multi.states2[[1]]$behav.state)
 ```
 
 Look at that! The result is a distribution of steps that aligns very nicely with the empirical track (i.e., approximately 80% of the points fall into behavioral state 1 and about 20% in behavioral state 2). This is a nice verification that our model is working as we intend.
+
+You'll notice that we directly inputed all of the values for the step lengths and turning angles as well as the transition probability functions. If we wanted to make it more user-friendly and adaptable, we could make those things user-defined inputs instead of hard coding them. That is a reasonable next step and we'll consider it your final challenge of the activity. I would create a `multi.state.user` functions that requires that the user to input three things: a matrix (or vector) of steps means and SD, a matrix (or vector) of turning angle means and concentrations, and a matrix (or vector) of the intercepts and coefficients of the transitions:
+
+```{r}
+multi.state.user <- function(N, x, step.params, angle.params, trans.probs) {
+  all.paths <- list()
+  
+  for (j in 1:N) {
+    steps.df <- data.frame(matrix(0,100,5))
+    colnames(steps.df) <- c("x", "y", "step.length", "turn.angle", "behav.state")
+    
+    rand <- runif(1,0,1)
+    if (rand < 0.812) {
+      prev.state <- 1
+    } else {
+      prev.state <- 2
+    }
+    steps.df[1,5] <- prev.state
+
+    for (i in 2:x[j]) {
+      time <- i %/% 3
+      if (time > 23) {
+        days <- i %/% 72
+        time <- time - (24 * days)
+      }
+      
+      if (prev.state == 1) {
+        prob.1to2 <- exp(trans.probs[1,1] + (trans.probs[2,1] * time))
+        if (prob.1to2 > 0 && prob.1to2 < 1) {
+          trans.1to2 <- rbinom(1,1,prob.1to2)
+        } else {
+          trans.1to2 <- 0
+        }
+        if (trans.1to2 == 1) {
+          behave.state <- 2
+        } else {
+          behave.state <- 1
+        }
+      } else {
+        prob.2to1 <- exp(trans.probs[1,2] + (trans.probs[2,2] * time))
+        if (prob.2to1 > 0 && prob.2to1 < 1) {
+          trans.2to1 <- rbinom(1,1,prob.2to1)
+        } else {
+          trans.2to1 <- 0
+        }
+        if (trans.2to1 == 1) {
+          behave.state <- 1
+        } else {
+          behave.state <- 2
+        }
+      } 
+      
+      if (behave.state == 1) { #probability of state 1
+        step <- rgamma(n=1, shape=((step.params[1,1]^2)/(step.params[2,1]^2)), rate=((step.params[1,1])/(step.params[2,1]^2)))
+        heading <- rvm(n=1, mean=angle.params[1,1], k=angle.params[2,1])
+      } else { #probability of state 2
+        step <- rgamma(n=1, shape=((step.params[1,2]^2)/(step.params[2,2]^2)), rate=(step.params[1,2]/(step.params[2,2]^2)))
+        heading <- rvm(n=1, mean=angle.params[1,2], k=angle.params[2,2])
+      } 
+      
+      next.pt <- movement(steps.df[(i-1),1:2], step, heading)
+      steps.df[i,1:4] <- next.pt
+      steps.df[i,5] <- behave.state
+      
+      prev.state <- behave.state
+    }
+    
+    all.paths[[j]] <- steps.df
+  }
+  return(all.paths)
+}
+```
+
+Let's run it with the same inputs that we previously hard-coded and see if we get similar results (it wont be exactly the same because it's still depending on a stochastic process):
+
+```{r}
+step.in <- matrix(c(55.610, 101.017, 332.775, 578.086), ncol=2)
+angle.in <- matrix(c(-0.096, 0.254, -0.030, 19.656), ncol=2)
+trans.in <- matrix(c(-2.564, -0.034, -1.544, 0.016), ncol=2)
+
+multi.states3 <- multi.state.user(1, c(200), step.in, angle.in, trans.in)
+plot(multi.states3[[1]]$x, multi.states3[[1]]$y, pch=19, type='b')
+table(multi.states3[[1]]$behav.state)
+```
+
+It appears to be working! Now you can change some of the input values and see what kind of effect it has on the results.
