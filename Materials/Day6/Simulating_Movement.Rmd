@@ -171,7 +171,7 @@ This function is going to act similarly to the first, but instead of drawing all
 | SD Step Length (m) | 101.017 | 578.086 |
 
 
-| Parameter | State 1 | State 2 | State 3 |
+| Parameter | State 1 | State 2 |
 | ------------------------ | ---------- | ---------- |
 | Mean Turning Angle (rad) | -0.096 | -0.030 |
 | Mean Concentration | -0.254 | 19.656 |
