@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Behavioral analysis has become one of the most important new ideas in the movement ecology literature. Due to the importance of the internal state in individual movement decisions, analyses such as the ones we will go through today offer an opportunity to understand the motivations underlying space-use more clearly than most of the broader scale analyses we've seen thus far. We are going to begin by considering Hidden Markov Models (HMM) as a means of exploring the behavioral states of our focal animals. Then, we will explore some methods in behavioral change point analysis (BCPA), before ending with a quick survey of some other novel methods in this space.
 
+# Hidden Markov Models (HMM)
+
 We will begin by loading in a dataset that comes with the moveHMM package, an elk movement track that is analyzed in the Morales et al. 2004 that introduces many of the concepts with which we will be working.
 
 ```{r}
@@ -160,16 +162,16 @@ lldata <- data.frame(ID=data$ID, x=attr(llcoord, "coords")[,1], y=attr(llcoord, 
 
 Now lets try to create our own HMM using empirical zebra data collected by the Getz Lab. We know how important time is when it comes to movement data, so rather than using a spatial covariate, let's use a temporal one to see if there is any effect on the transition probabilities.
 
-First, we will bring in the data on Zebra AG062:
+First, we will bring in the data on Zebra AG253:
 
 ```{r}
-zebra <- read.csv('Zebra_AG062.csv')
+zeb253 <- read.csv('Zebra_AG253.csv')
 ```
 
-As you can see, we have a lot more observations for this zebra than our elk example. For the sake of time, lets reduce this dataset to a smaller, but still substantial, subset of 8000 points:
+As you can see, we have a lot more observations for this zebra than our elk example. For the sake of time, lets reduce this dataset to a smaller, but still substantial, subset of 500 points:
 
 ```{r}
-zebra <- zebra[2001:10000,]
+zebra <- zeb253[10001:10500,]
 ```
 
 Now we have some cleaning to do. We can see that we have LatLong rather than UTM, so we'll need to take care of that. We also need to derive our own temporal covariate using the time stamps.
@@ -199,23 +201,23 @@ all.data <- data.frame("Easting" = x, "Northing" = y, "ID" = ID, "TimeOfDay" = T
 all.data$TimeOfDay <- as.numeric(all.data$TimeOfDay)
 ```
 
-Now we have a nice data frame with 8000 observations and 4 columns that looks a lot like the elk_data we imported:
+Now we have a nice data frame with 500 observations and 4 columns that looks a lot like the elk_data we imported:
 
 ```{r}
 head(all.data)
 ```
 
-From here, we'll need to prep the data (i.e., calculate step size and turning angle), make some decisions about the model(s) we want to create and define various initial values to parameterize the model(s). Let's try two alternatives, just like before, one with 2 states and one with 3 states. In both, we will use the time of day as a covariate:
+From here, we'll need to prep the data (i.e., calculate step size and turning angle), make some decisions about the model(s) we want to create and define various initial values to parameterize the model(s). Let's try two alternatives, just like before, one with 2 states and one with 3 states. Note that we are not including a zero-mass parameter here because there are no points with a step distance of 0, and we will get an error for over-parameterizing. In both models, we will use the time of day as a covariate:
 
 ```{r}
 dataHMM <- prepData(all.data, type="UTM", coordNames=c("Easting","Northing"))
 summary(dataHMM)
 plot(dataHMM,compact=T)
 
-mu0 <- c(0.1,1) # step mean (two parameters: one for each state)
-sigma0 <- c(0.1,1) # step SD
-zeromass0 <- c(0.1,0.05) # step zero-mass
-stepPar2 <- c(mu0,sigma0,zeromass0)
+mu0 <- c(0.05, 0.5) # step mean (two parameters: one for each state)
+sigma0 <- c(0.05, 0.5) # step SD
+#zeromass0 <- c(0.1, 0.05) # step zero-mass
+stepPar2 <- c(mu0,sigma0)#,zeromass0)
 
 angleMean0 <- c(pi,0) # angle mean
 kappa0 <- c(1,1) # angle concentration
@@ -226,9 +228,9 @@ z <- fitHMM(data=dataHMM, nbStates=2, stepPar0=stepPar2, anglePar0=anglePar2,
 
 
 mu0 <- c(0.01,0.1,1) # step mean (three parameters: one for each state)
-sigma0 <- c(.001,.05,.5) # step SD
-zeromass0 <- c(0.01,0.05,0.1) 
-stepPar3 <- c(mu0,sigma0,zeromass0)
+sigma0 <- c(.005,.05,.5) # step SD
+#zeromass0 <- c(0.01,0.05,0.1) 
+stepPar3 <- c(mu0,sigma0)#,zeromass0)
 
 angleMean0 <- c(0,0,0) # angle mean
 kappa0 <- c(0.01,0.5,1) # angle concentration
@@ -248,6 +250,7 @@ Well now we know that the three-state model performs better, so lets look at tha
 
 ```{r}
 z3
+plot(z3)
 plotStates(z3)
 
 states <- viterbi(z3)
@@ -256,9 +259,20 @@ prop.table(table(states))
 
 There we have it: over very own temporally-dependent HMM analysis! Based on the output of model z3, try to come up with some potential behaviors that we could associate with each of the three states.
 
+Just for the record, let's print the output of the 2-state model as well:
+
+```{r}
+z
+
+states.z <- viterbi(z)
+prop.table(table(states.z))
+```
+
+# Behavioral Change Point Analysis (BCPA)
+
 The next method we're going to take a look at is the behavioral change point analysis (BCPA), which looks for the points in a time series during which an animal transitions between behavioral states. We can even compare these results to the projected change points based on the HMM to see how closely they align.
 
-Just as with all other packages, `bcpa` has its own data format that it prefers, so we will use the `bcpa::MakeTrack` command to translate a set of 100 coordinates (from our 8000 point zebra path) into a usable format:
+Just as with all other packages, `bcpa` has its own data format that it prefers, so we will use the `bcpa::MakeTrack` command to translate a set of 100 coordinates (from our 10000 point zebra path) into a usable format:
 
 ```{r}
 library(bcpa)
@@ -279,8 +293,8 @@ head(zebra.VT)
 
 ```{r}
 zebra.ws <- WindowSweep(zebra.VT, "V*cos(Theta)", windowsize=50, progress=FALSE, K=2)
-plot(zebra.ws, type="smooth")
-plot(zebra.ws, type="smooth", threshold=7)
-plot(zebra.ws, type="flat")
-plot(zebra.ws, type="flat", clusterwidth=3)
+#plot(zebra.ws, type="smooth")
+#plot(zebra.ws, type="smooth", threshold=7)
+#plot(zebra.ws, type="flat")
+#plot(zebra.ws, type="flat", clusterwidth=3)
 ```
