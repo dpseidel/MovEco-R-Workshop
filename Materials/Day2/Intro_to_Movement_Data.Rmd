@@ -1,0 +1,128 @@
+---
+title: "Introduction to Movement Data"
+author: "Dana Seidel"
+date: "January 4, 2017"
+output: github_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+- Introduce movement data
+- Vectors/rasters
+- Spatial data in R (sf, sp libraries)
+- Projections, transformations
+- Movebank library (move package)
+- visualizing movement data (mapview, ggplot +geom_sf)
+- adehabitat, ltrajs, path statistics
+
+#Introduction
+
+Today we are going to dive into working with movement data in R. We will start by
+introducing you to some of the packages available for movement data and some of 
+
+
+This is an introduction to Spatial Analysis using the `sf` library in R.
+Much of this code was developed by Jamie Afflerbach . 
+
+For more of Jamie's introduction to the `sf` library and 
+spatial analysis in R, see her 
+[spatial-analysis-R repo](https://github.com/jafflerbach/spatial-analysis-R). 
+
+# Packages
+
+```{r}
+# developer's version
+devtools::install_github("tidyverse/ggplot2") 
+library(ggplot2)
+
+#install.packages(c("sf", "mapview"))
+library(tidyverse)
+library(sf)
+library(mapview)
+```
+
+
+# Read in the data
+**sf** objects usually have two classes - `sf` and `data.frame`.
+Two main differences comparing to a regular `data.frame` object are 
+spatial metadata (`geometry type`, `dimension`, `bbox`, `epsg (SRID)`, 
+`proj4string`) and additional column - typically named `geom` or `geometry`.
+
+
+```{r}
+west_shp_sf <- st_read(dsn = "shapefiles", layer="wc_regions")  #read in
+
+west_shp_sf %>% ggplot() + geom_sf()  # visualize
+
+class(west_shp_sf)
+```
+
+# Attributes
+**sf** objects can be used as a regular `data.frame` object in many operations
+
+```{r}
+nrow(west_shp_sf)
+ncol(west_shp_sf)
+```
+
+
+## sf & dplyr
+
+It also easy to use the **dplyr** package on `sf` objects:
+
+`select()`
+
+```{r select}
+
+west_shp_sf %>%
+  select.sf(rgn, rgn_key, geometry)
+
+```
+
+`filter()`
+
+```{r filter}
+
+west_shp_sf %>%
+  filter(rgn == "Oregon")
+
+```
+
+`mutate()`
+
+```{r mutate}
+
+sf_out <- west_shp_sf %>%
+  mutate(rgn_id = c(1:5),
+         area_km2 = area_m2/1000000) #converting square meters to square kilometers
+
+sf_out
+```
+
+# Union
+
+You can merge all polygons into one using `st_union()`.
+```{r st_union}
+
+full_rgn  <- st_union(sf_out)
+
+plot(full_rgn)
+
+#try plotting with ggplot2
+
+ # ggplot(full_rgn) +
+ #   geom_sf()
+```
+
+This doesn't work because now the object is a single geometry object of class `sfc` which is not a data.frame that ggplot requires for plotting. To turn an `sfc` object back into an `sf` object use `st_sf()`.
+
+```{r st_sf}
+
+full_rgn <- st_union(sf_out) %>%
+            st_sf(geometry = .)
+
+ ggplot(full_rgn) +
+   geom_sf()
+```

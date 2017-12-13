@@ -1,0 +1,16 @@
+---
+title: "Day 3 - MCP & Home Ranges"
+author: "Dana Seidel"
+date: "January 4, 2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(messages = FALSE, cache = TRUE)
+```
+
+```{r}
+library(adehabitatHR)
+library(adehabitatLT)
+```
+

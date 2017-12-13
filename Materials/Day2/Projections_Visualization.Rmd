@@ -1,0 +1,72 @@
+---
+title: "Projecting & Plotting - Movement Data"
+author: "Dana Seidel"
+date: "January 4, 2017"
+output: github_document
+---
+
+- Introduce movement data
+- Vectors/rasters
+- Spatial data in R (sf, sp libraries)
+- Projections, transformations
+- Movebank library (move package)
+- visualizing movement data (mapview, ggplot +geom_sf)
+- adehabitat, ltrajs, path statistics
+
+# Projections
+```{r}
+library(raster)
+npp <- raster( "rasters/annual_npp.tif")
+plot(npp)
+crs(npp)
+
+plot(projectRaster(npp, crs = "+proj=lcc +lat_1=48 +lat_2=33 +lon_0=-100 +ellps=WGS84"))
+
+
+```
+
+# Mapview
+
+```{r}
+#mapview(west_shp_sf)
+
+st_sample(west_shp_sf, 25) -> fish
+
+#icon: http://leafletjs.com/examples/custom-icons/
+fishIcon <- makeIcon("images/lumpsucker.jpg", 18,18)
+
+leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
+
+#mapview(west_shp_sf)@map %>% addTiles %>%  addMarkers(data = fish, icon=fishIcon)
+
+#%>% addFeatures(data = fish, icon = fishIcon)
+
+```
+
+# Visualize
+
+```{r}
+plot(west_shp_sf)
+plot(st_geometry(west_shp_sf))
+plot(west_shp_sf[1])
+```
+
+
+# Visualize with ggplot
+
+`ggplot2` now has integrated functionality to plot sf objects using `geom_sf()`.
+
+```{r}
+
+#simplest plot
+ggplot(west_shp_sf) +
+  geom_sf()
+
+```
+
+This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn_id.
+
+```{r}
+ggplot(west_shp_sf) +
+  geom_sf(aes(fill = rgn))
+```

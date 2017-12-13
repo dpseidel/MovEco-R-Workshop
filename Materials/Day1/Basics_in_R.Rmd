@@ -7,8 +7,6 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library("tidyverse")
-#library("printr") ## devtools::install_github("yihui/printr")
 ```
 
 
@@ -320,7 +318,7 @@ We can even write out our ggplot images:
 
 ```{r}
 # defaults to saving your last plot. can be specified
-ggsave("plot1", device = "eps")
+ggsave("plot1", device = "png")
 ```
 
 
