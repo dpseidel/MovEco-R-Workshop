@@ -44,6 +44,26 @@ library(mapview)
 ```
 
 
+
+The **sf** ("simple features") package is an R implementation of:  
+ - a new spatial data class system in R  
+ - functions for reading and writing spatial data  
+ - tools for spatial operations on vectors  
+
+# Vector Data
+A representation of the world using points, lines, and
+polygons. Vector models are useful for storing data that has discrete boundaries,
+such as country borders, land parcels, and streets.
+
+Often, stored as "shapefiles", .shp
+
+![]("./../../images/albatross.png")
+
+
+
+
+
+
 # Read in the data
 **sf** objects usually have two classes - `sf` and `data.frame`.
 Two main differences comparing to a regular `data.frame` object are 
@@ -126,3 +146,13 @@ full_rgn <- st_union(sf_out) %>%
  ggplot(full_rgn) +
    geom_sf()
 ```
+
+
+
+## Raster Data
+A representation of the world as a surface divided 
+into a regular grid of cells. Raster models are useful for storing data that 
+varies continuously, as in an aerial photograph, a satellite image, 
+a surface of chemical concentrations, or an elevation surface.
+
+Often, stored as "GeoTIFFs", .tif
