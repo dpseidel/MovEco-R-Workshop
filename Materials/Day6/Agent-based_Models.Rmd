@@ -65,7 +65,7 @@ Now let's create an object called `land` and use our new function, then plot it 
 
 ```{r}
 land <- simple.land(x.extent=5000, y.extent=3000, res=c(100,100), prop.forest=0.2, prop.grass=0.5)
-spplot(land)
+plot(land)
 ```
 
 That certainly isn't the most realistic landscape I have ever seen, but we made a surface that could theoretically dicatate an animal's movements. What is it exactly that makes it look so unrealistic, though? We have seen rasterized surfaced before, so it's not the fact that we have little boxes. Perhaps the issue is that we normally think about landscapes with some level of autocorrealtion. Here, we have completely randomly chosen the state of each of the vegetation types. We were able to define the relative proportion of each, but we know that where we have some forest in the real world, we are more likley to have other forest nearby. In other words, landscapes don't abide by completely random processes in most cases. Rather, they tend to exhibit patterns whereby like are located near like.
@@ -148,11 +148,11 @@ Now that looks a bit more like a real landscape! We can see that high quality ce
 So what can we do with that cool landscape we've created? Let's place an agent on the landscape and have its movements determined by the quality of the cells. We can see this interaction in multiple different ways, but let's just use a two-state model and say that whenever the animal is in state 2, its angle shifts so that it heads towards the highest quality cell nearby. This term 'nearby' though, needs to be defined before we do anything else. This is where an agent-based model gets some of its value; we can set a separate 'perceptual radius' for each agent and maintain that value throughout the simulation. We could even change it if we wanted (but we won't in this case). 
 
 So, we'll need a few things here:
-- 1) We are going to want to set up a data frame that contains the information we need on our agents (i.e., perceptual range). If we wanted, we could also include variables like species ID, which might serve to guide our selection of the perceptual range value. In this case, we will assume that the proportions of the different species are approximately equivalent.
-- 2) We need to assign initial positions to each of the agents, which we can store in the form of a list of data frames (i.e., data frame with nrow = number of steps and a list with length = number of agents)
-- 3) We will want to develop a function that allows us to calculate the angle between the current position of the agent and the highest quality cell within its perceptual range
-- 4) Because of our dependence on the landscape, we are going to need to make sure that all of the points fall within our landscape (as if there were a fence around it) using a `bounce` function
-- 5) Finally, we will need a function (similar to our `multi.state` function) that has two sets of step lengths.
+1. We are going to want to set up a data frame that contains the information we need on our agents (i.e., perceptual range). If we wanted, we could also include variables like species ID, which might serve to guide our selection of the perceptual range value. In this case, we will assume that the proportions of the different species are approximately equivalent.
+2. We need to assign initial positions to each of the agents, which we can store in the form of a list of data frames (i.e., data frame with nrow = number of steps and a list with length = number of agents)
+3. We will want to develop a function that allows us to calculate the angle between the current position of the agent and the highest quality cell within its perceptual range
+4. Because of our dependence on the landscape, we are going to need to make sure that all of the points fall within our landscape (as if there were a fence around it) using a `bounce` function
+5. Finally, we will need a function (similar to our `multi.state` function) that has two sets of step lengths.
 
 ```{r}
 library(prevR)
@@ -353,12 +353,12 @@ initialize.positions2 <- function(agents, site.poly) {
   return(steps.list)
 }
 
-feeding <- function(hunger.level, pos, land) {
+feeding <- function(agents, hunger.level, pos, land) {
   curr.cell <- extract(land, pos)
   if (agents$behav.state[i] == 1 && curr.cell > 7) {
-    hunger.level <- hunger.level - 0.15
+    hunger.level <- (hunger.level - 0.15)
   } else if ((hunger.level + 0.1) < 1) {
-    hunger.level <- hunger.level + 0.1
+    hunger.level <- (hunger.level + 0.1)
   } else {
     hunger.level <- 1
   }
@@ -393,19 +393,21 @@ move.feeding <- function(agents, steps.list, site.poly, land, step.params, n.ste
       next.pt <- movement(steps.df[(k-1),1:2], step.length, heading)
       # Make sure the new point is within our polygon; if not, replace
       next.pt <- bounce(pos, next.pt, site.poly, step.params)
+      # Determine the current hunger level and implement the feeding function above
       hunger.level <- agents$hunger[i]
-      agents$hunger[i] <- feeding(hunger.level, next.pt[,1:2], land)
+      agents$hunger[i] <- feeding(agents, hunger.level, next.pt[,1:2], land)
       # Add new location information into steps.list
       steps.df[k,1:4] <- next.pt
-      steps.df[k,5] <- agents$behav.state[i]
       steps.df[k,6] <- agents$hunger[i]
-      steps.list[[i]] <- steps.df
       # Now re-assign the agent to a new behavioral state based on hunger level
       if (agents$hunger[i] > 0.5) {
         agents$behav.state[i] <- 1
       } else {
         agents$behav.state[i] <- 0
       }
+      steps.df[k,5] <- agents$behav.state[i]
+      steps.list[[i]] <- steps.df
+      
     }
   }
   # It may be helpful to create a list of any thing that may change throughout the function; we know the steps.list changes, and so does the agent's behavioral state, so we'll save both as outputs (which must come in the form of a list)
@@ -413,6 +415,8 @@ move.feeding <- function(agents, steps.list, site.poly, land, step.params, n.ste
   return(move.list)
 }
 ```
+
+Now let's test out our more complex function:
 
 ```{r}
 agents2 <- initialize.agents2(N=20, num.sp=2, percep.means=c(250,400))
