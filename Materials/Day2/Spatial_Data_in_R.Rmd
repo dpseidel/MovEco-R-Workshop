@@ -22,12 +22,12 @@ review some of the R packages available for handling spatial data, discuss the
 format of different spatial data types, and explore how we can manipulate and visualize these
 in R. 
 
-Much of this code was originally developed by Jamie Afflerbach. For her own introduction 
+Much of the content and structure of this tutorial was inspired by Jamie Afflerbach's own introduction 
 to the `sf` library and spatial analysis in R (see her 
 [spatial-analysis-R repo](https://github.com/jafflerbach/spatial-analysis-R)). I 
 have adapted it here for the specific purposes of our workshop.
 
-# Packages
+## Packages
 
 Primarily we will be introducing the  **sf** ("simple features") package for working 
 with simple spatial data. 
@@ -60,7 +60,7 @@ Vector models are a representation of the world using points, lines, and
 polygons. This class is useful for storing data that has discrete boundaries,
 such as country borders, land parcels, and streets.
 
-Often, stored as "shapefiles", .shp
+Often, vector data is stored as "shapefiles" (.shp)
 
 ![]("./../../images/albatross.png")
 
@@ -71,8 +71,7 @@ into a regular grid of cells. These are useful for storing data that
 varies continuously, as in an aerial photograph, a satellite image, 
 a surface of chemical concentrations, or an elevation surface.
 
-Often, stored as "GeoTIFFs", .tif
-
+Often, Rasters are stored as "GeoTIFFs" (.tif)
 
 The **sf** library is used to store vector data but when working with raster data
 we will use operations from packages **raster** and **velox**. 
@@ -81,14 +80,12 @@ Later when we work with movement data we may find a need for other spatial packa
 such as: **spatial**, the **adehabitat** packages, **maptools**, **mapview**, 
 and the developers version of **ggplot2**. 
 
-# Dplyr functions with sf objects
-# Raster data 
-# itersections, extractions
-# spatial joins
-# Projections and transformations
-# Visualization
+# Activities
 
-# Read in the data
+To begin today, we are going to demonstrate how to **sf** and **tidyverse** libraries
+together to manipulate spatial *vector* data. 
+
+## Step 1. Set up our environment and read in the data
 
 ```{r}
 library(ggplot2)
@@ -98,27 +95,78 @@ library(sf)
 library(mapview)
 ```
 
-
 **sf** objects usually have two classes - `sf` and `data.frame`.
 Two main differences comparing to a regular `data.frame` object are 
 spatial metadata (`geometry type`, `dimension`, `bbox`, `epsg (SRID)`, 
 `proj4string`) and additional column - typically named `geom` or `geometry`.
 
+Today we are going to play with a shapfile of Hong Kong's geographic boundaries
+downloaded from the [global administrative areas database](http://www.gadm.org/download)
+and provided for you in the `shapefiles` directory. 
 
+First we need to unzip the downloaded file:
 ```{r}
-west_shp_sf <- st_read(dsn = "shapefiles", layer="wc_regions")  #read in
-
-west_shp_sf %>% ggplot() + geom_sf()  # visualize
-
-class(west_shp_sf)
+unzip("./shapefiles/HKG_Adm_gdb.zip", exdir="shapefiles")
 ```
 
-# Attributes
-**sf** objects can be used as a regular `data.frame` object in many operations
+Now let's use the `st_read` function to read this in. Within the `sf` library
+most commands begin with the "st" prefix. Since our file is a geodatabase we need 
+to first investigate which layers it contains. To do that we use the `st_layers`
+command. 
 
 ```{r}
-nrow(west_shp_sf)
-ncol(west_shp_sf)
+st_layers(dsn = "shapefiles/HKG_adm.gdb")  # check layers
+# looks like layer 1 is just the complerte boundary - note that it has 1 feature
+# and layer 2 might be multiple regions within the province?
+
+HK_boundary <- st_read(dsn = "shapefiles/HKG_adm.gdb", layer="HKG_adm0") # read in
+HK_regions <- st_read(dsn = "shapefiles/HKG_adm.gdb", layer="HKG_adm1")  # one at a time
+
+```
+
+### sf, data.frame Attributes
+
+Just for kicks, prove to yourself that a sf object is just a fancy data.frame:
+check out the class structure of "sf" objects
+```{r}
+class(HK_boundary)
+```
+
+Because of their dual class structure: **sf** objects can be used as a regular 
+`data.frame` object in many operations. For instance, we can call simple data.frame
+operations like `nrow` or `names` on these objects with ease
+
+```{r}
+nrow(HK_regions)
+ncol(HK_regions)
+names(HK_regions)
+```
+
+If we are ever curious about just the dataframe or just the geometry separately, 
+we can use `st_geometry` commands.  By setting the geometry to 'NULL' using `st_set_geometry`, a `sf`
+object returns to a simple data.frame. Calling the `st_geometry` from an sf object 
+would extract just the spatial attributes turning this into a "simple feature collection" or "sfc". 
+
+```{r}
+HK_boundary %>% class # complete sf object
+
+HK_boundary %>% st_set_geometry(NULL) %>% class  # force to data.frame
+
+HK_boundary %>% st_geometry() %>% class  # extract only the spatial info, force to "sfc"
+```
+
+# Step 2: Visualize
+Let's take a look at our shapefiles, make sure they look like we expect. 
+```{r}
+# look what happens when we use generic plot on the whole dataframe
+HK_regions %>% plot
+
+# pull just the geometry
+HK_boundary %>% st_geometry() %>% plot
+HK_regions %>% st_geometry() %>% plot
+
+# or pull just one column
+plot(HK_regions["NAME_1"])
 ```
 
 
@@ -131,7 +179,7 @@ It also easy to use the **dplyr** package on `sf` objects:
 ```{r select}
 
 west_shp_sf %>%
-  select.sf(rgn, rgn_key, geometry)
+  select(rgn, rgn_key, geometry)
 
 ```
 
@@ -217,14 +265,6 @@ leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
 
 ```
 
-# Visualize
-
-```{r}
-plot(west_shp_sf)
-plot(st_geometry(west_shp_sf))
-plot(west_shp_sf[1])
-```
-
 
 # Visualize with ggplot
 
@@ -233,7 +273,7 @@ plot(west_shp_sf[1])
 ```{r}
 
 #simplest plot
-ggplot(west_shp_sf) +
+ggplot(HK) +
   geom_sf()
 
 ```
@@ -241,6 +281,15 @@ ggplot(west_shp_sf) +
 This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn_id.
 
 ```{r}
-ggplot(west_shp_sf) +
-  geom_sf(aes(fill = rgn))
+ggplot(HK_regions) +
+  geom_sf(aes(fill = NAME_1))
 ```
+
+
+
+# Dplyr functions with sf objects
+# Raster data 
+# itersections, extractions
+# spatial joins
+# Projections and transformations
+# Visualization
