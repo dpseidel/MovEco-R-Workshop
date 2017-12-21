@@ -270,16 +270,16 @@ prop.table(table(states.z))
 
 # Behavioral Change Point Analysis (BCPA)
 
-The next method we're going to take a look at is the behavioral change point analysis (BCPA), which looks for the points in a time series during which an animal transitions between behavioral states. We can even compare these results to the projected change points based on the HMM to see how closely they align.
+The next method we're going to take a look at is the behavioral change point analysis (BCPA), which looks for the points in a time series during which there are notable shifts. In our case, we will be applying the method to a movement trajectory to see where an animal may transition between behavioral states, but technically change point analyses can be performed on any time series data (e.g., fluctuating stock values over time or carbon dioxide concentration in the atmosphere over time). Once we extract some change points, we can actually compare the results to the projected change points based on the HMM to see how closely they align.
 
-Just as with all other packages, `bcpa` has its own data format that it prefers, so we will use the `bcpa::MakeTrack` command to translate a set of 100 coordinates (from our 10000 point zebra path) into a usable format:
+Just as with all other packages, `bcpa` has its own data format that it prefers, so we will use the `bcpa::MakeTrack` command to translate a set of 100 coordinates (from our 500 point zebra path, for the sake of readability in the outputs) into a usable format:
 
 ```{r}
 library(bcpa)
 
-X <- as.numeric(coords@coords[301:400,1])
-Y <- as.numeric(coords@coords[301:400,2])
-Time <- 301:400
+X <- as.numeric(coords@coords[1:100,1])
+Y <- as.numeric(coords@coords[1:100,2])
+Time <- 1:100
 mytrack <- MakeTrack(X,Y,Time)
 plot(mytrack)
 ```
@@ -291,10 +291,69 @@ zebra.VT <- GetVT(mytrack)
 head(zebra.VT)
 ```
 
+The essence of a change point analysis is a sweep across a time series in search of breaks. This sweep can be conducted in a number of ways, but we will focus here on the window sweep, whereby we identify an appropriate `windowsize` and sensitivity (`K`) and then the algorithm searches across the time series in search of break points. One can also input a function as the second argument (it can represent any combination of the elements of our `zebra.VT` dataframe), to serve as a response variable. In this case, we will define a very simple function that account for both the velocity of movement and the direction of movement becasue we dont really have any *a priori* conception of what exactly causes change points in this path.
+
 ```{r}
 zebra.ws <- WindowSweep(zebra.VT, "V*cos(Theta)", windowsize=50, progress=FALSE, K=2)
-#plot(zebra.ws, type="smooth")
-#plot(zebra.ws, type="smooth", threshold=7)
-#plot(zebra.ws, type="flat")
-#plot(zebra.ws, type="flat", clusterwidth=3)
 ```
+
+The object that is returned by this function (which takes a little while to run, hence our reduction of the dataset to a smaller length) is a `ws` data frame whose final column indicates proposed break points should be and the parameter values associated with before and after those break point.
+
+```{r}
+head(zebra.ws$ws)
+```
+
+We can take a look at these suggested breakpoints by looking at the smoothed plot (i.e., the summary in which all the windows are averaged to obtain the “smooth” model). In this plot, the vertical lines represent the significant change points, the width of the lines is proportional to the number of time that change point was selected.
+
+```{r, warning=FALSE}
+plot(zebra.ws, type="smooth")
+```
+
+That doesnt offer the clearest picture. We can see that there are about 6 separate change points that have some support. We could, however, add a `threshold` parameter, which indicates how many of the windows that were swept over the data must have selected a particular changepoint for it to be considered significant. Here, we will use 5 and see what it looks like:
+
+```{r, warning=FALSE}
+plot(zebra.ws, type="smooth", threshold=5)
+```
+
+This reduces our number of change points from 6 to 4, and all of them appear to signify reasonable shifts in our response variable (which combines velocity and angle).
+
+An alternative way to search for change points is to use the 'flat' rather than 'smooth' method. This analysis first selects changepoints that it deems significant by clustering neighboring change points, and then estimates a homogeneous behavior that occurs between those changepoints.
+
+```{r, warning=FALSE}
+plot(zebra.ws, type="flat")
+```
+
+Once again, if we don't set an equivalent to the threshold parameter (in the case of the 'flat' approach, its called `clusterwidth`), we get quite a few change points. If we set this parameter to 5, we get the following:
+
+```{r, warning=FALSE}
+plot(zebra.ws, type="flat", clusterwidth=5)
+```
+
+This fairly conservative approach results in only two significant change points in our time series. A visual inspection suggests that these points lead to divisions that appear fairly homogenous within and heterogeneous between segments, so perhaps this is a reasonable set of change points. A summary of these change points can be obtained using the `bcpa::ChangePointSummary` command:
+
+```{r}
+ChangePointSummary(zebra.ws, clusterwidth=5)
+```
+
+This summmary suggests three phases, with each phase consisting progressively higher velocity (mu.hat). We can also visualize the path itself with the associated change points using the `bcpa::PathPlot` command or the `bcpa::PhasePlot` command:
+
+```{r}
+PathPlot(mytrack, zebra.ws, type="flat", clusterwidth = 5, main="Flat BCPA", xlim=c(580000,600000), ylim=c(7862000, 7870000))
+PhasePlot(zebra.ws, clusterwidth = 5)
+```
+
+Now, let's recall the first 100 values of our HMM predictions from the three-state model and see if they align with these results:
+
+```{r}
+states[1:100]
+```
+
+We can see a general pattern, but you can see that the HMM is very sensitive to changes (i.e., it doesn't have a threshold value associated to determine significant changes). We can, however, see that the there is a pretty notable shift from 2s interspersed with 1s to 3s interspersed with 1s at about t=56. This roughly aligns with the second change point we found with the BCPA method. 
+
+Is there anything else that you notice about the dataset based on these outputs?
+
+One important aspect that got lost when we artificially altered the time stamps in the second analysis is the fact that the points were not collected uniformly over time. In fact, state 1 in the HMM actually represents false short steps (for the most part), as these data were collected in a pattern of:
+
+- Point - 10 seconds - Point - 10 seconds - Point - 19 minutes and 40 seconds - Point -
+ 
+This results in the characteristic peaks and troughs that we see in the BCPA response variable and the pattern of state changes in the HMM. A little data management before beginning these analyses could have prevented this from affecting the results, but this serves as an important lesson in conducting such analyses that we must be careful about the structure of our data, as it will inevitably affect our outputs. It also illustrates some of the ways that we could check throughout the process.
