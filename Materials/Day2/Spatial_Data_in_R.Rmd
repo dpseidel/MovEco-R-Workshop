@@ -88,7 +88,6 @@ together to manipulate spatial *vector* data.
 ## Step 1. Set up our environment and read in the data
 
 ```{r}
-library(ggplot2)
 #install.packages(c("sf", "mapview"))
 library(tidyverse)
 library(sf)
@@ -100,31 +99,20 @@ Two main differences comparing to a regular `data.frame` object are
 spatial metadata (`geometry type`, `dimension`, `bbox`, `epsg (SRID)`, 
 `proj4string`) and additional column - typically named `geom` or `geometry`.
 
-Today we are going to play with a shapfile of Hong Kong's geographic boundaries
+Today we are going to play with a shapfiles of Hong Kong's administrative boundaries
 downloaded from the [global administrative areas database](http://www.gadm.org/download)
 and provided for you in the `shapefiles` directory. 
 
-First we need to unzip the downloaded file:
-```{r}
-unzip("./shapefiles/HKG_Adm_gdb.zip", exdir="shapefiles")
-```
-
-Now let's use the `st_read` function to read this in. Within the `sf` library
-most commands begin with the "st" prefix. Since our file is a geodatabase we need 
-to first investigate which layers it contains. To do that we use the `st_layers`
-command. 
+Now let's use the `st_read` function to read both files in separately. Note that 
+within the `sf` library most commands begin with the "st" prefix. 
 
 ```{r}
-st_layers(dsn = "shapefiles/HKG_adm.gdb")  # check layers
-# looks like layer 1 is just the complerte boundary - note that it has 1 feature
-# and layer 2 might be multiple regions within the province?
+HK_boundary <- st_read("shapefiles/HK_boundary.shp")
 
-HK_boundary <- st_read(dsn = "shapefiles/HKG_adm.gdb", layer="HKG_adm0") # read in
-HK_regions <- st_read(dsn = "shapefiles/HKG_adm.gdb", layer="HKG_adm1")  # one at a time
-
+HK_regions <- st_read("shapefiles/HK_regions.shp")
 ```
 
-### sf, data.frame Attributes
+### Attributes of `sf` objects
 
 Just for kicks, prove to yourself that a sf object is just a fancy data.frame:
 check out the class structure of "sf" objects
@@ -156,7 +144,10 @@ HK_boundary %>% st_geometry() %>% class  # extract only the spatial info, force 
 ```
 
 # Step 2: Visualize
+
 Let's take a look at our shapefiles, make sure they look like we expect. 
+
+## `sf` objects and BaseR
 ```{r}
 # look what happens when we use generic plot on the whole dataframe
 HK_regions %>% plot
@@ -169,10 +160,51 @@ HK_regions %>% st_geometry() %>% plot
 plot(HK_regions["NAME_1"])
 ```
 
+## With ggplot
 
-## sf & dplyr
+`ggplot2` now has integrated functionality to plot sf objects using `geom_sf()`.
 
-It also easy to use the **dplyr** package on `sf` objects:
+```{r}
+
+#simplest plot
+ggplot(HK_boundary) + geom_sf()
+
+```
+
+This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn_id.
+
+```{r}
+ggplot(HK_regions) +
+  geom_sf(aes(fill = NAME_1))
+```
+
+## Getting fancy with Mapview
+```{r}
+#mapview(west_shp_sf)
+
+st_sample(west_shp_sf, 25) -> fish
+
+#icon: http://leafletjs.com/examples/custom-icons/
+fishIcon <- makeIcon("images/lumpsucker.jpg", 18,18)
+
+leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
+
+#mapview(west_shp_sf)@map %>% addTiles %>%  addMarkers(data = fish, icon=fishIcon)
+
+#%>% addFeatures(data = fish, icon = fishIcon)
+
+```
+
+
+
+
+
+# Step 3: Mainuplate!
+
+An important advantage of simple features in R is that their structure makes it 
+easy to use the **dplyr** package on `sf` objects:
+
+For instance, taking standard examples introduced yesterday:
 
 `select()`
 
@@ -230,11 +262,9 @@ full_rgn <- st_union(sf_out) %>%
 ```
 
 
+# Projections & transformations
 
-# Projections
-
-![]("./../../images/crs.png")
-
+![]("../../images/crs.png")
 
 ```{r}
 library(raster)
@@ -247,49 +277,6 @@ plot(projectRaster(npp, crs = "+proj=lcc +lat_1=48 +lat_2=33 +lon_0=-100 +ellps=
 
 ```
 
-# Mapview
-
-```{r}
-#mapview(west_shp_sf)
-
-st_sample(west_shp_sf, 25) -> fish
-
-#icon: http://leafletjs.com/examples/custom-icons/
-fishIcon <- makeIcon("images/lumpsucker.jpg", 18,18)
-
-leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
-
-#mapview(west_shp_sf)@map %>% addTiles %>%  addMarkers(data = fish, icon=fishIcon)
-
-#%>% addFeatures(data = fish, icon = fishIcon)
-
-```
-
-
-# Visualize with ggplot
-
-`ggplot2` now has integrated functionality to plot sf objects using `geom_sf()`.
-
-```{r}
-
-#simplest plot
-ggplot(HK) +
-  geom_sf()
-
-```
-
-This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn_id.
-
-```{r}
-ggplot(HK_regions) +
-  geom_sf(aes(fill = NAME_1))
-```
-
-
-
-# Dplyr functions with sf objects
-# Raster data 
-# itersections, extractions
 # spatial joins
-# Projections and transformations
-# Visualization
+
+# itersections, extractions
