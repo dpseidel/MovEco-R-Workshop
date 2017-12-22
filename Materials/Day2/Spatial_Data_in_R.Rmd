@@ -9,12 +9,6 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Section Topics
-- Spatial data in R (sf, sp libraries)
-- Vectors/rasters
-- Projections, transformations
-- visualizing spatial data (mapview, ggplot +geom_sf)
-
 # Introduction
 Today we are going to get our first taste of working with movement data in R, but we will begin by
 introducing you to spatial data analysis in R more generally. In this section we will
@@ -62,14 +56,19 @@ such as country borders, land parcels, and streets.
 
 Often, vector data is stored as "shapefiles" (.shp)
 
-![]("./../../images/albatross.png")
-
+![GPS points from an albatross trajectory are an example of vector data](../../images/albatross.png)
 
 ## Raster Data
 Raster models are a representation of the world as a surface divided 
-into a regular grid of cells. These are useful for storing data that 
+into a regular grid of cells.
+
+![Rasters divide the world into a regular grid](../../images/raster_concept.png)
+
+These are useful for storing data that 
 varies continuously, as in an aerial photograph, a satellite image, 
-a surface of chemical concentrations, or an elevation surface.
+a surface of chemical concentrations, or an elevation surface
+
+![Rasters are better used for continuous data like temperature, elevation, or landcover type](../../images/examples.png)
 
 Often, Rasters are stored as "GeoTIFFs" (.tif)
 
@@ -80,7 +79,7 @@ Later when we work with movement data we may find a need for other spatial packa
 such as: **spatial**, the **adehabitat** packages, **maptools**, **mapview**, 
 and the developers version of **ggplot2**. 
 
-# Activities
+# Reading, Visualizaing, and Manipulating Spatial Data in R
 
 To begin today, we are going to demonstrate how to **sf** and **tidyverse** libraries
 together to manipulate spatial *vector* data. 
@@ -107,9 +106,9 @@ Now let's use the `st_read` function to read both files in separately. Note that
 within the `sf` library most commands begin with the "st" prefix. 
 
 ```{r}
-HK_boundary <- st_read("shapefiles/HK_boundary.shp")
+HK_boundary <- st_read("data_files/HK_boundary.shp")
 
-HK_regions <- st_read("shapefiles/HK_regions.shp")
+HK_regions <- st_read("data_files/HK_regions.shp")
 ```
 
 ### Attributes of `sf` objects
@@ -134,6 +133,7 @@ If we are ever curious about just the dataframe or just the geometry separately,
 we can use `st_geometry` commands.  By setting the geometry to 'NULL' using `st_set_geometry`, a `sf`
 object returns to a simple data.frame. Calling the `st_geometry` from an sf object 
 would extract just the spatial attributes turning this into a "simple feature collection" or "sfc". 
+To turn an `sfc` object back into an `sf` object use `st_sf()`.
 
 ```{r}
 HK_boundary %>% class # complete sf object
@@ -143,11 +143,11 @@ HK_boundary %>% st_set_geometry(NULL) %>% class  # force to data.frame
 HK_boundary %>% st_geometry() %>% class  # extract only the spatial info, force to "sfc"
 ```
 
-# Step 2: Visualize
+## Step 2: Visualize
 
 Let's take a look at our shapefiles, make sure they look like we expect. 
 
-## `sf` objects and BaseR
+### sf objects and BaseR
 ```{r}
 # look what happens when we use generic plot on the whole dataframe
 HK_regions %>% plot
@@ -160,25 +160,32 @@ HK_regions %>% st_geometry() %>% plot
 plot(HK_regions["NAME_1"])
 ```
 
-## With ggplot
+### With ggplot
 
 `ggplot2` now has integrated functionality to plot sf objects using `geom_sf()`.
+If the following code isn't working, check to make sure you are using the developer's
+version, `devtools::install_github("tidyverse/ggplot2")`.
 
 ```{r}
-
 #simplest plot
-ggplot(HK_boundary) + geom_sf()
-
+ggplot(HK_regions) + geom_sf()
 ```
 
 This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn_id.
 
 ```{r}
-ggplot(HK_regions) +
-  geom_sf(aes(fill = NAME_1))
+ggplot(HK_regions) + geom_sf(aes(fill = NAME_1))
 ```
 
-## Getting fancy with Mapview
+ggplot gives us useful defaults like Latitude and Longitude labels and cleaner legends but
+there are even fancier things we can do with maps... we'll introduce you to one in
+the `mapview` library below. 
+
+### Getting fancy with Mapview
+
+`mapview` is a wrapper for the `leaflet` package for R. Leaflet is a visualization
+engine written in javascript that is widely used to make and embed interactive plots. 
+
 ```{r}
 #mapview(west_shp_sf)
 
@@ -195,11 +202,7 @@ leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
 
 ```
 
-
-
-
-
-# Step 3: Mainuplate!
+## Step 3: Mainuplate!
 
 An important advantage of simple features in R is that their structure makes it 
 easy to use the **dplyr** package on `sf` objects:
@@ -210,73 +213,58 @@ For instance, taking standard examples introduced yesterday:
 
 ```{r select}
 
-west_shp_sf %>%
-  select(rgn, rgn_key, geometry)
+HK_boundary %>%
+  select(ID_0, ISO, NAME_LO, SOVEREI, FIPS, ISON, POP2000, SQKM) -> HK_trim
 
+HK_trim
+```
+
+`mutate()` & `pull()`
+
+```{r mutate}
+HK_trim %>%
+  mutate(POP_per_SQKM = POP2000/SQKM) %>% pull(POP_per_SQKM)
 ```
 
 `filter()`
 
 ```{r filter}
 
-west_shp_sf %>%
-  filter(rgn == "Oregon")
+HK_regions %>%
+  filter(NAME_1 %in% c("Eastern", "North", "Islands"))
 
+HK_regions %>%
+  filter(NAME_1 %in% c("Eastern", "North", "Islands")) %>% 
+  ggplot(.) + geom_sf(aes(fill = NAME_1))
 ```
 
-`mutate()`
 
-```{r mutate}
-
-sf_out <- west_shp_sf %>%
-  mutate(rgn_id = c(1:5),
-         area_km2 = area_m2/1000000) #converting square meters to square kilometers
-
-sf_out
-```
-
-# Union
-
+## Spatial operations
+### Union
 You can merge all polygons into one using `st_union()`.
 ```{r st_union}
 
-full_rgn  <- st_union(sf_out)
+full_rgn  <- st_union(HK_regions)
 
 plot(full_rgn)
-
-#try plotting with ggplot2
-
- # ggplot(full_rgn) +
- #   geom_sf()
 ```
 
-This doesn't work because now the object is a single geometry object of class `sfc` which is not a data.frame that ggplot requires for plotting. To turn an `sfc` object back into an `sf` object use `st_sf()`.
+### Projections & transformations
 
-```{r st_sf}
-
-full_rgn <- st_union(sf_out) %>%
-            st_sf(geometry = .)
-
- ggplot(full_rgn) +
-   geom_sf()
-```
-
-
-# Projections & transformations
-
-![]("../../images/crs.png")
+![](../../images/crs.png)
 
 ```{r}
 library(raster)
-npp <- raster( "rasters/annual_npp.tif")
-plot(npp)
-crs(npp)
 
-plot(projectRaster(npp, crs = "+proj=lcc +lat_1=48 +lat_2=33 +lon_0=-100 +ellps=WGS84"))
+#npp <- raster( "data_files/annual_npp.tif")
+#plot(npp)
+#crs(npp)
+
+#plot(projectRaster(npp, crs = "+proj=lcc +lat_1=48 +lat_2=33 +lon_0=-100 +ellps=WGS84"))
 
 
 ```
 
-# spatial joins
+### spatial joins
 
-# itersections, extractions
+### itersections, extractions
