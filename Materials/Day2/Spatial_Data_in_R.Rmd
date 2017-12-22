@@ -108,7 +108,7 @@ within the `sf` library most commands begin with the "st" prefix.
 ```{r}
 HK_boundary <- st_read("data_files/HK_boundary.shp")
 
-HK_regions <- st_read("data_files/HK_regions.shp")
+HK_districts <- st_read("data_files/HK_districts.shp")
 ```
 
 ### Attributes of `sf` objects
@@ -124,9 +124,9 @@ Because of their dual class structure: **sf** objects can be used as a regular
 operations like `nrow` or `names` on these objects with ease
 
 ```{r}
-nrow(HK_regions)
-ncol(HK_regions)
-names(HK_regions)
+nrow(HK_districts)
+ncol(HK_districts)
+names(HK_districts)
 ```
 
 If we are ever curious about just the dataframe or just the geometry separately, 
@@ -150,14 +150,14 @@ Let's take a look at our shapefiles, make sure they look like we expect.
 ### sf objects and BaseR
 ```{r}
 # look what happens when we use generic plot on the whole dataframe
-HK_regions %>% plot
+HK_districts %>% plot
 
 # pull just the geometry
 HK_boundary %>% st_geometry() %>% plot
-HK_regions %>% st_geometry() %>% plot
+HK_districts %>% st_geometry() %>% plot
 
 # or pull just one column
-plot(HK_regions["NAME_1"])
+plot(HK_districts["NAME_1"])
 ```
 
 ### With ggplot
@@ -168,13 +168,13 @@ version, `devtools::install_github("tidyverse/ggplot2")`.
 
 ```{r}
 #simplest plot
-ggplot(HK_regions) + geom_sf()
+ggplot(HK_districts) + geom_sf()
 ```
 
 This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn_id.
 
 ```{r}
-ggplot(HK_regions) + geom_sf(aes(fill = NAME_1))
+ggplot(HK_districts) + geom_sf(aes(fill = NAME_1))
 ```
 
 ggplot gives us useful defaults like Latitude and Longitude labels and cleaner legends but
@@ -186,19 +186,15 @@ the `mapview` library below.
 `mapview` is a wrapper for the `leaflet` package for R. Leaflet is a visualization
 engine written in javascript that is widely used to make and embed interactive plots. 
 
-```{r}
-#mapview(west_shp_sf)
-
-#st_sample(west_shp_sf, 25) -> fish
+```{r, screenshoot.force=TRUE}
+map <- mapview(HK_districts)
+st_sample(HK_districts, 25) -> points
 
 #icon: http://leafletjs.com/examples/custom-icons/
 #fishIcon <- makeIcon("images/lumpsucker.jpg", 18,18)
+#mapview(HK_regions)@map %>% addTiles %>%  addMarkers(data = points, icon=fishIcon)
 
-#leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
-
-#mapview(west_shp_sf)@map %>% addTiles %>%  addMarkers(data = fish, icon=fishIcon)
-
-#%>% addFeatures(data = fish, icon = fishIcon)
+mapview(points, map, cex=3, color="red")
 
 ```
 
@@ -230,10 +226,10 @@ HK_trim %>%
 
 ```{r filter}
 
-HK_regions %>%
+HK_districts %>%
   filter(NAME_1 %in% c("Eastern", "North", "Islands"))
 
-HK_regions %>%
+HK_districts %>%
   filter(NAME_1 %in% c("Eastern", "North", "Islands")) %>% 
   ggplot(.) + geom_sf(aes(fill = NAME_1))
 ```
@@ -244,7 +240,7 @@ HK_regions %>%
 You can merge all polygons into one using `st_union()`.
 ```{r st_union}
 
-full_rgn  <- st_union(HK_regions)
+full_rgn  <- st_union(HK_districts)
 
 plot(full_rgn)
 ```
@@ -256,12 +252,22 @@ plot(full_rgn)
 ```{r}
 library(raster)
 
-#npp <- raster( "data_files/annual_npp.tif")
-#plot(npp)
+
+# https://landcover.usgs.gov/global_climatology.php
+# download.file("https://landcover.usgs.gov/documents/GlobalLandCover_tif.zip", "data_files/Landcover.zip") 
+# unzip("data_files/Landcover.zip", "data_files/")
+land_cover <- raster("data_files/LCType.tif")
+mask <- raster( "../../../sst_1d_monthly/sst_oiv2_1d_19941000.asc") 
+sst_stack <- stack(sst)
+
+plot(sst)
 #crs(npp)
 
 #plot(projectRaster(npp, crs = "+proj=lcc +lat_1=48 +lat_2=33 +lon_0=-100 +ellps=WGS84"))
 
+library(rgeos)
+library(rgdal)
+library(raster)
 
 ```
 
