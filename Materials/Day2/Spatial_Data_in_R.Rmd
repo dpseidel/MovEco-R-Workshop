@@ -189,12 +189,12 @@ engine written in javascript that is widely used to make and embed interactive p
 ```{r}
 #mapview(west_shp_sf)
 
-st_sample(west_shp_sf, 25) -> fish
+#st_sample(west_shp_sf, 25) -> fish
 
 #icon: http://leafletjs.com/examples/custom-icons/
-fishIcon <- makeIcon("images/lumpsucker.jpg", 18,18)
+#fishIcon <- makeIcon("images/lumpsucker.jpg", 18,18)
 
-leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
+#leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
 
 #mapview(west_shp_sf)@map %>% addTiles %>%  addMarkers(data = fish, icon=fishIcon)
 
@@ -267,4 +267,4 @@ library(raster)
 
 ### spatial joins
 
-### itersections, extractions
+### intersections, extractions
