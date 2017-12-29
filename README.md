@@ -41,7 +41,7 @@ This is very similar to the base `install.packages()` function except we have to
 
 **Note: spatial packages across platforms rely on gdal, proj4 and geos. These should install correctly using the `install.packages` command in R when instaing `rgdal` and `rgeos` but occassionally produce platform specific errors. If you have trouble, first begin by googling your error as many many users before you have likely encountered the same issue. If your instal of these libraries fail - please see us during Day1's afternoon hands on activity and we can help you get properly set up. 
 
-# Addtional Resources: A (woefully incomplete) list 
+# Additional Resources: A (woefully incomplete) list 
 For those interested in similar tutorials please refer to:
 - [R for DataScience by Garrett Grolemund & Hadley Wickham](http://r4ds.had.co.nz/)
 - [The tidyverse website](https://www.tidyverse.org/learn/)
