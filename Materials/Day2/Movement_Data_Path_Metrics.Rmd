@@ -9,6 +9,16 @@ output: github_document
 - adehabitat, ltrajs, path statistics
 
 # Movement data
+```{r}
+library(movebank)
+readRenviron("../../.Renviron")
+#study <- movebank("study", id = 2911040)
+#individuals <- movebank("individuals", study_id = 2911040)
+albatross <- movebank("event", study_id = 2911040)
+```
+
+
+
 
 # Ltraj objects
 
@@ -20,14 +30,7 @@ output: github_document
 ## Displacement, Net Squared Displacement
 
 
-
-
-library(movebank)
-readRenviron("../../.Renviron")
-#study <- movebank("study", id = 2911040)
-#individuals <- movebank("individuals", study_id = 2911040)
-albatross <- movebank("event", study_id = 2911040)
-```
+Consider Albatross data, study id: 2911040
 
 ```{r}
 albatross_sf <- 
@@ -39,7 +42,6 @@ albatross_sf <-
 ```{r}
 albatross_sf %>% group_by(individual_id) %>% tally()
 albatross_sf %>% filter(individual_id %in% c(2911059,2911062)) %>% mapview(zcol="individual_id")
-
 ```
 
 
@@ -51,173 +53,6 @@ q <- st_as_sf(quakes[1:20,], coords = c("long", "lat"), crs=4326)
 # Show first 20 rows from the `quakes` dataset
 mapview(q)@map %>% addTiles() %>%
   addMarkers(data = quakes[1:20,], ~long, ~lat, popup = ~as.character(mag), label = ~as.character(mag))
-```
-
-
-
-----
-
-
-Consider spatio-temporal data with `stars` package: 
-
-```{r}
-#devtools::install_github("r-spatial/stars", update = FALSE)
-
-```
-
-Buffalo movement data from <http://dx.doi.org/10.5441/001/1.j900f88t>
-
-
-```{r message=FALSE}
-#buffalo_meta <- read_csv("https://www.datarepository.movebank.org/bitstream/handle/10255/move.611/Kruger%20African%20Buffalo%2c%20GPS%20tracking%2c%20South%20Africa-reference-data.csv")
-
-buffalo_meta <- read_csv("../data/buffalo-meta.csv")
-```
-
-```{r}
-#buffalo <- read_csv("https://www.datarepository.movebank.org/bitstream/handle/10255/move.610/Kruger%20African%20Buffalo%2c%20GPS%20tracking%2c%20South%20Africa.csv")
-
-buffalo <- read_csv("../data/buffalo.csv")
-buffalo
-```
-
-```{r}
-buffalo_sf <- st_as_sf(buffalo, coords = c("location-long", "location-lat"), crs=4326)
-```
-
-One of the best things about the `sf` library is that we can leverage all of our `dplyr` verbs to manipulate the laters.  For instance, this `buffalo` movement data sure has a lot of records.  Let's subset it to focus only the individual named "Queen" and use the first two months of data:
-
-
-```{r}
-queen <-
-buffalo_sf %>% 
-  filter(`individual-local-identifier`=="Queen") %>%
-  filter(timestamp < as.POSIXct("2005-05-01"))
-```
-
-We can now plot this data efficiently:
-
-```{r}
-queen %>%
-  ggplot() + geom_sf(size=0.2, shape="+")
-```
-
-Hmm, it would be helpful to have this data on a map.  Let's take a look at some of the built-in maps:
-
-```{r}
-#sa <- map("worldHires","South Africa", plot=FALSE)
-st_as_sf(map('world', "South Africa", plot = FALSE, fill = TRUE, xlim = c(14,35), ylim=c(-35,-20))) %>% 
-  st_transform(4326) %>%
-  ggplot() + geom_sf() 
-```
-
-Maybe we want finer resolution:
-
-```{r}
-download.file("http://biogeo.ucdavis.edu/data/gadm2.8/shp/ZAF_adm_shp.zip", "sa.shp.zip")
-unzip("sa.shp.zip", exdir = "sa.shp")
-```
-
-
-
-```{r}
-south_africa <- st_read("sa.shp")
-south_africa %>% 
-  ggplot() + geom_sf()
-```
-
-```{r}
-b <- st_bbox(buffalo_sf)
-```
-
-```{r}
-kruger <- south_africa %>% filter(NAME_1 %in% c("Limpopo", "Mpumalanga"))
-
-queen %>%
-  ggplot()  + 
-  geom_sf(data = kruger) +
-  geom_sf()  # map first, pts on top
-  #coord_sf(xlim = c(31.6,32), ylim = c(-25, -24))
-  #coord_sf(xlim = c(b['xmin'], b['xmax']), ylim = c(b['ylim'], b['ymax']))
-```
-
-Hmm, that seems like a lot of work.  Can't we just get some standard map layers for our data? And some nice interactive zoom/pan features?
-
-```{r}
-mapview(queen, zcol="timestamp")
-```
-
-Yeah, that's more like it.
-
-----------
-
-
-```{r}
-p4s <- "+init=epsg:4326 +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
-```
-
-- `sf`: a Simple Feature data.frame
-- `sfc`: Simple Feature column, containing the geometry of a simple feature frame.
-- `sfg`: a Simple Feature Geometry
-
-Hack cooridnates into WKT format to exploit conversion from CSV
-
-```{r}
-buffalo %>%
-  rename(X = `location-lat`, Y = `location-long`) %>%
-  mutate(WKT = paste0("POINT (", X, " ", Y, ")")) %>%
-  select(-X, -Y) %>%
-  write_csv("buffalo_st.csv")
-buffalo_st <- st_read("buffalo_st.csv")
-
-st_crs(buffalo_st) <- p4s
-
-```
-
-
-Construct a `sf` data.frame manually? See https://github.com/edzer/sfr/issues/385
-
-```{r}
-
-#buffalo %>% rowwise() %>% summarise(long = `location-long`, lat=`location-lat`)
-
-## better than purrrlyr::by_rows
-## need dplyr >= 0.7.0 to support list-columns
-
-buffalo_sf <-
-buffalo %>%
-  rowwise() %>%
-  mutate(geometry = 
-           st_geometry(
-             st_point(c(`location-long`, `location-lat`)))) %>% 
-  ungroup() # remove rowwise class
-
-as(buffalo_sf, "sf")
-# 
-# class(buffalo_sf) <- c("sf", class(buffalo_sf))
-
-## errors:
-#st_crs(buffalo_sf) <- p4s
-```
-
-Construct a multipoint geometry. (but, we want 1 geometry per entry!)
-
-```{r}
-sfg <- st_multipoint(as.matrix(buffalo[c("location-long", "location-lat")]))
-sfc <- st_geometry(sfg)
-st_crs(sfc) <- p4s
-```
-
-```{r}
-library(sp)
-buffalo_sp <- SpatialPointsDataFrame(coords = buffalo[c("location-long", "location-lat")], 
-                                     data = buffalo, 
-                                     proj4string = sp::CRS(p4s))
-
-sf <- as(buffalo_sp, "sf")
-
-#sf2 <- st_as_sf(buffalo_sp) #identical to above
-# sfc <- st_as_sfc(buffalo_sp) # identical to st_geometry(sf)
 ```
 
 Consider Albatross data, study id: 2911040
