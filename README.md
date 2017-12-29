@@ -39,7 +39,7 @@ This is very similar to the base `install.packages()` function except we have to
 - `devtools::install_github("tidyverse/ggplot2")`
 - `devtools::install_github("r-spatial/mapview")`
 
-**Note: spatial packages across platforms rely on gdal, proj4 and geos. These should install correctly using the `install.packages` command in R when instaing `rgdal` and `rgeos` but occassionally produce platform specific errors. If you have trouble, first begin by googling your error as many many users before you have likely encountered the same issue. If your instal of these libraries fail - please see us during Day1's afternoon hands on activity and we can help you get properly set up. 
+**spatial packages across platforms rely on gdal, proj4 and geos. These should install correctly using the `install.packages` command in R when installing `rgdal` and `rgeos` but occassionally produce platform specific errors. If you have trouble, first begin by googling your error as many many users before you have likely encountered the same issue. If your install of these libraries fail - please see us during Day1's afternoon hands on activity and we can help you get properly set up. 
 
 # Additional R Resources: A (woefully incomplete) list 
 For those interested in similar tutorials or resources in R and spatial data more generally please refer to:
