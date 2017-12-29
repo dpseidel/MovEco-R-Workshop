@@ -41,7 +41,7 @@ This is very similar to the base `install.packages()` function except we have to
 
 **Note: spatial packages across platforms rely on gdal, proj4 and geos. These should install correctly using the `install.packages` command in R when instaing `rgdal` and `rgeos` but occassionally produce platform specific errors. If you have trouble, first begin by googling your error as many many users before you have likely encountered the same issue. If your instal of these libraries fail - please see us during Day1's afternoon hands on activity and we can help you get properly set up. 
 
-# Additional General R Resources: A (woefully incomplete) list 
+# Additional R Resources: A (woefully incomplete) list 
 For those interested in similar tutorials or resources in R and spatial data more generally please refer to:
 - [R for DataScience by Garrett Grolemund & Hadley Wickham](http://r4ds.had.co.nz/)
 - [Rstudio Cheatsheets!](https://www.rstudio.com/resources/cheatsheets/) 
@@ -49,7 +49,7 @@ For those interested in similar tutorials or resources in R and spatial data mor
 - the upcoming textbook [Geocomputation with R](http://robinlovelace.net/geocompr/)
 - the [sf vignettes](https://cran.r-project.org/web/packages/sf/) of the `sf` package.
 - the [r-spatial blog & website](http://r-spatial.org/) for the latest news from the r-spatial community.
-- the [Tidyverse website/blog](https://www.tidyverse.org/articles/) fo latest news from the tidyverse
+- the [Tidyverse website/blog](https://www.tidyverse.org/articles/) for the latest news from the tidyverse
 
 
 # Acknowledgements
