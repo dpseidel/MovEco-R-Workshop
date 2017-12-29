@@ -1,8 +1,9 @@
 ---
 title: "Introduction to working with Spatial Data in R"
 author: "Dana Seidel"
-date: "January 4, 2017"
+date: "January 4, 2018"
 output: github_document
+always_allow_html: yes
 ---
 
 ```{r setup, include = FALSE}
@@ -245,32 +246,111 @@ full_rgn  <- st_union(HK_districts)
 plot(full_rgn)
 ```
 
-### Projections & transformations
+### Joins
+
+Perhaps we had some points -- locations of animal observations maybe -- and we 
+wanted to join them to data in a different layer -- the sf library and dplyr make
+this readily doable.
+
+Below we join the randomly sampled points from above to the HK_districts layer, to pull the relevant district information for each point. 
+
+```{r}
+st_sf(points) %>% st_join(., HK_districts)
+
+# Similar functions are available in other libraries:
+# adehabitatMA::join()
+# rgeos::over
+```
+
+From there it is simple to use `group_by` and `tally` (a wrapper for the more general `summarise` function) to count how many points we sampled in each district:
+
+```{r}
+st_sf(points) %>% 
+  st_join(., HK_districts) %>%
+  group_by(NAME_1) %>% 
+  tally()
+
+# all while retaining the spatial geometry associated with each point. 
+```
+
+### Projections & transformations with vectors and rasters
+
+Above we have sometimes encountered warnings like this one:
+> although coordinates are longitude/latitude, st_intersects assumes that they are planar
+
+This has to do with our coordinate system. Geographic coordinate systems give 
+coordinates which are spherical (i.e. measured from the earth's center) or 
+planimetric (in which the earth's coordinates are projected onto a two-dimensional planar surface). 
+Most spatial operations in the sf library assume coordinates are projected into a
+planar surface which typically lend themselves to more interpretable measurements e.g meters or kilometers. 
+
+Above,  all our vector data have been in the
+WGS84 spherical coordinate reference system, which uses longitude and latitude with units in degrees.
+An example of this projection can be seen in the lower right depication of the US
+in the image below. 
 
 ![](../../images/crs.png)
 
+It is cruial when doing spatial analyses to know and match the coordinate systems 
+across all of your datasets and ensure everything is properly projected, or your 
+results may be incorrect or your analysis may fail. This is true whether you are
+working with raster or vector data. 
+
+
 ```{r}
 library(raster)
-
 
 # https://landcover.usgs.gov/global_climatology.php
 # download.file("https://landcover.usgs.gov/documents/GlobalLandCover_tif.zip", "data_files/Landcover.zip") 
 # unzip("data_files/Landcover.zip", "data_files/")
 land_cover <- raster("data_files/LCType.tif")
-mask <- raster( "../../../sst_1d_monthly/sst_oiv2_1d_19941000.asc") 
-sst_stack <- stack(sst)
 
-plot(sst)
-#crs(npp)
-
-#plot(projectRaster(npp, crs = "+proj=lcc +lat_1=48 +lat_2=33 +lon_0=-100 +ellps=WGS84"))
-
-library(rgeos)
-library(rgdal)
-library(raster)
-
+plot(land_cover)
+crs(land_cover)
 ```
 
-### spatial joins
+Perhaps we want to work with both our HK_districts and the landcover dataset 
+but in a planar coordinate system
+
+
+```{r}
+HK_landcover <- crop(land_cover, extent(as(HK_boundary, "Spatial")))
+```
 
 ### intersections, extractions
+```{r}
+library(velox)
+vx <- velox(HK_landcover)
+
+landcover <- c("Water",
+ "Evergreen Needle leaf Forest",
+  "Evergreen Broadleaf Forest",
+ "Deciduous Needle leaf Forest",
+ "Deciduous Broadleaf Forest",	
+ "Mixed Forests",
+ "Closed Shrublands", 
+ "Open Shrublands",
+ "Woody Savannas",
+ "Savannas", 
+ "Grasslands", 
+ "Permanent Wetland", 
+ "Croplands", 
+ "Urban and Built-Up",
+ "Cropland/Natural Vegetation Mosaic", # #15 snow and ice not encountered
+ "Barren or Sparsely Vegetated")
+
+landcover_by_district <- vx$extract(HK_districts) %>% 
+  map(., plyr::count) %>% 
+  reduce(., function(dtf1,dtf2) full_join(dtf1,dtf2, by="x")) %>% 
+  arrange(x) 
+
+landcover_by_district[is.na(landcover_by_district)] <- 0
+names(landcover_by_district) <- c("Class_No", seq(1,18,1))
+landcover_by_district$Class <- landcover
+
+district_totals <- map_dbl(landcover_by_district[,2:19], sum)
+
+for (i in 1:18){
+  landcover_by_district[,i+1] <- round((landcover_by_district[,i+1]/district_totals[i])*100,2)
+}
+```

@@ -1,7 +1,7 @@
 ---
 title: "Day 3 - MCP & Home Ranges"
 author: "Dana Seidel"
-date: "January 4, 2017"
+date: "January 5, 2018"
 output: github_document
 ---
 
@@ -13,4 +13,8 @@ knitr::opts_chunk$set(messages = FALSE, cache = TRUE)
 library(adehabitatHR)
 library(adehabitatLT)
 ```
+
+# MCP
+# UD
+# Brownian Bridges
 
