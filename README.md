@@ -4,8 +4,8 @@ Scripts and Code for the Movement Ecology &amp; R Workshop. Hong Kong University
 # Instructions before the workshop
 Please make sure you have installed:
 
-- R
-- Rstudio
+- [R (version 3.4 or higher)](https://www.r-project.org/)
+- [Rstudio](https://www.rstudio.com/products/rstudio/download/#download) 
 - The following packages:
     - devtools
     - tidyverse
@@ -13,13 +13,16 @@ Please make sure you have installed:
     - sp
     - ggplot2 (developer's version)
     - mapview (developer's version)
-    - rgeos
+    - rgdal*
+    - rgeos*
     - adehabitat
     - adehabitatLT
     - adehabitatHR
     - move
     - raster
-
+    
+*Note: spatial packages across platforms rely on gdal, proj4 and geos. These should install correctly using the `install.packages` command in R when instaing `rgdal` and `rgeos` but occassionally produce platform specific errors. If you have trouble, first begin by googling your error as many many users before you have likely encountered the same issue. If your instal of these libraries fail - please see us during Day1's afternoon hands on activity and we can help you get properly set up. 
+  
 ### Installation Instructions:
 Inside the Rstudio console, you can install packages using the function `install.packages()`.
 
@@ -35,6 +38,6 @@ This is very similar to the base `install.packages()` function except we have to
 - ` devtools::install_github("r-spatial/mapview")`
 
 # Files
-- The proposed schedule is found in the [Suggested_Schedule.md](https://github.com/dpseidel/MovEco-R-Workshop/blob/master/Suggested_Schedule.md), produced by the `Suggested_Schedule.Rmd`, both found in the main directory. 
+- The proposed schedule is found in the [Schedule.pdf](https://github.com/dpseidel/MovEco-R-Workshop/blob/master/Schedule.pdf), produced by the `Schedule.Rmd`, both found in the main directory. 
 - All files, including slides, live coding scripts, and activities are found sorted into directories according to workshop day in the `materials/` directory.
 
