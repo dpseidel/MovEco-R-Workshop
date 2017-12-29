@@ -9,26 +9,12 @@ output: github_document
 - adehabitat, ltrajs, path statistics
 
 # Movement data
+## Movebank
 ```{r}
-library(movebank)
+library(move)
 readRenviron("../../.Renviron")
-#study <- movebank("study", id = 2911040)
-#individuals <- movebank("individuals", study_id = 2911040)
 albatross <- movebank("event", study_id = 2911040)
 ```
-
-
-
-
-# Ltraj objects
-
-# Path Metrics 
-## Step Length
-## Turning Angle (Relative v. Absolute)
-## Tortuosity, Straightness Index
-## Persistence, Persistence Velocity
-## Displacement, Net Squared Displacement
-
 
 Consider Albatross data, study id: 2911040
 
@@ -44,20 +30,14 @@ albatross_sf %>% group_by(individual_id) %>% tally()
 albatross_sf %>% filter(individual_id %in% c(2911059,2911062)) %>% mapview(zcol="individual_id")
 ```
 
-
-```{r}
-## Leaflet doesn't do "point" and "mutipoint" for `sf` objects directly, but we can combine leaflet and mapview
-#albatross_sf %>% filter(individual_id %in% c(2911059,2911062)) %>% leaflet()
-data(quakes)
-q <- st_as_sf(quakes[1:20,], coords = c("long", "lat"), crs=4326)
-# Show first 20 rows from the `quakes` dataset
-mapview(q)@map %>% addTiles() %>%
-  addMarkers(data = quakes[1:20,], ~long, ~lat, popup = ~as.character(mag), label = ~as.character(mag))
-```
-
-Consider Albatross data, study id: 2911040
-
-
 Look at env var layers from <https://www.movebank.org/node/7471>
 
-http://proj4.org/faq.html
+# Ltraj objects
+## Side note: Regular vs. Irreguar Trajectories
+
+# Path Metrics 
+## Step Length
+## Turning Angle (Relative v. Absolute)
+## Tortuosity, Straightness Index
+## Persistence, Persistence Velocity
+## Displacement, Net Squared Displacement
