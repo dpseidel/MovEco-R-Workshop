@@ -5,34 +5,33 @@ date: "January 4, 2018"
 output: github_document
 ---
 
-- Movebank library (move package)
-- adehabitat, ltrajs, path statistics
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
+```{r}
+library(tidyverse)
+library(sf)
+library(mapview)
+```
 # Movement data
-## Movebank
-```{r}
-library(move)
-readRenviron("../../.Renviron")
-albatross <- movebank("event", study_id = 2911040)
-```
+As mentioned this morning, movement data may come in a variety of forms and resolutions, 
+and the analyses 
 
-Consider Albatross data, study id: 2911040
 
-```{r}
-albatross_sf <- 
-  albatross %>%
-  na.omit() %>%
-  st_as_sf(coords = c("location_long", "location_lat"), crs=4326)
-```
-
-```{r}
-albatross_sf %>% group_by(individual_id) %>% tally()
-albatross_sf %>% filter(individual_id %in% c(2911059,2911062)) %>% mapview(zcol="individual_id")
-```
-
-Look at env var layers from <https://www.movebank.org/node/7471>
+Here we are going to introduce working with movement data as `ltraj` objects in the 
+adehabitat library which makes extracting simple path metrics like tortuosity, 
+and persistence, simple. 
 
 # Ltraj objects
+```{r}
+library(adehabitatLT)
+data("whale")
+data("albatross")
+data("hseal")
+
+```
+
 ## Side note: Regular vs. Irreguar Trajectories
 
 # Path Metrics 
@@ -41,3 +40,5 @@ Look at env var layers from <https://www.movebank.org/node/7471>
 ## Tortuosity, Straightness Index
 ## Persistence, Persistence Velocity
 ## Displacement, Net Squared Displacement
+
+

@@ -42,16 +42,15 @@ This is very similar to the base `install.packages()` function except we have to
 **spatial packages across platforms rely on gdal, proj4 and geos. These should install correctly using the `install.packages` command in R when installing `rgdal` and `rgeos` but occassionally produce platform specific errors. If you have trouble, first begin by googling your error as many many users before you have likely encountered the same issue. If your install of these libraries fail - please see us during Day1's afternoon hands on activity and we can help you get properly set up. 
 
 # Additional R Resources: A (woefully incomplete) list 
-For those interested in similar tutorials or resources in R and spatial data more generally please refer to:
-- [R for DataScience by Garrett Grolemund & Hadley Wickham](http://r4ds.had.co.nz/)
+For those interested in further tutorials or resources for spatial data analysis and R more generally, please refer to:
+- The [R for DataScience](http://r4ds.had.co.nz/) book
 - [Rstudio Cheatsheets!](https://www.rstudio.com/resources/cheatsheets/) 
 - Jamie Afflerbach's Spatial Analysis in R tutorials and [repo](https://github.com/jafflerbach/spatial-analysis-R)
 - the upcoming textbook [Geocomputation with R](http://robinlovelace.net/geocompr/)
-- the [sf vignettes](https://cran.r-project.org/web/packages/sf/) of the `sf` package.
-- the [r-spatial blog & website](http://r-spatial.org/) for the latest news from the r-spatial community.
+- the [vignettes](https://cran.r-project.org/web/packages/sf/) of the `sf` package
+- the [r-spatial blog & website](http://r-spatial.org/) for the latest news from the r-spatial community
 - the [Tidyverse website/blog](https://www.tidyverse.org/articles/) for the latest news from the tidyverse
 
-
 # Acknowledgements
-Much of this code is adapted from other resources produced by the [#Rstats](https://twitter.com/search?q=%23rstats&src=typd) community at large. We make an effort to cite these resources throughout our materials where appropriate but would like to additionally acknowledge the contributions of Andy Lyons, Hadley Wickham, Garrett Grolemund, Carl Boettiger, and Jamie Afflerbach that have influenced this workshop. 
+Much of this code is adapted from other resources produced by the [#Rstats](https://twitter.com/search?q=%23rstats&src=typd) community at large. We make an effort to cite these resources throughout our materials where appropriate but would like to specifically acknowledge the contributions of Andy Lyons, Hadley Wickham, Garrett Grolemund, Carl Boettiger, and Jamie Afflerbach that have influenced this workshop. 
 

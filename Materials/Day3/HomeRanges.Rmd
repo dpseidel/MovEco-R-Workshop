@@ -15,6 +15,10 @@ library(adehabitatLT)
 ```
 
 # MCP
-# UD
+
+# Kernel UD
+
 # Brownian Bridges
+library(move)
+BBMM object --> getvolumeUD
 
