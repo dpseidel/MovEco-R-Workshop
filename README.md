@@ -24,6 +24,7 @@ Please make sure you have installed:
     - adehabitatHR
     - move
     - raster
+    - lme4
   
 ## Installation Instructions:
 Inside the Rstudio console, you can install packages using the function `install.packages()`.

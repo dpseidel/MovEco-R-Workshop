@@ -14,31 +14,145 @@ library(tidyverse)
 library(sf)
 library(mapview)
 ```
-# Movement data
-As mentioned this morning, movement data may come in a variety of forms and resolutions, 
-and the analyses 
 
+# Movement data
+As mentioned this morning, movement data may come in a variety of scales and resolutions, requiring careful consideration before analysis. 
+
+Here we are going to focus on GPS relocation data as it is one of the most common
+forms of tracking data and provides a (mostly) consistent record of an animals movement path. 
+
+## Movebank
+Though often researchers in your position
+will have data of your own, there has been an effort 
+to share movement data from other collections through the Movebank database. Movebank 
+is a free online infrastructure created to help researchers manage, share, analyze, 
+and archive animal movement data. `move` is an R package that contains functions to
+access movement data stored in [movebank.org](http://www.movebank.org) as well
+as tools to visualize and statistically analyze animal movement data. 
+`move` is addressing movement ecology questions that complement existing efforts 
+such as `adeHabitat` and other packages which we will introduce later.
+
+Here let's consider some Albatross data, from movebank study #2911040:
+To run this code you would need your own movebank username and password, here I
+have stored my password in my local environment as the variable `pass`. 
+
+```{r}
+library(move)
+loginStored <- movebankLogin(username="dpseidel", password=pass)
+albatross <- getMovebank("event", study_id = 2911040, login=loginStored)
+
+head(albatross)
+```
+
+This gives us a standard dataframe with a time stamp, coordinates, and individual id. 
+
+Just as before, we can manipulate, and clean up, this data easily when converted to an sf object:
+```{r}
+albatross_sf <- 
+  albatross %>%
+  na.omit() %>%
+  st_as_sf(coords = c("location_long", "location_lat"), crs=4326)
+```
+
+For instance, in this state, it's simple to look at how many records we have per individual:
+```{r}
+albatross_sf %>% 
+  group_by(individual_id) %>% 
+  tally()
+```
+
+Or map the paths of a particular pair:
+```{r}
+albatross_sf %>% 
+  filter(individual_id %in% c(2911059,2911062)) %>% 
+  mapview(zcol="individual_id")
+```
+
+## Ltraj objects
+Beyond `move`, there are many packages in R used to handle movement data, and an ever growing number built for specific analyses. There is however no consensus yet on which class object
+movement data need be in for each of these packages, and researchers often have to be comfortable converting from one to the other depending on the task at hand and the 
+format required by each package. 
 
 Here we are going to introduce working with movement data as `ltraj` objects in the 
-adehabitat library which makes extracting simple path metrics like tortuosity, 
-and persistence, simple. 
+`adehabitat` library which makes extracting primary path characteristics like tortuosity, 
+and persistence, exceptionally simple. `ltraj` is shorthand for list of trajectories, and
+if you query the `class` of these objects you'll see they are indeed just complex lists. 
 
-# Ltraj objects
 ```{r}
 library(adehabitatLT)
-data("whale")
-data("albatross")
-data("hseal")
+
+data(ibex)
+class(ibex)
+```
+### Side note: type of trajectory
+
+### Side note: Regular vs. Irreguar Trajectories
+```{r}
+data(ibexraw)
+```
+
+##  Importing movement data of our own
+move() creates move objects or movestacks, we can identify bursts. 
+ltraj creates ltraj objects
+
+<<< must be expanded >>>
+
+As reating an `ltraj` object from a dataframe of relocations is a speedy way to 
+
+# Primary Path Characteristics
+<<NEED TO INTRODUCE THIS IDEA>>
+
+If we dig a little deeper into our `ltraj` objects from above, we'll see that in
+creating these we also derive certain basic characteristics from our paths: 
+
+- Step Length (i.e Displacement: increment of the X and Y values between two consecutive locations)
+```{r}
 
 ```
 
-## Side note: Regular vs. Irreguar Trajectories
+- Turning Angle (Relative v. Absolute)
+```{r}
 
-# Path Metrics 
-## Step Length
-## Turning Angle (Relative v. Absolute)
-## Tortuosity, Straightness Index
+```
+
+These both are calculated from producing the ltraj. On top of these we can do some 
+quick calculations to pull out
+- velocity
+```{r}
+
+```
+- Net Squared Displacement
+```{r}
+
+```
+
+
+# Secondary 
+## Tortuosity: the level of convolution of a movement path compared to a straight line
+### Straightness Index - (straight-line distance between points / cumulative path lengths between points),
+straightness index computed as the ratio between the distance from the starting point to the goal and the path length travelled to reach the goal. 
+```{r}
+
+```
+
+### Sinuosity index (Benhamou 2004)
+(2) the tortuosity of a random search path, ranging between straight line movement and Brownian motion, can be reliably estimated by a sinuosity index which combines the mean cosine of changes of direction with the mean step length;
+```{r}
+
+```
+
 ## Persistence, Persistence Velocity
-## Displacement, Net Squared Displacement
+measuring persistence of a time series is an important tool... but in movement you have to decide what kind of persistence you hope to measure:
+persistence of velocity?  package bcpa
+```{r}
+
+```
+
+persistence of direction? 
+```{r}
+
+```
+
+<< check to make sure Eric has not already spoken to this >> 
 
 
