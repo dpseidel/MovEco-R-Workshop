@@ -26,3 +26,9 @@
 | 13:30 – 14:45 | Livecode| DPS | Slightly more advanced R (custom functions, flexible arguments, loops) |
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | | Practice manipulating raw data |
+
+### Files
+- Lectures: HongKongMovement2018Lec1.pdf
+- LiveCode 1: Basics_in_R.Rmd
+- LiveCode 2: More_Advanced_R.Rmd
+- Activity: Day1_Activities.Rmd
