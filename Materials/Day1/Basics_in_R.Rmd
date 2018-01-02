@@ -9,15 +9,29 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-# Introducing R studio
+# Introducing Rstudio (live demo)
 - What is the console? 
 - What is the source?
-- what is your environment?
+- What is your environment?
 - Using git within Rstudio
 
+## SideNote: What is an .Rmd file? What about .r file? 
+This is an R Markdown document (.Rmd). Markdown is a simple formatting syntax 
+for authoring HTML, PDF, and MS Word documents. It facilitates the easy combination 
+of both code and text. Everything you see in the grey chunks will run as R code. 
+Everything outside a code chunk is treated as plain text. 
+
+For complete formatting with plots and code output and the text, one must `knit`
+a .Rmd file into their final file formats (generally html, pdf, md, or doc). Which is
+why you may see "duplicate" files in our github repo. 
+
+For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Comparatively, a simple R script saves as a .r file. Everything inside a .r file 
+is treated (and run) as code unless commented out with a `#` sign. 
+
 # The TidyVerse
-The tidyverse is an opinionated collection of R packages designed for data science.
+The tidyverse is a collection of R packages designed for data science.
 All packages share an underlying philosophy and common APIs. 
 
 Install the packages: `install.packages("tidyverse")`
@@ -43,7 +57,7 @@ Big Data Borat [\@BigDataBorat](https://twitter.com/BigDataBorat/status/30659635
 
 ## Parsing
 
-Our first task is to read this data into our R environment.  To this, we will use the `read_csv` function. Reading in a data file is called *parsing*, which sounds much more sophisticated.  For good reason too -- parsing different data files and formats is a cornerstone of all pratical data science research, and can often be the hardest step.
+Our first task is to read this data into our R environment.  To this, we will use the `read_table` function. Reading in a data file is called *parsing*, which sounds much more sophisticated.  For good reason too -- parsing different data files and formats is a cornerstone of all pratical data science research, and can often be the hardest step.
 
 #### So what do we need to know about this file in order to read it into R?
 
@@ -54,15 +68,14 @@ library("tidyverse")
 
 ```{r}
 ## Let's try:
-co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt")
+co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt")
 co2
 ```
-
 
 **hmm... no luck.  Let's try defining the comment symbol:**
 
 ```{r }
-co2 <- read_tsv("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
+co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
                 comment = "#")
 co2
 ```
@@ -85,7 +98,8 @@ head(co2)
 
 Alternately, with `readr::read_table` from `tidyverse` 
 
-It seems that `comment` arg is not fully implemented in CRAN version of `readr` so we must rely on `skip` to avoid the comment block:
+It seems that `comment` arg is not yet fully implemented in CRAN version of `readr` 
+so we must rely on `skip` to avoid the comment block:
 
 ```{r message=FALSE, warning=FALSE}
 co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
@@ -145,7 +159,6 @@ co2[,"year"]
 co2[,1]
 co2$year  # what's the difference here?
 
-
 co2 %>% select(year, average) 
 co2[, c("year", "average")] 
 co2[, c(1,4)]
@@ -202,7 +215,6 @@ are powerful tools for rearranging and summarizing our data.
 when group_by years in the co2 dataframe, is the addition of a small line in 
 the tibble header: "# Groups:   year [60]"
 ```{r}
-
 co2 %>% group_by(year)
 ```
 
@@ -230,7 +242,6 @@ The `mutate` function is similar to `summarise` in that it allows you to take va
 For instance, perhaps we wanted to make a column combining the year and month for our dataset
 ```{r}
 co2 %>% mutate(month_year = paste0(month,"/", year))
-
 ```
 
 `group by` functions also work to group things before`mutate` functions. FOr instance, if we wanted a column

@@ -1,34 +1,52 @@
 ---
 title: "Projecting & Plotting - Movement Data"
 author: "Dana Seidel"
-date: "January 4, 2017"
+date: "January 4, 2018"
 output: github_document
 ---
 
-- Movebank library (move package)
-- adehabitat, ltrajs, path statistics
-
-# Movement data
-
-# Ltraj objects
-
-# Path Metrics 
-## Step Length
-## Turning Angle (Relative v. Absolute)
-## Tortuosity, Straightness Index
-## Persistence, Persistence Velocity
-## Displacement, Net Squared Displacement
-
-
-
-
-library(movebank)
-readRenviron("../../.Renviron")
-#study <- movebank("study", id = 2911040)
-#individuals <- movebank("individuals", study_id = 2911040)
-albatross <- movebank("event", study_id = 2911040)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+library(sf)
+library(mapview)
+```
+
+# Movement data
+As mentioned this morning, movement data may come in a variety of scales and resolutions, requiring careful consideration before analysis. 
+
+Here we are going to focus on GPS relocation data as it is one of the most common
+forms of tracking data and provides a (mostly) consistent record of an animals movement path. 
+
+## Movebank
+Though often researchers in your position
+will have data of your own, there has been an effort 
+to share movement data from other collections through the Movebank database. Movebank 
+is a free online infrastructure created to help researchers manage, share, analyze, 
+and archive animal movement data. `move` is an R package that contains functions to
+access movement data stored in [movebank.org](http://www.movebank.org) as well
+as tools to visualize and statistically analyze animal movement data. 
+`move` is addressing movement ecology questions that complement existing efforts 
+such as `adeHabitat` and other packages which we will introduce later.
+
+Here let's consider some Albatross data, from movebank study #2911040:
+To run this code you would need your own movebank username and password, here I
+have stored my password in my local environment as the variable `pass`. 
+
+```{r}
+library(move)
+loginStored <- movebankLogin(username="dpseidel", password=pass)
+albatross <- getMovebank("event", study_id = 2911040, login=loginStored)
+
+head(albatross)
+```
+
+This gives us a standard dataframe with a time stamp, coordinates, and individual id. 
+
+Just as before, we can manipulate, and clean up, this data easily when converted to an sf object:
 ```{r}
 albatross_sf <- 
   albatross %>%
@@ -36,193 +54,105 @@ albatross_sf <-
   st_as_sf(coords = c("location_long", "location_lat"), crs=4326)
 ```
 
+For instance, in this state, it's simple to look at how many records we have per individual:
 ```{r}
-albatross_sf %>% group_by(individual_id) %>% tally()
-albatross_sf %>% filter(individual_id %in% c(2911059,2911062)) %>% mapview(zcol="individual_id")
-
+albatross_sf %>% 
+  group_by(individual_id) %>% 
+  tally()
 ```
 
-
+Or map the paths of a particular pair:
 ```{r}
-## Leaflet doesn't do "point" and "mutipoint" for `sf` objects directly, but we can combine leaflet and mapview
-#albatross_sf %>% filter(individual_id %in% c(2911059,2911062)) %>% leaflet()
-data(quakes)
-q <- st_as_sf(quakes[1:20,], coords = c("long", "lat"), crs=4326)
-# Show first 20 rows from the `quakes` dataset
-mapview(q)@map %>% addTiles() %>%
-  addMarkers(data = quakes[1:20,], ~long, ~lat, popup = ~as.character(mag), label = ~as.character(mag))
+albatross_sf %>% 
+  filter(individual_id %in% c(2911059,2911062)) %>% 
+  mapview(zcol="individual_id")
 ```
 
+## Ltraj objects
+Beyond `move`, there are many packages in R used to handle movement data, and an ever growing number built for specific analyses. There is however no consensus yet on which class object
+movement data need be in for each of these packages, and researchers often have to be comfortable converting from one to the other depending on the task at hand and the 
+format required by each package. 
 
-
-----
-
-
-Consider spatio-temporal data with `stars` package: 
-
-```{r}
-#devtools::install_github("r-spatial/stars", update = FALSE)
-
-```
-
-Buffalo movement data from <http://dx.doi.org/10.5441/001/1.j900f88t>
-
-
-```{r message=FALSE}
-#buffalo_meta <- read_csv("https://www.datarepository.movebank.org/bitstream/handle/10255/move.611/Kruger%20African%20Buffalo%2c%20GPS%20tracking%2c%20South%20Africa-reference-data.csv")
-
-buffalo_meta <- read_csv("../data/buffalo-meta.csv")
-```
+Here we are going to introduce working with movement data as `ltraj` objects in the 
+`adehabitat` library which makes extracting primary path characteristics like tortuosity, 
+and persistence, exceptionally simple. `ltraj` is shorthand for list of trajectories, and
+if you query the `class` of these objects you'll see they are indeed just complex lists. 
 
 ```{r}
-#buffalo <- read_csv("https://www.datarepository.movebank.org/bitstream/handle/10255/move.610/Kruger%20African%20Buffalo%2c%20GPS%20tracking%2c%20South%20Africa.csv")
+library(adehabitatLT)
 
-buffalo <- read_csv("../data/buffalo.csv")
-buffalo
+data(ibex)
+class(ibex)
 ```
+### Side note: type of trajectory
 
+### Side note: Regular vs. Irreguar Trajectories
 ```{r}
-buffalo_sf <- st_as_sf(buffalo, coords = c("location-long", "location-lat"), crs=4326)
+data(ibexraw)
 ```
 
-One of the best things about the `sf` library is that we can leverage all of our `dplyr` verbs to manipulate the laters.  For instance, this `buffalo` movement data sure has a lot of records.  Let's subset it to focus only the individual named "Queen" and use the first two months of data:
+##  Importing movement data of our own
+move() creates move objects or movestacks, we can identify bursts. 
+ltraj creates ltraj objects
 
+<<< must be expanded >>>
 
-```{r}
-queen <-
-buffalo_sf %>% 
-  filter(`individual-local-identifier`=="Queen") %>%
-  filter(timestamp < as.POSIXct("2005-05-01"))
-```
+As reating an `ltraj` object from a dataframe of relocations is a speedy way to 
 
-We can now plot this data efficiently:
+# Primary Path Characteristics
+<<NEED TO INTRODUCE THIS IDEA>>
 
-```{r}
-queen %>%
-  ggplot() + geom_sf(size=0.2, shape="+")
-```
+If we dig a little deeper into our `ltraj` objects from above, we'll see that in
+creating these we also derive certain basic characteristics from our paths: 
 
-Hmm, it would be helpful to have this data on a map.  Let's take a look at some of the built-in maps:
-
-```{r}
-#sa <- map("worldHires","South Africa", plot=FALSE)
-st_as_sf(map('world', "South Africa", plot = FALSE, fill = TRUE, xlim = c(14,35), ylim=c(-35,-20))) %>% 
-  st_transform(4326) %>%
-  ggplot() + geom_sf() 
-```
-
-Maybe we want finer resolution:
-
-```{r}
-download.file("http://biogeo.ucdavis.edu/data/gadm2.8/shp/ZAF_adm_shp.zip", "sa.shp.zip")
-unzip("sa.shp.zip", exdir = "sa.shp")
-```
-
-
-
-```{r}
-south_africa <- st_read("sa.shp")
-south_africa %>% 
-  ggplot() + geom_sf()
-```
-
-```{r}
-b <- st_bbox(buffalo_sf)
-```
-
-```{r}
-kruger <- south_africa %>% filter(NAME_1 %in% c("Limpopo", "Mpumalanga"))
-
-queen %>%
-  ggplot()  + 
-  geom_sf(data = kruger) +
-  geom_sf()  # map first, pts on top
-  #coord_sf(xlim = c(31.6,32), ylim = c(-25, -24))
-  #coord_sf(xlim = c(b['xmin'], b['xmax']), ylim = c(b['ylim'], b['ymax']))
-```
-
-Hmm, that seems like a lot of work.  Can't we just get some standard map layers for our data? And some nice interactive zoom/pan features?
-
-```{r}
-mapview(queen, zcol="timestamp")
-```
-
-Yeah, that's more like it.
-
-----------
-
-
-```{r}
-p4s <- "+init=epsg:4326 +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
-```
-
-- `sf`: a Simple Feature data.frame
-- `sfc`: Simple Feature column, containing the geometry of a simple feature frame.
-- `sfg`: a Simple Feature Geometry
-
-Hack cooridnates into WKT format to exploit conversion from CSV
-
-```{r}
-buffalo %>%
-  rename(X = `location-lat`, Y = `location-long`) %>%
-  mutate(WKT = paste0("POINT (", X, " ", Y, ")")) %>%
-  select(-X, -Y) %>%
-  write_csv("buffalo_st.csv")
-buffalo_st <- st_read("buffalo_st.csv")
-
-st_crs(buffalo_st) <- p4s
-
-```
-
-
-Construct a `sf` data.frame manually? See https://github.com/edzer/sfr/issues/385
-
+- Step Length (i.e Displacement: increment of the X and Y values between two consecutive locations)
 ```{r}
 
-#buffalo %>% rowwise() %>% summarise(long = `location-long`, lat=`location-lat`)
-
-## better than purrrlyr::by_rows
-## need dplyr >= 0.7.0 to support list-columns
-
-buffalo_sf <-
-buffalo %>%
-  rowwise() %>%
-  mutate(geometry = 
-           st_geometry(
-             st_point(c(`location-long`, `location-lat`)))) %>% 
-  ungroup() # remove rowwise class
-
-as(buffalo_sf, "sf")
-# 
-# class(buffalo_sf) <- c("sf", class(buffalo_sf))
-
-## errors:
-#st_crs(buffalo_sf) <- p4s
 ```
 
-Construct a multipoint geometry. (but, we want 1 geometry per entry!)
-
+- Turning Angle (Relative v. Absolute)
 ```{r}
-sfg <- st_multipoint(as.matrix(buffalo[c("location-long", "location-lat")]))
-sfc <- st_geometry(sfg)
-st_crs(sfc) <- p4s
+
 ```
 
+These both are calculated from producing the ltraj. On top of these we can do some 
+quick calculations to pull out
+- velocity
 ```{r}
-library(sp)
-buffalo_sp <- SpatialPointsDataFrame(coords = buffalo[c("location-long", "location-lat")], 
-                                     data = buffalo, 
-                                     proj4string = sp::CRS(p4s))
 
-sf <- as(buffalo_sp, "sf")
+```
+- Net Squared Displacement
+```{r}
 
-#sf2 <- st_as_sf(buffalo_sp) #identical to above
-# sfc <- st_as_sfc(buffalo_sp) # identical to st_geometry(sf)
 ```
 
-Consider Albatross data, study id: 2911040
+
+# Secondary 
+## Tortuosity: the level of convolution of a movement path compared to a straight line
+### Straightness Index - (straight-line distance between points / cumulative path lengths between points),
+straightness index computed as the ratio between the distance from the starting point to the goal and the path length travelled to reach the goal. 
+```{r}
+
+```
+
+### Sinuosity index (Benhamou 2004)
+(2) the tortuosity of a random search path, ranging between straight line movement and Brownian motion, can be reliably estimated by a sinuosity index which combines the mean cosine of changes of direction with the mean step length;
+```{r}
+
+```
+
+## Persistence, Persistence Velocity
+measuring persistence of a time series is an important tool... but in movement you have to decide what kind of persistence you hope to measure:
+persistence of velocity?  package bcpa
+```{r}
+
+```
+
+persistence of direction? 
+```{r}
+
+```
+
+<< check to make sure Eric has not already spoken to this >> 
 
 
-Look at env var layers from <https://www.movebank.org/node/7471>
-
-http://proj4.org/faq.html

@@ -1,227 +1,356 @@
 ---
 title: "Introduction to working with Spatial Data in R"
 author: "Dana Seidel"
-date: "January 4, 2017"
+date: "January 4, 2018"
 output: github_document
+always_allow_html: yes
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-- Introduce movement data
-- Vectors/rasters
-- Spatial data in R (sf, sp libraries)
-- Projections, transformations
-- visualizing spatial data (mapview, ggplot +geom_sf)
+# Introduction
+Today we are going to get our first taste of working with movement data in R, but we will begin by
+introducing you to spatial data analysis in R more generally. In this section we will
+review some of the R packages available for handling spatial data, discuss the
+format of different spatial data types, and explore how we can manipulate and visualize these
+in R. 
 
-#Introduction
-
-Today we are going to dive into working with movement data in R. We will start by
-introducing you to some of the packages available for spatial data, discussing the
-format of different spatial 
-
-This is an introduction to Spatial Analysis using the `sf` library in R.
-Much of this code was developed by Jamie Afflerbach  for her own introduction 
+Much of the content and structure of this tutorial was inspired by Jamie Afflerbach's own introduction 
 to the `sf` library and spatial analysis in R (see her 
 [spatial-analysis-R repo](https://github.com/jafflerbach/spatial-analysis-R)). I 
-have adapted it here to work specifically with movement data. 
+have adapted it here for the specific purposes of our workshop.
 
-# Packages
-# Vector Data - Simple Features
-# Dplyr functions with sf objects
-# Raster data 
-# itersections, extractions
-# spatial joins
-# Projections and transformations
-# Visualization
+## Packages
 
+Primarily we will be introducing the  **sf** ("simple features") package for working 
+with simple spatial data. 
 
-# Packages
+The **sf** library is an R implementation of:  
+ - a new spatial data class system in R  
+ - functions for reading and writing spatial data  
+ - tools for spatial operations on vectors  
+ 
+Ultimately this seeks to replace the older **sp**, **rgdal**, **rgeos** packages 
+which formed the original toolset for working with spatial data in R. The **sf** library
+replaces the S4 class structure used in **sp** with simple feature access - the current standard
+across industry for organizing spatial data -- extending R's data.frame structure directly
+to accept spatial geometry attributes and making it easier to manipulate spatial datasets
+using tools like dplyr and the tidyverse. However, as this package is new and under 
+developement there are times were we will switch back to the S4 class structure to play
+nice with our movement packages. 
+
+More information regarding this shift [here](https://www.r-consortium.org/blog/2017/01/03/simple-features-now-on-cran)
+
+Spatial data comes in two forms:
+
+1. Vector data
+2. Raster data
+
+With important differences across classes. 
+
+## Vector Data
+Vector models are a representation of the world using points, lines, and
+polygons. This class is useful for storing data that has discrete boundaries,
+such as country borders, land parcels, and streets.
+
+Often, vector data is stored as "shapefiles" (.shp)
+
+![GPS points from an albatross trajectory are an example of vector data](../../images/albatross.png)
+
+## Raster Data
+Raster models are a representation of the world as a surface divided 
+into a regular grid of cells.
+
+![Rasters divide the world into a regular grid](../../images/raster_concept.png)
+
+These are useful for storing data that 
+varies continuously, as in an aerial photograph, a satellite image, 
+a surface of chemical concentrations, or an elevation surface
+
+![Rasters are better used for continuous data like temperature, elevation, or landcover type](../../images/examples.png)
+
+Often, Rasters are stored as "GeoTIFFs" (.tif)
+
+The **sf** library is used to store vector data but when working with raster data
+we will use operations from packages **raster** and **velox**. 
+
+Later when we work with movement data we may find a need for other spatial packages in R
+such as: **spatial**, the **adehabitat** packages, **maptools**, **mapview**, 
+and the developers version of **ggplot2**. 
+
+# Reading, Visualizaing, and Manipulating Spatial Data in R
+
+To begin today, we are going to demonstrate how to **sf** and **tidyverse** libraries
+together to manipulate spatial *vector* data. 
+
+## Step 1. Set up our environment and read in the data
 
 ```{r}
-# developer's version
-devtools::install_github("tidyverse/ggplot2") 
-library(ggplot2)
-
 #install.packages(c("sf", "mapview"))
 library(tidyverse)
 library(sf)
 library(mapview)
 ```
 
-
-
-The **sf** ("simple features") package is an R implementation of:  
- - a new spatial data class system in R  
- - functions for reading and writing spatial data  
- - tools for spatial operations on vectors  
-
-# Vector Data
-A representation of the world using points, lines, and
-polygons. Vector models are useful for storing data that has discrete boundaries,
-such as country borders, land parcels, and streets.
-
-Often, stored as "shapefiles", .shp
-
-![]("./../../images/albatross.png")
-
-
-
-
-
-
-# Read in the data
 **sf** objects usually have two classes - `sf` and `data.frame`.
 Two main differences comparing to a regular `data.frame` object are 
 spatial metadata (`geometry type`, `dimension`, `bbox`, `epsg (SRID)`, 
 `proj4string`) and additional column - typically named `geom` or `geometry`.
 
+Today we are going to play with a shapfiles of Hong Kong's administrative boundaries
+downloaded from the [global administrative areas database](http://www.gadm.org/download)
+and provided for you in the `shapefiles` directory. 
+
+Now let's use the `st_read` function to read both files in separately. Note that 
+within the `sf` library most commands begin with the "st" prefix. 
 
 ```{r}
-west_shp_sf <- st_read(dsn = "shapefiles", layer="wc_regions")  #read in
+HK_boundary <- st_read("data_files/HK_boundary.shp")
 
-west_shp_sf %>% ggplot() + geom_sf()  # visualize
-
-class(west_shp_sf)
+HK_districts <- st_read("data_files/HK_districts.shp")
 ```
 
-# Attributes
-**sf** objects can be used as a regular `data.frame` object in many operations
+### Attributes of `sf` objects
+
+Just for kicks, prove to yourself that a sf object is just a fancy data.frame:
+check out the class structure of "sf" objects
+```{r}
+class(HK_boundary)
+```
+
+Because of their dual class structure: **sf** objects can be used as a regular 
+`data.frame` object in many operations. For instance, we can call simple data.frame
+operations like `nrow` or `names` on these objects with ease
 
 ```{r}
-nrow(west_shp_sf)
-ncol(west_shp_sf)
+nrow(HK_districts)
+ncol(HK_districts)
+names(HK_districts)
 ```
 
+If we are ever curious about just the dataframe or just the geometry separately, 
+we can use `st_geometry` commands.  By setting the geometry to 'NULL' using `st_set_geometry`, a `sf`
+object returns to a simple data.frame. Calling the `st_geometry` from an sf object 
+would extract just the spatial attributes turning this into a "simple feature collection" or "sfc". 
+To turn an `sfc` object back into an `sf` object use `st_sf()`.
 
-## sf & dplyr
+```{r}
+HK_boundary %>% class # complete sf object
 
-It also easy to use the **dplyr** package on `sf` objects:
+HK_boundary %>% st_set_geometry(NULL) %>% class  # force to data.frame
+
+HK_boundary %>% st_geometry() %>% class  # extract only the spatial info, force to "sfc"
+```
+
+## Step 2: Visualize
+
+Let's take a look at our shapefiles, make sure they look like we expect. 
+
+### sf objects and BaseR
+```{r}
+# look what happens when we use generic plot on the whole dataframe
+HK_districts %>% plot
+
+# pull just the geometry
+HK_boundary %>% st_geometry() %>% plot
+HK_districts %>% st_geometry() %>% plot
+
+# or pull just one column
+plot(HK_districts["NAME_1"])
+```
+
+### With ggplot
+
+`ggplot2` now has integrated functionality to plot sf objects using `geom_sf()`.
+If the following code isn't working, check to make sure you are using the developer's
+version, `devtools::install_github("tidyverse/ggplot2")`.
+
+```{r}
+#simplest plot
+ggplot(HK_districts) + geom_sf()
+```
+
+This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn_id.
+
+```{r}
+ggplot(HK_districts) + geom_sf(aes(fill = NAME_1))
+```
+
+ggplot gives us useful defaults like Latitude and Longitude labels and cleaner legends but
+there are even fancier things we can do with maps... we'll introduce you to one in
+the `mapview` library below. 
+
+### Getting fancy with Mapview
+
+`mapview` is a wrapper for the `leaflet` package for R. Leaflet is a visualization
+engine written in javascript that is widely used to make and embed interactive plots. 
+
+```{r, screenshoot.force=TRUE}
+map <- mapview(HK_districts)
+st_sample(HK_districts, 25) -> points
+
+#icon: http://leafletjs.com/examples/custom-icons/
+#fishIcon <- makeIcon("images/lumpsucker.jpg", 18,18)
+#mapview(HK_regions)@map %>% addTiles %>%  addMarkers(data = points, icon=fishIcon)
+
+mapview(points, map, cex=3, color="red")
+
+```
+
+## Step 3: Mainuplate!
+
+An important advantage of simple features in R is that their structure makes it 
+easy to use the **dplyr** package on `sf` objects:
+
+For instance, taking standard examples introduced yesterday:
 
 `select()`
 
 ```{r select}
 
-west_shp_sf %>%
-  select.sf(rgn, rgn_key, geometry)
+HK_boundary %>%
+  select(ID_0, ISO, NAME_LO, SOVEREI, FIPS, ISON, POP2000, SQKM) -> HK_trim
 
+HK_trim
+```
+
+`mutate()` & `pull()`
+
+```{r mutate}
+HK_trim %>%
+  mutate(POP_per_SQKM = POP2000/SQKM) %>% pull(POP_per_SQKM)
 ```
 
 `filter()`
 
 ```{r filter}
 
-west_shp_sf %>%
-  filter(rgn == "Oregon")
+HK_districts %>%
+  filter(NAME_1 %in% c("Eastern", "North", "Islands"))
 
+HK_districts %>%
+  filter(NAME_1 %in% c("Eastern", "North", "Islands")) %>% 
+  ggplot(.) + geom_sf(aes(fill = NAME_1))
 ```
 
-`mutate()`
 
-```{r mutate}
-
-sf_out <- west_shp_sf %>%
-  mutate(rgn_id = c(1:5),
-         area_km2 = area_m2/1000000) #converting square meters to square kilometers
-
-sf_out
-```
-
-# Union
-
+## Spatial operations
+### Union
 You can merge all polygons into one using `st_union()`.
 ```{r st_union}
 
-full_rgn  <- st_union(sf_out)
+full_rgn  <- st_union(HK_districts)
 
 plot(full_rgn)
-
-#try plotting with ggplot2
-
- # ggplot(full_rgn) +
- #   geom_sf()
 ```
 
-This doesn't work because now the object is a single geometry object of class `sfc` which is not a data.frame that ggplot requires for plotting. To turn an `sfc` object back into an `sf` object use `st_sf()`.
+### Joins
 
-```{r st_sf}
+Perhaps we had some points -- locations of animal observations maybe -- and we 
+wanted to join them to data in a different layer -- the sf library and dplyr make
+this readily doable.
 
-full_rgn <- st_union(sf_out) %>%
-            st_sf(geometry = .)
+Below we join the randomly sampled points from above to the HK_districts layer, to pull the relevant district information for each point. 
 
- ggplot(full_rgn) +
-   geom_sf()
+```{r}
+st_sf(points) %>% st_join(., HK_districts)
+
+# Similar functions are available in other libraries:
+# adehabitatMA::join()
+# rgeos::over
 ```
 
+From there it is simple to use `group_by` and `tally` (a wrapper for the more general `summarise` function) to count how many points we sampled in each district:
 
-## Raster Data
-A representation of the world as a surface divided 
-into a regular grid of cells. Raster models are useful for storing data that 
-varies continuously, as in an aerial photograph, a satellite image, 
-a surface of chemical concentrations, or an elevation surface.
+```{r}
+st_sf(points) %>% 
+  st_join(., HK_districts) %>%
+  group_by(NAME_1) %>% 
+  tally()
 
-Often, stored as "GeoTIFFs", .tif
+# all while retaining the spatial geometry associated with each point. 
+```
 
+### Projections & transformations with vectors and rasters
 
-# Projections
+Above we have sometimes encountered warnings like this one:
+> although coordinates are longitude/latitude, st_intersects assumes that they are planar
 
-![]("./../../images/crs.png")
+This has to do with our coordinate system. Geographic coordinate systems give 
+coordinates which are spherical (i.e. measured from the earth's center) or 
+planimetric (in which the earth's coordinates are projected onto a two-dimensional planar surface). 
+Most spatial operations in the sf library assume coordinates are projected into a
+planar surface which typically lend themselves to more interpretable measurements e.g meters or kilometers. 
+
+Above,  all our vector data have been in the
+WGS84 spherical coordinate reference system, which uses longitude and latitude with units in degrees.
+An example of this projection can be seen in the lower right depication of the US
+in the image below. 
+
+![](../../images/crs.png)
+
+It is cruial when doing spatial analyses to know and match the coordinate systems 
+across all of your datasets and ensure everything is properly projected, or your 
+results may be incorrect or your analysis may fail. This is true whether you are
+working with raster or vector data. 
 
 
 ```{r}
 library(raster)
-npp <- raster( "rasters/annual_npp.tif")
-plot(npp)
-crs(npp)
 
-plot(projectRaster(npp, crs = "+proj=lcc +lat_1=48 +lat_2=33 +lon_0=-100 +ellps=WGS84"))
+# https://landcover.usgs.gov/global_climatology.php
+# download.file("https://landcover.usgs.gov/documents/GlobalLandCover_tif.zip", "data_files/Landcover.zip") 
+# unzip("data_files/Landcover.zip", "data_files/")
+land_cover <- raster("data_files/LCType.tif")
 
-
+plot(land_cover)
+crs(land_cover)
 ```
 
-# Mapview
+Perhaps we want to work with both our HK_districts and the landcover dataset 
+but in a planar coordinate system
+
 
 ```{r}
-#mapview(west_shp_sf)
-
-st_sample(west_shp_sf, 25) -> fish
-
-#icon: http://leafletjs.com/examples/custom-icons/
-fishIcon <- makeIcon("images/lumpsucker.jpg", 18,18)
-
-leaflet(fish) %>% addTiles %>% addMarkers(icon=fishIcon)
-
-#mapview(west_shp_sf)@map %>% addTiles %>%  addMarkers(data = fish, icon=fishIcon)
-
-#%>% addFeatures(data = fish, icon = fishIcon)
-
+HK_landcover <- crop(land_cover, extent(as(HK_boundary, "Spatial")))
 ```
 
-# Visualize
-
+### intersections, extractions
 ```{r}
-plot(west_shp_sf)
-plot(st_geometry(west_shp_sf))
-plot(west_shp_sf[1])
-```
+library(velox)
+vx <- velox(HK_landcover)
 
+landcover <- c("Water",
+ "Evergreen Needle leaf Forest",
+  "Evergreen Broadleaf Forest",
+ "Deciduous Needle leaf Forest",
+ "Deciduous Broadleaf Forest",	
+ "Mixed Forests",
+ "Closed Shrublands", 
+ "Open Shrublands",
+ "Woody Savannas",
+ "Savannas", 
+ "Grasslands", 
+ "Permanent Wetland", 
+ "Croplands", 
+ "Urban and Built-Up",
+ "Cropland/Natural Vegetation Mosaic", # #15 snow and ice not encountered
+ "Barren or Sparsely Vegetated")
 
-# Visualize with ggplot
+landcover_by_district <- vx$extract(HK_districts) %>% 
+  map(., plyr::count) %>% 
+  reduce(., function(dtf1,dtf2) full_join(dtf1,dtf2, by="x")) %>% 
+  arrange(x) 
 
-`ggplot2` now has integrated functionality to plot sf objects using `geom_sf()`.
+landcover_by_district[is.na(landcover_by_district)] <- 0
+names(landcover_by_district) <- c("Class_No", seq(1,18,1))
+landcover_by_district$Class <- landcover
 
-```{r}
+district_totals <- map_dbl(landcover_by_district[,2:19], sum)
 
-#simplest plot
-ggplot(west_shp_sf) +
-  geom_sf()
-
-```
-
-This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn_id.
-
-```{r}
-ggplot(west_shp_sf) +
-  geom_sf(aes(fill = rgn))
+for (i in 1:18){
+  landcover_by_district[,i+1] <- round((landcover_by_district[,i+1]/district_totals[i])*100,2)
+}
 ```
