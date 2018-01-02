@@ -70,14 +70,14 @@ Step 1. Set up our environment and read in the data
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
     ## ✔ tibble  1.3.4          ✔ dplyr   0.7.4     
     ## ✔ tidyr   0.7.2          ✔ stringr 1.2.0     
     ## ✔ readr   1.1.1          ✔ forcats 0.2.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -351,35 +351,46 @@ st_sf(points) %>% st_join(., HK_districts)
 
     ## although coordinates are longitude/latitude, st_intersects assumes that they are planar
 
-    ## Simple feature collection with 24 features and 14 fields
+    ## Simple feature collection with 35 features and 14 fields
     ## geometry type:  POINT
     ## dimension:      XY
-    ## bbox:           xmin: 113.8597 ymin: 22.22392 xmax: 114.3471 ymax: 22.54966
+    ## bbox:           xmin: 113.8563 ymin: 22.22863 xmax: 114.3869 ymax: 22.53628
     ## epsg (SRID):    4326
     ## proj4string:    +proj=longlat +datum=WGS84 +no_defs
     ## First 10 features:
-    ##    ID_0 ISO    NAME_0 ID_1    NAME_1 HASC_1 CCN_1 CCA_1   TYPE_1  ENGTYPE
-    ## 1   102 HKG Hong Kong    3   Islands  HK.IS    NA  <NA> District District
-    ## 2   102 HKG Hong Kong    9   Sha Tin  HK.ST    NA  <NA> District District
-    ## 3   102 HKG Hong Kong   14  Tuen Mun  HK.TM    NA  <NA> District District
-    ## 4   102 HKG Hong Kong   11  Southern  HK.SO    NA  <NA> District District
-    ## 5   102 HKG Hong Kong    6 Kwun Tong  HK.KU    NA  <NA> District District
-    ## 6   102 HKG Hong Kong   13 Tsuen Wan  HK.TW    NA  <NA> District District
-    ## 7   102 HKG Hong Kong   12    Tai Po  HK.TP    NA  <NA> District District
-    ## 8   102 HKG Hong Kong    3   Islands  HK.IS    NA  <NA> District District
-    ## 9   102 HKG Hong Kong   12    Tai Po  HK.TP    NA  <NA> District District
-    ## 10  102 HKG Hong Kong    8  Sai Kung  HK.SK    NA  <NA> District District
-    ##    NL_NAME VARNAME   Shp_Lng     Shap_Ar                       geometry
-    ## 1     <NA>    <NA> 2.7542074 0.015733596 POINT (113.859657056394 22....
-    ## 2     <NA>    <NA> 0.5821248 0.005895610 POINT (114.185894329297 22....
-    ## 3     <NA>    <NA> 0.7959588 0.007939630 POINT (113.923209938586 22....
-    ## 4     <NA>    <NA> 0.8811445 0.003718947 POINT (114.168049511398 22....
-    ## 5     <NA>    <NA> 0.1927009 0.001029288 POINT (114.210146803441 22....
-    ## 6     <NA>    <NA> 0.7908177 0.005404587 POINT (114.041411801872 22....
-    ## 7     <NA>    <NA> 1.9998019 0.013501973 POINT (114.343913556551 22....
-    ## 8     <NA>    <NA> 2.7542074 0.015733596 POINT (113.951472191416 22....
-    ## 9     <NA>    <NA> 1.9998019 0.013501973 POINT (114.347111770318 22....
-    ## 10    <NA>    <NA> 2.5614897 0.012582268 POINT (114.307721735027 22....
+    ##    ID_0 ISO    NAME_0 ID_1       NAME_1 HASC_1 CCN_1 CCA_1   TYPE_1
+    ## 1   102 HKG Hong Kong   14     Tuen Mun  HK.TM    NA  <NA> District
+    ## 2   102 HKG Hong Kong    8     Sai Kung  HK.SK    NA  <NA> District
+    ## 3   102 HKG Hong Kong   18    Yuen Long  HK.YL    NA  <NA> District
+    ## 4   102 HKG Hong Kong    3      Islands  HK.IS    NA  <NA> District
+    ## 5   102 HKG Hong Kong   14     Tuen Mun  HK.TM    NA  <NA> District
+    ## 6   102 HKG Hong Kong    4 Kowloon City  HK.KC    NA  <NA> District
+    ## 7   102 HKG Hong Kong    3      Islands  HK.IS    NA  <NA> District
+    ## 8   102 HKG Hong Kong    9      Sha Tin  HK.ST    NA  <NA> District
+    ## 9   102 HKG Hong Kong    3      Islands  HK.IS    NA  <NA> District
+    ## 10  102 HKG Hong Kong    8     Sai Kung  HK.SK    NA  <NA> District
+    ##     ENGTYPE NL_NAME VARNAME   Shp_Lng      Shap_Ar
+    ## 1  District    <NA>    <NA> 0.7959588 0.0079396304
+    ## 2  District    <NA>    <NA> 2.5614897 0.0125822680
+    ## 3  District    <NA>    <NA> 0.8802538 0.0121403618
+    ## 4  District    <NA>    <NA> 2.7542074 0.0157335956
+    ## 5  District    <NA>    <NA> 0.7959588 0.0079396304
+    ## 6  District    <NA>    <NA> 0.2588975 0.0009319862
+    ## 7  District    <NA>    <NA> 2.7542074 0.0157335956
+    ## 8  District    <NA>    <NA> 0.5821248 0.0058956100
+    ## 9  District    <NA>    <NA> 2.7542074 0.0157335956
+    ## 10 District    <NA>    <NA> 2.5614897 0.0125822680
+    ##                          geometry
+    ## 1  POINT (113.925868417528 22....
+    ## 2  POINT (114.349924911183 22....
+    ## 3  POINT (114.077785925781 22....
+    ## 4  POINT (113.930414136978 22....
+    ## 5  POINT (113.952787107826 22....
+    ## 6  POINT (114.175931830609 22....
+    ## 7  POINT (114.112771992756 22....
+    ## 8  POINT (114.243565141369 22....
+    ## 9  POINT (113.856258161929 22....
+    ## 10 POINT (114.386890085383 22....
 
 ``` r
 # Similar functions are available in other libraries:
@@ -401,23 +412,23 @@ st_sf(points) %>%
     ## Simple feature collection with 11 features and 2 fields
     ## geometry type:  GEOMETRY
     ## dimension:      XY
-    ## bbox:           xmin: 113.8597 ymin: 22.22392 xmax: 114.3471 ymax: 22.54966
+    ## bbox:           xmin: 113.8563 ymin: 22.22863 xmax: 114.3869 ymax: 22.53628
     ## epsg (SRID):    4326
     ## proj4string:    +proj=longlat +datum=WGS84 +no_defs
     ## # A tibble: 11 x 3
-    ##        NAME_1     n          geometry
-    ##        <fctr> <int>  <simple_feature>
-    ##  1    Islands     4 <MULTIPOINT (...>
-    ##  2 Kwai Tsing     1 <POINT (114.1...>
-    ##  3  Kwun Tong     1 <POINT (114.2...>
-    ##  4      North     3 <MULTIPOINT (...>
-    ##  5   Sai Kung     2 <MULTIPOINT (...>
-    ##  6    Sha Tin     2 <MULTIPOINT (...>
-    ##  7   Southern     2 <MULTIPOINT (...>
-    ##  8     Tai Po     2 <MULTIPOINT (...>
-    ##  9  Tsuen Wan     2 <MULTIPOINT (...>
-    ## 10   Tuen Mun     4 <MULTIPOINT (...>
-    ## 11  Yuen Long     1 <POINT (114.0...>
+    ##          NAME_1     n          geometry
+    ##          <fctr> <int>  <simple_feature>
+    ##  1      Islands     5 <MULTIPOINT (...>
+    ##  2 Kowloon City     1 <POINT (114.1...>
+    ##  3   Kwai Tsing     2 <MULTIPOINT (...>
+    ##  4        North     4 <MULTIPOINT (...>
+    ##  5     Sai Kung     5 <MULTIPOINT (...>
+    ##  6      Sha Tin     2 <MULTIPOINT (...>
+    ##  7 Sham Shui Po     1 <POINT (114.1...>
+    ##  8       Tai Po     5 <MULTIPOINT (...>
+    ##  9    Tsuen Wan     1 <POINT (114.1...>
+    ## 10     Tuen Mun     4 <MULTIPOINT (...>
+    ## 11    Yuen Long     5 <MULTIPOINT (...>
 
 ``` r
 # all while retaining the spatial geometry associated with each point. 
@@ -433,7 +444,7 @@ Above, all our vector data have been in the WGS84 spherical coordinate reference
 
 ![](../../images/crs.png)
 
-It is cruial when doing spatial analyses to know and match the coordinate systems across all of your datasets and ensure everything is properly projected, or your results may be incorrect or your analysis may fail. This is true whether you are working with raster or vector data.
+It is crucial when doing spatial analyses to know and match the coordinate systems across all of your datasets and ensure everything is properly projected, or your results may be incorrect or your analysis may fail. This is true whether you are working with raster or vector data.
 
 ``` r
 library(raster)
@@ -474,21 +485,50 @@ crs(land_cover)
     ## CRS arguments:
     ##  +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
 
-Perhaps we want to work with both our HK\_districts and the landcover dataset but in a planar coordinate system
+Perhaps we want to work with both our HK\_districts and the landcover dataset but in a planar coordinate system. To do this with an `sf` object we use `st_transform`, with a raster object, `projectRaster`.
+
+Let's crop and transform these data into the [World Azimuthal Equidistant](https://epsg.io/54032) projection to compare.
 
 ``` r
+# to save time on the projection, let's trim the extent before projecting. 
+# We can do this because they are already in the same geographic crs. 
+# however, the extent call doesn't recognize sf objects yet so let's temporarily switch it back to `sp` format
 HK_landcover <- crop(land_cover, extent(as(HK_boundary, "Spatial")))
+
+HK_lc_proj <- projectRaster(HK_landcover, method= 'ngb', NAflag = 0,
+                                crs = "+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs")
 ```
 
-### intersections, extractions
+By plotting these side by side, you can really see how different projections can be!
+
+``` r
+plot(HK_landcover)
+```
+
+![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-14-1.png)
+
+``` r
+plot(HK_lc_proj)
+```
+
+![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-14-2.png)
+
+### Intersections & Extractions
+
+Commonly in movement ecology, we need to extract values from rasters across our vector data be it points where an animal walked or polygons like their home range or breeding sites for instance.
+
+There are a number of functions to do this sort of spatial intersect and extraction in the rgeos and raster libraries e.g `gIntersection` and `extract` but they can be very inefficient in R - especially for large rasters. New libraries like `fasterize` and `velox` have been built to make these functions significantly faster. Below I will introduce `velox` but you can find more information about both by exploring their github pages.
+
+Say we want to know the percentage of each landcover class each district is made up of. We can convert to a velox object to quickly and easily extract this information and use dplyr and purrr verbs to make a clean table of percentages by landcover class.
 
 ``` r
 library(velox)
-vx <- velox(HK_landcover)
+vx <- velox(HK_landcover) # makes a velox object from our raster
 
+# lets give our classes names
 landcover <- c("Water",
  "Evergreen Needle leaf Forest",
-  "Evergreen Broadleaf Forest",
+ "Evergreen Broadleaf Forest",
  "Deciduous Needle leaf Forest",
  "Deciduous Broadleaf Forest",  
  "Mixed Forests",
@@ -503,18 +543,140 @@ landcover <- c("Water",
  "Cropland/Natural Vegetation Mosaic", # #15 snow and ice not encountered
  "Barren or Sparsely Vegetated")
 
-landcover_by_district <- vx$extract(HK_districts) %>% 
-  map(., plyr::count) %>% 
-  reduce(., function(dtf1,dtf2) full_join(dtf1,dtf2, by="x")) %>% 
-  arrange(x) 
+landcover_by_district <- vx$extract(HK_districts) %>% #extracts the raster cells in each district
+  map(., plyr::count) %>%  #counts each category
+  reduce(., function(dtf1,dtf2) full_join(dtf1,dtf2, by="x")) %>%  # reduces to a dataframe
+  arrange(x) # orders
 
-landcover_by_district[is.na(landcover_by_district)] <- 0
-names(landcover_by_district) <- c("Class_No", seq(1,18,1))
-landcover_by_district$Class <- landcover
+head(landcover_by_district)
+```
 
-district_totals <- map_dbl(landcover_by_district[,2:19], sum)
+    ##   x freq.x freq.y freq.x.x freq.y.y freq.x.x.x freq.y.y.y freq.x.x.x.x
+    ## 1 0     15      4      132        2         16         NA           10
+    ## 2 1     NA     NA       NA       NA         NA         NA           NA
+    ## 3 2      8     31      182       NA         NA         NA          203
+    ## 4 3      1     NA       10       NA         NA         NA           NA
+    ## 5 4     NA     NA        1       NA         NA         NA           NA
+    ## 6 5      7      5      134       NA          5         NA           25
+    ##   freq.y.y.y.y freq.x.x.x.x.x freq.y.y.y.y.y freq.x.x.x.x.x.x
+    ## 1           36             NA              5               28
+    ## 2            1             NA             NA               NA
+    ## 3          216             99             NA               73
+    ## 4            3             NA             NA                6
+    ## 5            1             NA             NA               NA
+    ## 6           36             24             NA                7
+    ##   freq.y.y.y.y.y.y freq.x.x.x.x.x.x.x freq.y.y.y.y.y.y.y
+    ## 1               47                 18                 52
+    ## 2                1                 NA                 NA
+    ## 3              334                 95                 12
+    ## 4               NA                  1                  4
+    ## 5               NA                 NA                 NA
+    ## 6               58                 23                 15
+    ##   freq.x.x.x.x.x.x.x.x freq.y.y.y.y.y.y.y.y freq.x.x.x.x.x.x.x.x.x
+    ## 1                    4                   NA                     17
+    ## 2                   NA                   NA                     NA
+    ## 3                    7                    5                     NA
+    ## 4                   NA                   NA                     NA
+    ## 5                   NA                   NA                     NA
+    ## 6                    1                   NA                     NA
+    ##   freq.y.y.y.y.y.y.y.y.y
+    ## 1                     26
+    ## 2                     NA
+    ## 3                     74
+    ## 4                     NA
+    ## 5                     NA
+    ## 6                     16
 
-for (i in 1:18){
+``` r
+landcover_by_district[is.na(landcover_by_district)] <- 0 # make NAs 0
+names(landcover_by_district) <- c("Class_No", seq(1,18,1)) # improve column names
+landcover_by_district$Class <- landcover # add a column including each landover class name
+
+head(landcover_by_district)
+```
+
+    ##   Class_No  1  2   3 4  5 6   7   8  9 10 11  12 13 14 15 16 17 18
+    ## 1        0 15  4 132 2 16 0  10  36  0  5 28  47 18 52  4  0 17 26
+    ## 2        1  0  0   0 0  0 0   0   1  0  0  0   1  0  0  0  0  0  0
+    ## 3        2  8 31 182 0  0 0 203 216 99  0 73 334 95 12  7  5  0 74
+    ## 4        3  1  0  10 0  0 0   0   3  0  0  6   0  1  4  0  0  0  0
+    ## 5        4  0  0   1 0  0 0   0   1  0  0  0   0  0  0  0  0  0  0
+    ## 6        5  7  5 134 0  5 0  25  36 24  0  7  58 23 15  1  0  0 16
+    ##                          Class
+    ## 1                        Water
+    ## 2 Evergreen Needle leaf Forest
+    ## 3   Evergreen Broadleaf Forest
+    ## 4 Deciduous Needle leaf Forest
+    ## 5   Deciduous Broadleaf Forest
+    ## 6                Mixed Forests
+
+``` r
+district_totals <- map_dbl(landcover_by_district[,2:19], sum) #sum for each district, i.e. column
+district_totals
+```
+
+    ##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18 
+    ##  65  93 894  54 120  59 692 729 341  46 212 771 321 451  52  46  42 707
+
+``` r
+for (i in 1:18){ # convert to percentages
   landcover_by_district[,i+1] <- round((landcover_by_district[,i+1]/district_totals[i])*100,2)
 }
+
+# transpose things a little
+landcover_by_district %>%
+  dplyr::select(-Class_No) %>% 
+  gather(key = District_No, value = value, 1:18) %>% 
+  spread(key = names(.)[1], value = 'value') %>% 
+  arrange(as.numeric(District_No))  -> district_LC
+
+head(district_LC)
 ```
+
+    ##   District_No Barren or Sparsely Vegetated Closed Shrublands
+    ## 1           1                         3.08              0.00
+    ## 2           2                         2.15              1.08
+    ## 3           3                         0.34              0.00
+    ## 4           4                         1.85              0.00
+    ## 5           5                         2.50              0.83
+    ## 6           6                         0.00              0.00
+    ##   Cropland/Natural Vegetation Mosaic Croplands Deciduous Broadleaf Forest
+    ## 1                               0.00      1.54                       0.00
+    ## 2                               0.00      7.53                       0.00
+    ## 3                               2.91      3.47                       0.11
+    ## 4                               0.00      5.56                       0.00
+    ## 5                               0.00     10.00                       0.00
+    ## 6                               0.00      1.69                       0.00
+    ##   Deciduous Needle leaf Forest Evergreen Broadleaf Forest
+    ## 1                         1.54                      12.31
+    ## 2                         0.00                      33.33
+    ## 3                         1.12                      20.36
+    ## 4                         0.00                       0.00
+    ## 5                         0.00                       0.00
+    ## 6                         0.00                       0.00
+    ##   Evergreen Needle leaf Forest Grasslands Mixed Forests Open Shrublands
+    ## 1                            0       4.62         10.77            0.00
+    ## 2                            0       0.00          5.38            0.00
+    ## 3                            0       0.34         14.99            1.34
+    ## 4                            0       1.85          0.00            0.00
+    ## 5                            0       2.50          4.17            2.50
+    ## 6                            0       6.78          0.00            1.69
+    ##   Permanent Wetland Savannas Urban and Built-Up Water Woody Savannas
+    ## 1             18.46     0.00              20.00 23.08           4.62
+    ## 2             21.51     0.00              20.43  4.30           4.30
+    ## 3             27.18     0.78               4.14 14.77           8.17
+    ## 4              0.00     0.00              87.04  3.70           0.00
+    ## 5              7.50     0.00              55.83 13.33           0.83
+    ## 6              3.39     0.00              86.44  0.00           0.00
+
+In this format it's easy to pull out districts by their landcover characteristics.
+
+For instance, perhaps we want to know which districts are more than 80% Urban:
+
+``` r
+district_LC %>% filter(`Urban and Built-Up` > 80) %>% pull(District_No)
+```
+
+    ## [1] "4"  "6"  "16"
+
+We will continue to see how useful extraction in this afternoon's activity and we get to RSFs tomorrow.
