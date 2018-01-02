@@ -1,13 +1,13 @@
 ---
 title: "Introduction to working with Spatial Data in R"
-author: "Dana Seidel"
+author: "Dana Seidel & Eric Dougherty"
 date: "January 4, 2018"
 output: github_document
 always_allow_html: yes
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
 ```
 
 # Introduction
@@ -291,7 +291,7 @@ in the image below.
 
 ![](../../images/crs.png)
 
-It is cruial when doing spatial analyses to know and match the coordinate systems 
+It is crucial when doing spatial analyses to know and match the coordinate systems 
 across all of your datasets and ensure everything is properly projected, or your 
 results may be incorrect or your analysis may fail. This is true whether you are
 working with raster or vector data. 
@@ -310,21 +310,54 @@ crs(land_cover)
 ```
 
 Perhaps we want to work with both our HK_districts and the landcover dataset 
-but in a planar coordinate system
+but in a planar coordinate system. To do this with an `sf` object we use 
+`st_transform`, with a raster object, `projectRaster`. 
 
+Let's crop and transform these data into the [World Azimuthal Equidistant](https://epsg.io/54032) 
+projection to compare. 
 
 ```{r}
+# to save time on the projection, let's trim the extent before projecting. 
+# We can do this because they are already in the same geographic crs. 
+# however, the extent call doesn't recognize sf objects yet so let's temporarily switch it back to `sp` format
 HK_landcover <- crop(land_cover, extent(as(HK_boundary, "Spatial")))
+
+HK_lc_proj <- projectRaster(HK_landcover, method= 'ngb', NAflag = 0,
+                                crs = "+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs")
+
 ```
 
-### intersections, extractions
+By plotting these side by side, you can really see how different projections can be!
+ 
+```{r}
+plot(HK_landcover)
+plot(HK_lc_proj)
+```
+
+### Intersections & Extractions
+
+Commonly in movement ecology, we need to extract values from rasters across our vector data
+be it points where an animal walked or polygons like their home range or breeding sites for instance. 
+
+There are a number of functions to do this sort of spatial intersect and extraction in the rgeos and 
+raster libraries e.g `gIntersection` and `extract`
+but they can be very inefficient in R - especially for large rasters. New libraries like
+`fasterize` and `velox` have been built to make these functions significantly faster. 
+Below I will introduce `velox` but you can find more information about both by
+exploring their github pages. 
+
+Say we want to know the percentage of each landcover class each district is made up of. 
+We can convert to a velox object to quickly and easily extract this information and use
+dplyr and purrr verbs to make a clean table of percentages by landcover class. 
+
 ```{r}
 library(velox)
-vx <- velox(HK_landcover)
+vx <- velox(HK_landcover) # makes a velox object from our raster
 
+# lets give our classes names
 landcover <- c("Water",
  "Evergreen Needle leaf Forest",
-  "Evergreen Broadleaf Forest",
+ "Evergreen Broadleaf Forest",
  "Deciduous Needle leaf Forest",
  "Deciduous Broadleaf Forest",	
  "Mixed Forests",
@@ -339,18 +372,42 @@ landcover <- c("Water",
  "Cropland/Natural Vegetation Mosaic", # #15 snow and ice not encountered
  "Barren or Sparsely Vegetated")
 
-landcover_by_district <- vx$extract(HK_districts) %>% 
-  map(., plyr::count) %>% 
-  reduce(., function(dtf1,dtf2) full_join(dtf1,dtf2, by="x")) %>% 
-  arrange(x) 
+landcover_by_district <- vx$extract(HK_districts) %>% #extracts the raster cells in each district
+  map(., plyr::count) %>%  #counts each category
+  reduce(., function(dtf1,dtf2) full_join(dtf1,dtf2, by="x")) %>%  # reduces to a dataframe
+  arrange(x) # orders
 
-landcover_by_district[is.na(landcover_by_district)] <- 0
-names(landcover_by_district) <- c("Class_No", seq(1,18,1))
-landcover_by_district$Class <- landcover
+head(landcover_by_district)
 
-district_totals <- map_dbl(landcover_by_district[,2:19], sum)
+landcover_by_district[is.na(landcover_by_district)] <- 0 # make NAs 0
+names(landcover_by_district) <- c("Class_No", seq(1,18,1)) # improve column names
+landcover_by_district$Class <- landcover # add a column including each landover class name
 
-for (i in 1:18){
+head(landcover_by_district)
+
+district_totals <- map_dbl(landcover_by_district[,2:19], sum) #sum for each district, i.e. column
+district_totals
+
+for (i in 1:18){ # convert to percentages
   landcover_by_district[,i+1] <- round((landcover_by_district[,i+1]/district_totals[i])*100,2)
 }
+
+# transpose things a little
+landcover_by_district %>%
+  dplyr::select(-Class_No) %>% 
+  gather(key = District_No, value = value, 1:18) %>% 
+  spread(key = names(.)[1], value = 'value') %>% 
+  arrange(as.numeric(District_No))  -> district_LC
+
+head(district_LC)
 ```
+
+In this format it's easy to pull out districts by their landcover characteristics. 
+
+For instance, perhaps we want to know which districts are more than 80% Urban:
+```{r}
+district_LC %>% filter(`Urban and Built-Up` > 80) %>% pull(District_No)
+```
+
+We will continue to see how useful extraction in this afternoon's activity and 
+we get to RSFs tomorrow.

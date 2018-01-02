@@ -18,3 +18,9 @@
 | 13:30 – 14:45 | Livecode| DPS | Projecting and Plotting (proj4, transformations, visualization) |
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | | Practice plotting tracks and extracting path metrics |
+
+### Files
+- Lectures: HongKongMovement2018Lec2.pdf
+- LiveCode 1: Spatial_Data_in_R.Rmd
+- LiveCode 2: Movement_Data_Path_Metrics.Rmd
+- Activity: Day2_Activities.Rmd
