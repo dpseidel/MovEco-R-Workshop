@@ -21,7 +21,7 @@ output: pdf_document
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
-| 9:00 – 10:30 | Lecture | ERD |   Overview of Movement Ecology and Analyses |
+| 9:00 – 10:30 | Lecture | ERD/DPS | Overview of Movement Ecology and Analyses |
 | 10:30 – 10:45 | Morning Break | | |
 | 10:45 – 12:00 | Livecode | DPS | Introduction to spatial data in R | 
 | 12:00 – 13:30 | Lunch | | |
