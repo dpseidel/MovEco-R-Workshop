@@ -10,17 +10,17 @@
 
 ### Schedule
 | Time | Activity | Speaker | Topic |
-| ------------- | --------------- | --- | ------------------------------------ |
-| 9:00 – 10:30 | Lecture | DPS/ERD |   Overview of Movement Ecology and Analyses |
+| ------------- | --------------- | ------- | -------------------------------- |
+| 9:00 – 10:30 | Lecture | ERD |   Overview of Movement Ecology and Analyses |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Livecode | DPS | Introduction to movement data (points, vectors, rasters; POSTGIS) | 
+| 10:45 – 12:00 | Livecode | DPS | Introduction to spatial data in R | 
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 | Livecode| DPS | Projecting and Plotting (proj4, transformations, visualization) |
+| 13:30 – 14:45 | Livecode| DPS | Movement data in R (movebank, ltraj objects, path metrics) |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | Hands on | | Practice plotting tracks and extracting path metrics |
+| 15:00 – 16:30 | Hands on | --- | Practice plotting tracks and extracting path metrics |
 
 ### Files
 - Lectures: HongKongMovement2018Lec2.pdf
 - LiveCode 1: Spatial_Data_in_R.Rmd
 - LiveCode 2: Movement_Data_Path_Metrics.Rmd
-- Activity: Day2_Activities.Rmd
+- Activity: Day2_Activity.Rmd
