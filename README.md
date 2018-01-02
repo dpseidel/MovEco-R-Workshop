@@ -53,5 +53,5 @@ For those interested in further tutorials or resources for spatial data analysis
 - the [Tidyverse website/blog](https://www.tidyverse.org/articles/) for the latest news from the tidyverse
 
 # Acknowledgements
-Much of this code is adapted from other resources produced by the [#Rstats](https://twitter.com/search?q=%23rstats&src=typd) community at large. We make an effort to cite these resources throughout our materials where appropriate but would like to specifically acknowledge the contributions of Andy Lyons, Hadley Wickham, Garrett Grolemund, Carl Boettiger, and Jamie Afflerbach that have influenced this workshop. 
+Much of this code is adapted from other resources produced by the [#Rstats](https://twitter.com/search?q=%23rstats&src=typd) community at large. We make an effort to cite these resources throughout our materials where appropriate but would like to specifically acknowledge the contributions of Andy Lyons, Brianna Abrahms, Clement Calenge, Hadley Wickham, Garrett Grolemund, Carl Boettiger, and Jamie Afflerbach that have influenced this workshop. 
 
