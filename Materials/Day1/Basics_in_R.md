@@ -3,18 +3,29 @@ Basics in R
 Dana Seidel & Eric Dougherty
 1/3/2018
 
-Introducing R studio
-====================
+Introducing Rstudio (live demo)
+===============================
 
 -   What is the console?
 -   What is the source?
--   what is your environment?
+-   What is your environment?
 -   Using git within Rstudio
+
+SideNote: What is an .Rmd file? What about .r file?
+---------------------------------------------------
+
+This is an R Markdown document (.Rmd). Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. It facilitates the easy combination of both code and text. Everything you see in the grey chunks will run as R code. Everything outside a code chunk is treated as plain text.
+
+For complete formatting with plots and code output and the text, one must `knit` a .Rmd file into their final file formats (generally html, pdf, md, or doc). Which is why you may see "duplicate" files in our github repo.
+
+For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Comparatively, a simple R script saves as a .r file. Everything inside a .r file is treated (and run) as code unless commented out with a `#` sign.
 
 The TidyVerse
 =============
 
-The tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying philosophy and common APIs.
+The tidyverse is a collection of R packages designed for data science. All packages share an underlying philosophy and common APIs.
 
 Install the packages: `install.packages("tidyverse")`
 
@@ -23,6 +34,17 @@ Load the packages each time you open a new session:
 ``` r
 library(tidyverse)
 ```
+
+    ## ── Attaching packages ─────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+
+    ## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
+    ## ✔ tibble  1.3.4          ✔ dplyr   0.7.4     
+    ## ✔ tidyr   0.7.2          ✔ stringr 1.2.0     
+    ## ✔ readr   1.1.1          ✔ forcats 0.2.0
+
+    ## ── Conflicts ────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
 
 Access the book! [R for Data Science](http://r4ds.had.co.nz/)
 
@@ -42,7 +64,7 @@ Big Data Borat [@BigDataBorat](https://twitter.com/BigDataBorat/status/306596352
 Parsing
 -------
 
-Our first task is to read this data into our R environment. To this, we will use the `read_csv` function. Reading in a data file is called *parsing*, which sounds much more sophisticated. For good reason too -- parsing different data files and formats is a cornerstone of all pratical data science research, and can often be the hardest step.
+Our first task is to read this data into our R environment. To this, we will use the `read_table` function. Reading in a data file is called *parsing*, which sounds much more sophisticated. For good reason too -- parsing different data files and formats is a cornerstone of all pratical data science research, and can often be the hardest step.
 
 #### So what do we need to know about this file in order to read it into R?
 
@@ -50,67 +72,26 @@ Our first task is to read this data into our R environment. To this, we will use
 library("tidyverse")
 ```
 
+[First let's take a look at it](ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt)
+
+The first thing we should notice is that there is a large comment block of documentation. This can be ignored when parsing by using the `comment` arg.
+
 ``` r
 ## Let's try:
-co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt")
+co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt", comment='#')
+head(co2)
 ```
 
-    ## Parsed with column specification:
-    ## cols(
-    ##   `# --------------------------------------------------------------------` = col_character()
-    ## )
+    ##     V1 V2       V3     V4     V5     V6 V7
+    ## 1 1958  3 1958.208 315.71 315.71 314.62 -1
+    ## 2 1958  4 1958.292 317.45 317.45 315.29 -1
+    ## 3 1958  5 1958.375 317.50 317.50 314.71 -1
+    ## 4 1958  6 1958.458 -99.99 317.10 314.85 -1
+    ## 5 1958  7 1958.542 315.86 315.86 314.98 -1
+    ## 6 1958  8 1958.625 314.93 314.93 315.94 -1
 
-``` r
-co2
-```
-
-    ## # A tibble: 787 x 1
-    ##    `# --------------------------------------------------------------------`
-    ##                                                                       <chr>
-    ##  1                                                  # USE OF NOAA ESRL DATA
-    ##  2                                                                        #
-    ##  3             # These data are made freely available to the public and the
-    ##  4       # scientific community in the belief that their wide dissemination
-    ##  5        # will lead to greater understanding and new scientific insights.
-    ##  6         # The availability of these data does not constitute publication
-    ##  7   # of the data.  NOAA relies on the ethics and integrity of the user to
-    ##  8     # insure that ESRL receives fair credit for their work.  If the data
-    ##  9       # are obtained for potential use in a publication or presentation,
-    ## 10      # ESRL should be informed at the outset of the nature of this work.
-    ## # ... with 777 more rows
-
-**hmm... no luck. Let's try defining the comment symbol:**
-
-``` r
-co2 <- read_tsv("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
-                comment = "#")
-```
-
-    ## Parsed with column specification:
-    ## cols(
-    ##   `1958   3    1958.208      315.71      315.71      314.62     -1` = col_character()
-    ## )
-
-``` r
-co2
-```
-
-    ## # A tibble: 715 x 1
-    ##    `1958   3    1958.208      315.71      315.71      314.62     -1`
-    ##                                                                <chr>
-    ##  1   1958   4    1958.292      317.45      317.45      315.29     -1
-    ##  2   1958   5    1958.375      317.50      317.50      314.71     -1
-    ##  3   1958   6    1958.458      -99.99      317.10      314.85     -1
-    ##  4   1958   7    1958.542      315.86      315.86      314.98     -1
-    ##  5   1958   8    1958.625      314.93      314.93      315.94     -1
-    ##  6   1958   9    1958.708      313.20      313.20      315.91     -1
-    ##  7   1958  10    1958.792      -99.99      312.66      315.61     -1
-    ##  8   1958  11    1958.875      313.33      313.33      315.31     -1
-    ##  9   1958  12    1958.958      314.67      314.67      315.61     -1
-    ## 10   1959   1    1959.042      315.62      315.62      315.70     -1
-    ## # ... with 705 more rows
-
-Getting there, but not quite done. Our first row is being interpreted as column names. The documentation also notes that certain values are used to indicate missing data, which we would be better off converting to explicitly missing so we don't get confused.
+Almost there, but things are still a bit messy. Our first row is being interpreted as column names.
+The documentation also notes that certain values are used to indicate missing data, which we would be better off converting to explicitly missing so we don't get confused.
 
 ``` r
 co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
@@ -135,7 +116,7 @@ Importing Data with tidyverse
 
 Alternately, with `readr::read_table` from `tidyverse`
 
-It seems that `comment` arg is not fully implemented in CRAN version of `readr` so we must rely on `skip` to avoid the comment block:
+It seems that `comment` arg is not yet fully implemented in CRAN version of `readr` so we must rely on `skip` to avoid the documentation block:
 
 ``` r
 co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
@@ -148,7 +129,7 @@ co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
 co2
 ```
 
-    ## # A tibble: 716 x 7
+    ## # A tibble: 717 x 7
     ##     year month decimal_date average interpolated  trend  days
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>
     ##  1  1958     3     1958.208  315.71       315.71 314.62    NA
@@ -161,7 +142,7 @@ co2
     ##  8  1958    10     1958.792      NA       312.66 315.61    NA
     ##  9  1958    11     1958.875  313.33       313.33 315.31    NA
     ## 10  1958    12     1958.958  314.67       314.67 315.61    NA
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 Success! We have read in the data. Now we're ready to rock and roll.
 
@@ -185,7 +166,7 @@ names(co2)
 str(co2)
 ```
 
-    ## Classes 'tbl_df', 'tbl' and 'data.frame':    716 obs. of  7 variables:
+    ## Classes 'tbl_df', 'tbl' and 'data.frame':    717 obs. of  7 variables:
     ##  $ year        : int  1958 1958 1958 1958 1958 1958 1958 1958 1958 1958 ...
     ##  $ month       : int  3 4 5 6 7 8 9 10 11 12 ...
     ##  $ decimal_date: num  1958 1958 1958 1958 1959 ...
@@ -217,7 +198,7 @@ str(co2)
 nrow(co2)
 ```
 
-    ## [1] 716
+    ## [1] 717
 
 ``` r
 ncol(co2)
@@ -230,21 +211,21 @@ ncol(co2)
 summary(co2)  # here we can get a good sense of the missing values in the days column and average column. 
 ```
 
-    ##       year          month       decimal_date     average     
-    ##  Min.   :1958   Min.   : 1.0   Min.   :1958   Min.   :313.2  
-    ##  1st Qu.:1973   1st Qu.: 4.0   1st Qu.:1973   1st Qu.:328.6  
-    ##  Median :1988   Median : 6.5   Median :1988   Median :350.4  
-    ##  Mean   :1988   Mean   : 6.5   Mean   :1988   Mean   :353.1  
-    ##  3rd Qu.:2002   3rd Qu.: 9.0   3rd Qu.:2003   3rd Qu.:374.4  
-    ##  Max.   :2017   Max.   :12.0   Max.   :2018   Max.   :409.6  
-    ##                                               NA's   :7      
+    ##       year          month         decimal_date     average     
+    ##  Min.   :1958   Min.   : 1.000   Min.   :1958   Min.   :313.2  
+    ##  1st Qu.:1973   1st Qu.: 4.000   1st Qu.:1973   1st Qu.:328.6  
+    ##  Median :1988   Median : 7.000   Median :1988   Median :350.9  
+    ##  Mean   :1988   Mean   : 6.506   Mean   :1988   Mean   :353.2  
+    ##  3rd Qu.:2002   3rd Qu.: 9.000   3rd Qu.:2003   3rd Qu.:374.4  
+    ##  Max.   :2017   Max.   :12.000   Max.   :2018   Max.   :409.6  
+    ##                                                 NA's   :7      
     ##   interpolated       trend            days      
     ##  Min.   :312.7   Min.   :314.6   Min.   : 0.00  
-    ##  1st Qu.:328.3   1st Qu.:328.8   1st Qu.:24.00  
-    ##  Median :350.2   Median :350.2   Median :26.00  
-    ##  Mean   :352.8   Mean   :352.8   Mean   :25.34  
-    ##  3rd Qu.:374.2   3rd Qu.:374.4   3rd Qu.:28.00  
-    ##  Max.   :409.6   Max.   :407.1   Max.   :31.00  
+    ##  1st Qu.:328.3   1st Qu.:328.9   1st Qu.:24.00  
+    ##  Median :350.2   Median :350.4   Median :26.00  
+    ##  Mean   :352.9   Mean   :352.9   Mean   :25.34  
+    ##  3rd Qu.:374.2   3rd Qu.:374.5   3rd Qu.:28.00  
+    ##  Max.   :409.6   Max.   :407.2   Max.   :31.00  
     ##                                  NA's   :194
 
 ``` r
@@ -269,26 +250,26 @@ tail(co2, 20)
     ## # A tibble: 20 x 7
     ##     year month decimal_date average interpolated  trend  days
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>
-    ##  1  2016     3     2016.208  404.83       404.83 403.25    29
-    ##  2  2016     4     2016.292  407.42       407.42 404.53    25
-    ##  3  2016     5     2016.375  407.70       407.70 404.29    29
-    ##  4  2016     6     2016.458  406.81       406.81 404.49    26
-    ##  5  2016     7     2016.542  404.39       404.39 403.98    28
-    ##  6  2016     8     2016.625  402.25       402.25 404.12    23
-    ##  7  2016     9     2016.708  401.03       401.03 404.60    24
-    ##  8  2016    10     2016.792  401.57       401.57 404.98    29
-    ##  9  2016    11     2016.875  403.53       403.53 405.59    27
-    ## 10  2016    12     2016.958  404.42       404.42 405.18    29
-    ## 11  2017     1     2017.042  406.13       406.13 405.90    26
-    ## 12  2017     2     2017.125  406.42       406.42 405.60    26
-    ## 13  2017     3     2017.208  407.18       407.18 405.60    23
-    ## 14  2017     4     2017.292  409.00       409.00 406.11    25
-    ## 15  2017     5     2017.375  409.65       409.65 406.24    27
-    ## 16  2017     6     2017.458  408.84       408.84 406.51    26
-    ## 17  2017     7     2017.542  407.07       407.07 406.66    28
-    ## 18  2017     8     2017.625  405.07       405.07 406.93    29
-    ## 19  2017     9     2017.708  403.38       403.38 406.95    26
-    ## 20  2017    10     2017.792  403.64       403.64 407.06    27
+    ##  1  2016     4     2016.292  407.42       407.42 404.52    25
+    ##  2  2016     5     2016.375  407.70       407.70 404.30    29
+    ##  3  2016     6     2016.458  406.81       406.81 404.48    26
+    ##  4  2016     7     2016.542  404.39       404.39 403.97    28
+    ##  5  2016     8     2016.625  402.25       402.25 404.13    23
+    ##  6  2016     9     2016.708  401.03       401.03 404.57    24
+    ##  7  2016    10     2016.792  401.57       401.57 404.95    29
+    ##  8  2016    11     2016.875  403.53       403.53 405.62    27
+    ##  9  2016    12     2016.958  404.42       404.42 405.20    29
+    ## 10  2017     1     2017.042  406.13       406.13 405.89    26
+    ## 11  2017     2     2017.125  406.42       406.42 405.61    26
+    ## 12  2017     3     2017.208  407.18       407.18 405.61    23
+    ## 13  2017     4     2017.292  409.00       409.00 406.10    25
+    ## 14  2017     5     2017.375  409.65       409.65 406.24    27
+    ## 15  2017     6     2017.458  408.84       408.84 406.51    26
+    ## 16  2017     7     2017.542  407.07       407.07 406.65    28
+    ## 17  2017     8     2017.625  405.07       405.07 406.94    29
+    ## 18  2017     9     2017.708  403.38       403.38 406.93    26
+    ## 19  2017    10     2017.792  403.64       403.64 407.03    27
+    ## 20  2017    11     2017.875  405.14       405.14 407.22    26
 
 ``` r
 # to see the whole table in a Rstudio window, run the following line, uncommented. 
@@ -305,7 +286,7 @@ Subsetting can be done a variety of ways through baseR and tidyverse. Here we ar
 co2[,"year"] 
 ```
 
-    ## # A tibble: 716 x 1
+    ## # A tibble: 717 x 1
     ##     year
     ##    <int>
     ##  1  1958
@@ -318,13 +299,13 @@ co2[,"year"]
     ##  8  1958
     ##  9  1958
     ## 10  1958
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 ``` r
 co2[,1]
 ```
 
-    ## # A tibble: 716 x 1
+    ## # A tibble: 717 x 1
     ##     year
     ##    <int>
     ##  1  1958
@@ -337,7 +318,7 @@ co2[,1]
     ##  8  1958
     ##  9  1958
     ## 10  1958
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 ``` r
 co2$year  # what's the difference here?
@@ -394,13 +375,13 @@ co2$year  # what's the difference here?
     ## [673] 2014 2014 2014 2014 2014 2014 2014 2014 2014 2014 2015 2015 2015 2015
     ## [687] 2015 2015 2015 2015 2015 2015 2015 2015 2016 2016 2016 2016 2016 2016
     ## [701] 2016 2016 2016 2016 2016 2016 2017 2017 2017 2017 2017 2017 2017 2017
-    ## [715] 2017 2017
+    ## [715] 2017 2017 2017
 
 ``` r
 co2 %>% select(year, average) 
 ```
 
-    ## # A tibble: 716 x 2
+    ## # A tibble: 717 x 2
     ##     year average
     ##    <int>   <dbl>
     ##  1  1958  315.71
@@ -413,13 +394,13 @@ co2 %>% select(year, average)
     ##  8  1958      NA
     ##  9  1958  313.33
     ## 10  1958  314.67
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 ``` r
 co2[, c("year", "average")] 
 ```
 
-    ## # A tibble: 716 x 2
+    ## # A tibble: 717 x 2
     ##     year average
     ##    <int>   <dbl>
     ##  1  1958  315.71
@@ -432,13 +413,13 @@ co2[, c("year", "average")]
     ##  8  1958      NA
     ##  9  1958  313.33
     ## 10  1958  314.67
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 ``` r
 co2[, c(1,4)]
 ```
 
-    ## # A tibble: 716 x 2
+    ## # A tibble: 717 x 2
     ##     year average
     ##    <int>   <dbl>
     ##  1  1958  315.71
@@ -451,13 +432,13 @@ co2[, c(1,4)]
     ##  8  1958      NA
     ##  9  1958  313.33
     ## 10  1958  314.67
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 ``` r
 co2 %>% select(-days)# select all columns except year
 ```
 
-    ## # A tibble: 716 x 6
+    ## # A tibble: 717 x 6
     ##     year month decimal_date average interpolated  trend
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl>
     ##  1  1958     3     1958.208  315.71       315.71 314.62
@@ -470,13 +451,13 @@ co2 %>% select(-days)# select all columns except year
     ##  8  1958    10     1958.792      NA       312.66 315.61
     ##  9  1958    11     1958.875  313.33       313.33 315.31
     ## 10  1958    12     1958.958  314.67       314.67 315.61
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 ``` r
 co2[,-7]
 ```
 
-    ## # A tibble: 716 x 6
+    ## # A tibble: 717 x 6
     ##     year month decimal_date average interpolated  trend
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl>
     ##  1  1958     3     1958.208  315.71       315.71 314.62
@@ -489,7 +470,7 @@ co2[,-7]
     ##  8  1958    10     1958.792      NA       312.66 315.61
     ##  9  1958    11     1958.875  313.33       313.33 315.31
     ## 10  1958    12     1958.958  314.67       314.67 315.61
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 ``` r
 co2 %>% filter(year >= 1980, month == 12) # comma functions as "and" in the filter function
@@ -504,9 +485,9 @@ co2 %>% filter(year >= 1980, month == 12) # comma functions as "and" in the filt
     ##  4  1983    12     1983.958  343.05       343.05 343.96    19
     ##  5  1984    12     1984.958  344.70       344.70 345.57    12
     ##  6  1985    12     1985.958  345.88       345.88 346.81    25
-    ##  7  1986    12     1986.958  347.22       347.22 348.13    24
+    ##  7  1986    12     1986.958  347.21       347.21 348.12    24
     ##  8  1987    12     1987.958  349.16       349.16 350.05    27
-    ##  9  1988    12     1988.958  351.41       351.41 352.35    28
+    ##  9  1988    12     1988.958  351.41       351.41 352.34    28
     ## 10  1989    12     1989.958  352.85       352.85 353.80    27
     ## # ... with 27 more rows
 
@@ -523,9 +504,9 @@ co2 %>% subset(year >= 1980 & month == 12)  # but and must be explicit in the su
     ##  4  1983    12     1983.958  343.05       343.05 343.96    19
     ##  5  1984    12     1984.958  344.70       344.70 345.57    12
     ##  6  1985    12     1985.958  345.88       345.88 346.81    25
-    ##  7  1986    12     1986.958  347.22       347.22 348.13    24
+    ##  7  1986    12     1986.958  347.21       347.21 348.12    24
     ##  8  1987    12     1987.958  349.16       349.16 350.05    27
-    ##  9  1988    12     1988.958  351.41       351.41 352.35    28
+    ##  9  1988    12     1988.958  351.41       351.41 352.34    28
     ## 10  1989    12     1989.958  352.85       352.85 353.80    27
     ## # ... with 27 more rows
 
@@ -533,7 +514,7 @@ co2 %>% subset(year >= 1980 & month == 12)  # but and must be explicit in the su
 co2 %>% filter(month == 11 | month == 11) # | is equivalent to "or"
 ```
 
-    ## # A tibble: 59 x 7
+    ## # A tibble: 60 x 7
     ##     year month decimal_date average interpolated  trend  days
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>
     ##  1  1958    11     1958.875  313.33       313.33 315.31    NA
@@ -546,7 +527,7 @@ co2 %>% filter(month == 11 | month == 11) # | is equivalent to "or"
     ##  8  1965    11     1965.875  318.87       318.87 320.87    NA
     ##  9  1966    11     1966.875  319.79       319.79 321.84    NA
     ## 10  1967    11     1967.875  320.72       320.72 322.78    NA
-    ## # ... with 49 more rows
+    ## # ... with 50 more rows
 
 ``` r
 co2[co2$month==12,] 
@@ -580,9 +561,9 @@ co2[co2$year>=1980 & co2$month==12,]
     ##  4  1983    12     1983.958  343.05       343.05 343.96    19
     ##  5  1984    12     1984.958  344.70       344.70 345.57    12
     ##  6  1985    12     1985.958  345.88       345.88 346.81    25
-    ##  7  1986    12     1986.958  347.22       347.22 348.13    24
+    ##  7  1986    12     1986.958  347.21       347.21 348.12    24
     ##  8  1987    12     1987.958  349.16       349.16 350.05    27
-    ##  9  1988    12     1988.958  351.41       351.41 352.35    28
+    ##  9  1988    12     1988.958  351.41       351.41 352.34    28
     ## 10  1989    12     1989.958  352.85       352.85 353.80    27
     ## # ... with 27 more rows
 
@@ -590,7 +571,7 @@ co2[co2$year>=1980 & co2$month==12,]
 co2[co2$month==12 | co2$month==11,] 
 ```
 
-    ## # A tibble: 118 x 7
+    ## # A tibble: 119 x 7
     ##     year month decimal_date average interpolated  trend  days
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>
     ##  1  1958    11     1958.875  313.33       313.33 315.31    NA
@@ -603,7 +584,7 @@ co2[co2$month==12 | co2$month==11,]
     ##  8  1961    12     1961.958  317.01       317.01 317.94    NA
     ##  9  1962    11     1962.875  316.69       316.69 318.62    NA
     ## 10  1962    12     1962.958  317.69       317.69 318.61    NA
-    ## # ... with 108 more rows
+    ## # ... with 109 more rows
 
 ``` r
 # Note: logical operations (those that produce True or False) require the double equal sign `==`
@@ -632,7 +613,7 @@ co2 %>%
     ##  4  1983  343.05
     ##  5  1984  344.70
     ##  6  1985  345.88
-    ##  7  1986  347.22
+    ##  7  1986  347.21
     ##  8  1987  349.16
     ##  9  1988  351.41
     ## 10  1989  352.85
@@ -655,7 +636,7 @@ co2_subset
     ##  4  1983  343.05
     ##  5  1984  344.70
     ##  6  1985  345.88
-    ##  7  1986  347.22
+    ##  7  1986  347.21
     ##  8  1987  349.16
     ##  9  1988  351.41
     ## 10  1989  352.85
@@ -679,7 +660,7 @@ Group By & Summarise
 co2 %>% group_by(year)
 ```
 
-    ## # A tibble: 716 x 7
+    ## # A tibble: 717 x 7
     ## # Groups:   year [60]
     ##     year month decimal_date average interpolated  trend  days
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>
@@ -693,7 +674,7 @@ co2 %>% group_by(year)
     ##  8  1958    10     1958.792      NA       312.66 315.61    NA
     ##  9  1958    11     1958.875  313.33       313.33 315.31    NA
     ## 10  1958    12     1958.958  314.67       314.67 315.61    NA
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 Everything else appears the same! We still have 716 rows and 10 columns. All the names are the same. BUT.... if we pass this new grouped dataframe into another function like `summarise`, check out what happens:
 
@@ -725,7 +706,7 @@ co2 %>% summarise(`Number of measurements` = n(), `Average trend` = mean(trend))
     ## # A tibble: 1 x 2
     ##   `Number of measurements` `Average trend`
     ##                      <int>           <dbl>
-    ## 1                      716        352.7969
+    ## 1                      717        352.8727
 
 But once we "group" the dataframe, R knows to compute our functions across the groups we specify.
 
@@ -738,7 +719,7 @@ The `mutate` function is similar to `summarise` in that it allows you to take va
 co2 %>% mutate(month_year = paste0(month,"/", year))
 ```
 
-    ## # A tibble: 716 x 8
+    ## # A tibble: 717 x 8
     ##     year month decimal_date average interpolated  trend  days month_year
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>      <chr>
     ##  1  1958     3     1958.208  315.71       315.71 314.62    NA     3/1958
@@ -751,7 +732,7 @@ co2 %>% mutate(month_year = paste0(month,"/", year))
     ##  8  1958    10     1958.792      NA       312.66 315.61    NA    10/1958
     ##  9  1958    11     1958.875  313.33       313.33 315.31    NA    11/1958
     ## 10  1958    12     1958.958  314.67       314.67 315.61    NA    12/1958
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 `group by` functions also work to group things before`mutate` functions. FOr instance, if we wanted a column that averaged the temperature across each year?
 
@@ -759,7 +740,7 @@ co2 %>% mutate(month_year = paste0(month,"/", year))
 co2 %>% group_by(year) %>% mutate(year_average= mean(average, na.rm=TRUE))
 ```
 
-    ## # A tibble: 716 x 8
+    ## # A tibble: 717 x 8
     ## # Groups:   year [60]
     ##     year month decimal_date average interpolated  trend  days year_average
     ##    <int> <int>        <dbl>   <dbl>        <dbl>  <dbl> <int>        <dbl>
@@ -773,7 +754,7 @@ co2 %>% group_by(year) %>% mutate(year_average= mean(average, na.rm=TRUE))
     ##  8  1958    10     1958.792      NA       312.66 315.61    NA     315.3313
     ##  9  1958    11     1958.875  313.33       313.33 315.31    NA     315.3313
     ## 10  1958    12     1958.958  314.67       314.67 315.61    NA     315.3313
-    ## # ... with 706 more rows
+    ## # ... with 707 more rows
 
 Together, group\_by, mutate, and summarise are some of your most powerful tools for data manipulation.
 
@@ -792,7 +773,7 @@ Plotting Data with `ggplot`
 ggplot(co2, aes(decimal_date, average)) + geom_line()
 ```
 
-![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
+![](Basics_in_R_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 Plotting multiple series
 ------------------------
@@ -843,7 +824,7 @@ We often would like to plot several data values together for comparison, for exa
       geom_line()
     ```
 
-    ![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-18-1.png)
+    ![](Basics_in_R_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 Plotting multiple series
 ------------------------
@@ -857,7 +838,7 @@ co2 %>%
   ggplot(aes(decimal_date, ppmv, col = series)) +  geom_line()
 ```
 
-![](Basics_in_R_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
+![](Basics_in_R_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Writing out Data or objects
 ===========================
@@ -872,7 +853,7 @@ We can even write out our ggplot images:
 
 ``` r
 # defaults to saving your last plot. can be specified
-ggsave("plot1", device = "eps")
+ggsave("plot1", device = "png")
 ```
 
     ## Saving 7 x 5 in image

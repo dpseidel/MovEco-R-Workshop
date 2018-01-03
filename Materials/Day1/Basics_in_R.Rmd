@@ -65,22 +65,22 @@ Our first task is to read this data into our R environment.  To this, we will us
 library("tidyverse")
 ```
 
+[First let's take a look at it](ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt) 
+
+The first thing we should notice is that there is a large comment block of documentation. 
+This can be ignored when parsing by using the `comment` arg. 
 
 ```{r}
 ## Let's try:
-co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt")
-co2
+co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt", comment='#')
+head(co2)
 ```
 
-**hmm... no luck.  Let's try defining the comment symbol:**
 
-```{r }
-co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
-                comment = "#")
-co2
-```
-
-Getting there, but not quite done. Our first row is being interpreted as column names.  The documentation also notes that certain values are used to indicate missing data, which we would be better off converting to explicitly missing so we don't get confused.
+Almost there, but things are still
+a bit messy. Our first row is being interpreted as column names.  
+The documentation also notes that certain values are used to indicate missing data, 
+which we would be better off converting to explicitly missing so we don't get confused.
 
 
 ```{r}
@@ -99,7 +99,7 @@ head(co2)
 Alternately, with `readr::read_table` from `tidyverse` 
 
 It seems that `comment` arg is not yet fully implemented in CRAN version of `readr` 
-so we must rely on `skip` to avoid the comment block:
+so we must rely on `skip` to avoid the documentation block:
 
 ```{r message=FALSE, warning=FALSE}
 co2 <- read_table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",

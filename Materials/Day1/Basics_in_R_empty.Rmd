@@ -1,0 +1,296 @@
+---
+title: "Basics in R"
+author: "Dana Seidel & Eric Dougherty"
+date: "1/3/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introducing Rstudio (live demo)
+- What is the console? 
+- What is the source?
+- What is your environment?
+- Using git within Rstudio
+
+## SideNote: What is an .Rmd file? What about .r file? 
+This is an R Markdown document (.Rmd). Markdown is a simple formatting syntax 
+for authoring HTML, PDF, and MS Word documents. It facilitates the easy combination 
+of both code and text. Everything you see in the grey chunks will run as R code. 
+Everything outside a code chunk is treated as plain text. 
+
+For complete formatting with plots and code output and the text, one must `knit`
+a .Rmd file into their final file formats (generally html, pdf, md, or doc). Which is
+why you may see "duplicate" files in our github repo. 
+
+For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Comparatively, a simple R script saves as a .r file. Everything inside a .r file 
+is treated (and run) as code unless commented out with a `#` sign. 
+
+# The TidyVerse
+The tidyverse is a collection of R packages designed for data science.
+All packages share an underlying philosophy and common APIs. 
+
+Install the packages: `install.packages("tidyverse")`
+
+Load the packages each time you open a new session:
+```{r}
+library(tidyverse)
+```
+
+Access the book! [R for Data Science](http://r4ds.had.co.nz/)
+
+Other Resources:
+
+- [Cheat sheets!](https://www.rstudio.com/resources/cheatsheets/)
+
+- [More Books & online courses](https://www.tidyverse.org/learn/)
+
+# Importing Data
+
+> In Data Science, 80% of time spent prepare data, 20% of time spent complain about need for prepare data. 
+
+Big Data Borat [\@BigDataBorat](https://twitter.com/BigDataBorat/status/306596352991830016), February 27, 2013
+
+## Parsing
+
+Our first task is to read this data into our R environment.  To this, we will use the `read_table` function. Reading in a data file is called *parsing*, which sounds much more sophisticated.  For good reason too -- parsing different data files and formats is a cornerstone of all pratical data science research, and can often be the hardest step.
+
+#### So what do we need to know about this file in order to read it into R?
+
+[First let's take a look at it](ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt) 
+
+The first thing we should notice is that there is a large comment block of documentation. 
+This can be ignored when parsing by using the `comment` arg. 
+
+```{r read.table}
+
+```
+
+
+Almost there, but things are still
+a bit messy. Our first row is being interpreted as column names.  
+The documentation also notes that certain values are used to indicate missing data, 
+which we would be better off converting to explicitly missing so we don't get confused.
+
+
+```{r read.table_nastrings_colnames}
+
+```
+
+
+## Importing Data with tidyverse
+
+Alternately, with `readr::read_table` from `tidyverse` 
+
+It seems that `comment` arg is not yet fully implemented in CRAN version of `readr` 
+so we must rely on `skip` to avoid the documentation block:
+
+```{r read_table message=FALSE, warning=FALSE}
+
+```
+
+Success! We have read in the data. Now we're ready to rock and roll.
+
+# Viewing data
+
+Once parsed and imported, it's a good idea to take a look at your data, both to 
+get a sense of it's size, names, and shape but also to keep an eye out for missing
+value or errors. 
+
+For this stage, using a combination of `str`, `names`, `summar`, `View`, `head` and `tail`
+functions can be helpful. 
+
+```{r}
+# to get the names of the columns
+
+
+# to check out the full structure of the R object
+
+# to get a summary of the object
+# here we can get a good sense of the missing values in the days column and average column. 
+
+# for the first or last `n` lines of the data frame
+# check out r help - shows us that the default argument is 10 lines
+
+
+# to see the whole table in a Rstudio window, run the following line, uncommented. 
+# View(co2)
+# also double click from the environment
+```
+
+# Subsetting data
+
+Subsetting can be done a variety of ways through baseR and tidyverse. Here we are going
+to cover the following ways:
+- `select()`, tidyverse
+- `filter()` , tidyverse
+- bracket `[]` notation, baseR
+- dollar sign `$` notation, baseR
+- subset function, baseR
+
+```{r}
+# bracket v. $
+
+
+# pipes and select, multiple columns
+
+# dropping columns, select/bracket
+# select all columns except year
+
+
+# filter v. subset
+ # comma functions as "and" in the filter function
+ # but and must be explicit in the subset function
+
+# OR in filter # | is equivalent to "or"
+
+# bracket subsetting
+
+
+# Note: logical operations (those that produce True or False) require the double equal sign `==`
+```
+
+### SideNote: Whats that little `c()` do?
+Try running `?c` in your R console to find out. We use this function regularly
+to create vectors or lists of objects. 
+
+### SideNote: The Power of the Pipe `%>%`
+You might be thinking what is that weird symbol we just used? 
+This is a pipe, a function in the `magittr` package loaded in the tidyverse, 
+Pipes are a powerful way
+to perform sequential operations on an R object. Using the pipe, allows use to push 
+the output of our first operation into our next operation seamlessly, without using
+intermediate objects or overwriting our original object. 
+
+```{r}
+# demonstrate pipe from filter to select
+
+
+# compared to intermediate objects
+# This is the same but much more readable and much cleaner than the following:
+
+co2_filter 
+co2_subset 
+
+```
+It's also worth noting that the piped version does not create an additional object unless you ask it to. 
+This is super useful in the early stages of exploring and visualizing your data.
+
+More information about pipes and the alternatives found [here](http://r4ds.had.co.nz/pipes.html)
+
+# Sorting data
+Often data is not in the exact form we want or we need additional information from our data. 
+When this is the case, the tidyverse library has some helpful functions that, when combined, 
+are powerful tools for rearranging and summarizing our data. 
+
+## Group By & Summarise
+`group_by` allows us to invisibly partition our data into groups which can be powerful when we later want to applied functions or look at statistics on groups together. Take a look, you'll notice the only thing that changes 
+when group_by years in the co2 dataframe, is the addition of a small line in 
+the tibble header: "# Groups:   year [60]"
+```{r groupby}
+```
+
+Everything else appears the same! We still have 716 rows and 10 columns. All the names are the same. 
+BUT.... if we pass this new grouped dataframe into another function like `summarise`, check out what happens:
+
+```{r groupby_summarise}
+```
+
+The `summarise` function allows you to build a new table with completely new columns,
+based upon any operations you want to run on your original table. Without the group by, 
+this same `summarise` command would return only 1 line:
+
+```{r}
+co2 %>% summarise(`Number of measurements` = n(), `Average trend` = mean(trend))
+```
+
+But once we "group" the dataframe, R knows to compute our functions across the groups 
+we specify. 
+
+## Mutating
+
+The `mutate` function is similar to `summarise` in that it allows you to take values from within a data table, compute something new, but in this case, the R will append it as a new column to the original dataframe.
+For instance, perhaps we wanted to make a column combining the year and month for our dataset
+```{r mutate}
+```
+
+`group by` functions also work to group things before`mutate` functions. FOr instance, if we wanted a column
+that averaged the temperature across each year?
+
+```{r groupby_mutate}
+```
+
+Together, group_by, mutate, and summarise are some of your most powerful tools for data manipulation. 
+
+# Plotting data
+## Plotting Data with `ggplot`
+
+Effective visualizations are an integral part of data science, poorly organized or poorly labelled figures can be as much a source of peril as understanding.  Nevertheless, the ability to generate plots quickly with minimal tinkering is an essential skill.  As standards for visualizations have increased, too often visualization is seen as an ends rather than a means of data analysis. See [Fox & Hendler (2011)](http://science.sciencemag.org/content/331/6018/705.short) for more discussion of this.
+
+## Plotting Data with `ggplot`
+
+```{r ggplot}
+```
+
+## Plotting multiple series
+
+We often would like to plot several data values together for comparison,
+for example the average, interpolated and trend co2 data. We can do
+this in three steps:
+
+1. subsetting the dataset to the columns desired for plotting
+
+    ```{r select}
+    ```
+
+2. rearranging the data into a "long" data table where the data values
+are stacked together in one column and there is a separate column that
+keeps track of the whether the data came from the average,
+interpolated, or trend column. Notice by using the same name,
+we overwrite the original co2_sub
+
+
+    ```{r gather}
+
+    ```
+
+
+3. plotting
+
+    ```{r plot}
+
+    ```
+
+
+## Plotting multiple series
+
+Or, even better, we can take advantage of dplyr's nifty pipping abilities and
+accomplish all of these steps in one block of code. Beyond being more
+succinct, this has the added benefit of avoiding creating a new object
+for the subsetted data.
+
+```{r allinone}
+
+```
+
+
+# Writing out Data or objects
+
+Often after doing all the work to clean up your data you want to write out the clean file, this is simple
+with the `write_*` functions. 
+
+```{r write_csv}
+```
+
+We can even write out our ggplot images:
+
+```{r ggsave}
+# defaults to saving your last plot. can be specified
+
+```
+
+

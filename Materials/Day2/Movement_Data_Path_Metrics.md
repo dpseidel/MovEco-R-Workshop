@@ -132,30 +132,36 @@ Here let's consider some Albatross data, from movebank study \#2911040: To load 
 ``` r
 loginStored <- movebankLogin(username="dpseidel", password=pass)
 
-#search for studies - searchMovebankStudies(x="albatross", login=cred)
-#get study ID - getMovebankStudy()
-#check for animal IDs - getMovebankAnimals()
+#search for studies - 
+searchMovebankStudies(x="albatross", login=loginStored)
+#get study ID - 
+getMovebankStudy(2911040, login=loginStored)$citation
+
+#check for animal IDs - 
+getMovebankAnimals(2911040, login=loginStored)
 #get the all data - getMovebankData()
 #get only specific animal by specifying individual_id
 
 albatross <- getMovebank("event", study_id = 2911040, login=loginStored)
 
+write_tsv(albatross, "Study2911040")
 # getMovebank("event", login, study_id,...): returns the sensor measurements from a study. 
 # See also getMovebankData, getMovebankNonLocationData.
 ```
 
-To save us the effort of getting you all Movebank logins at this point, I have provided the csv. We can use this to demonstrate the 3rd way of loading in movement data.
+To save us the effort of getting you all Movebank logins at this point, I have provided the tsv. We can use this to demonstrate the 3rd way of loading in movement data.
 
 ``` r
-study <- read.csv("data_files/Study2911040.csv", 
-                  colClasses = c("POSIXct","numeric", "numeric", "factor", "factor"))
-
+study <- read_tsv("data_files/Study2911040", comment="##",
+                  col_types = "Tnncc")
+study <- as.data.frame(study)
+                       
 albatross <- move(x=study$location_long,
               y=study$location_lat,
               time=study$timestamp,
               data=study,
-              animal = study$individual_id,
-              sensor = study$tag_id,
+              animal = as.factor(study$individual_id),
+              sensor = as.factor(study$tag_id),
               proj=CRS("+proj=longlat"))
 ```
 
