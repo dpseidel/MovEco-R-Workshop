@@ -1,0 +1,357 @@
+---
+title: "Day 1 Hands on Practice"
+math: true
+---
+
+In this section, we will explore population dynamics of multiple interacting species; or more generally, dynamics in multiple variables.  Previously, our only _dynamic_ variable was a single focal population, sometimes called `x`, or squirrels, that could change over time in response to how many other squirrels there were.  All other aspects of system were fixed: such as the environmental conditions responsible for determining the growth rate `r` and carrying capacity `K`.  In this exercise, you will explore what happens when we start accounting for multiple species interacting with each other.
+
+We motivate this using an example of a classic data set that played a fundamental role in the early part of the previous centry in defining both our understanding of population dynamics and the mathematical field of dynamical systems more generally. As mentioned last week, this example comes from records of the Hudson Bay fur trapping company on the prevelance of Canadian Lynx and Snowshoe Hare populations.  The key thing to understand about the interaction between these two species is illustrated below:
+
+![](https://www.math.duke.edu/education/ccp/materials/engin/predprey/Lynx.gif)
+
+
+
+Though we will focus on simulating our own data with `for` loops and functions, it is worth a moment to consider the oscillations observed in the real data, which we can access and plot using the now-familiar functions:
+
+
+```{r message=FALSE}
+library(tidyverse)
+```
+
+```{r  message=FALSE, warning=FALSE}
+data <- read_delim("https://raw.githubusercontent.com/bblais/Systems-Modeling-Spring-2015-Notebooks/master/data/Lynx%20and%20Hare%20Data/lynxhare.csv",
+                ";") 
+data %>%
+  select(year, hare, lynx) %>%
+  mutate(hare = log(hare), lynx = log(lynx)) %>%
+  gather(species, population, -year) %>%
+  ggplot(aes(year, population, col=species)) + 
+  geom_line()
+
+```
+
+
+
+
+
+We refer to writing down either equations or code that describe this population as a "model" of the population.  Mathematical models play a central role in almost all applications of data science, and come in many forms and serve many purposes.  
+
+
+$$H_{t+1} = H_t + H_t  f(H,P) $$
+$$P_{t+1} = P_t + P_t  g(H,P) $$
+
+
+
+
+## Exercise 1: A basic predator-prey model
+
+1.  Define the following mathematical functions in R:
+
+$$f(H,P) = a - b P $$
+$$g(H,P) = c H  - d $$
+```{r}
+prey <- function(H, P, pars){
+ (pars$a - pars$b*P)
+}
+pred <- function(H, P, pars){
+  (pars$c*H - pars$d)
+}
+```
+
+
+2. Write a loop to simulate the following dynamics using the above functions definitions:
+
+$$x_{t+1} = x_t + x_t  f(x,y) $$
+$$y_{t+1} = y_t + y_t  g(x,y) $$
+
+Use the following parameters to get started:
+
+```
+a = 0.01
+b = 0.01
+c = 0.01
+d = 0.01
+```
+
+use initial value $x_0 = 1.1$ and $y_0 = 1.1$ and a max time of $500$ iterations to get started.
+
+```{r}
+pars <- list(a = .01, b = .01, c = .01, d = .01)
+sim <- function(pars = list(a = .01, b = .01, c = .01, d = .01),
+                H0 = 1.1, P0 = 1.1, time = 500, g = pred, f = prey){
+  H <- numeric(time) 
+  P <- numeric(time)
+  H[1] <- H0
+  P[1] <- P0
+  for(i in 1:(time-1)){
+      H[i+1] <- max((1 + f(H[i], P[i], pars)) * H[i], 0)
+      P[i+1] <- max((1 + g(H[i], P[i], pars)) * P[i], 0)
+  }
+  data.frame(time = 1:time, hare = H, lynx = P)
+}
+```
+
+3. Create a plot showing the population sizes of hare (x) and lynx (y) over time.
+
+```{r}
+sim1 <- sim()
+sim1 %>% 
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+
+```
+4.  Increase the time interval to 1000, 3000, 9000.  What happens?  
+```{r}
+sim2 <- sim(time = 1000)
+sim2 %>% 
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+
+sim3 <- sim(time = 3000)
+sim3 %>% 
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+
+sim4 <- sim(time = 9000)
+sim4 %>% 
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+```
+
+*Over a longer time interval, we see a similar cyclic pattern as to the data introduced above! The amplitude of the cycle seems to increase. *
+
+5. Vary the starting conditions. What do you see?  
+
+```{r}
+sim6 <- sim(pars=list(a = .02, b = .03, c=.05, d=.04), H0=2, P0=2, time=1000)
+sim6 %>% 
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+```
+
+*The timing and sync of the cycle changes, lynx populations seem to crash repeatedly*
+
+6. Create a plot a of hare size vs linx size with various starting conditions.  Use `geom_path` to create these plots -- called "phase planes"
+
+```{r}
+sim(time=9000) %>% 
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+sim(time=9000, pars=list(a = .01, b = .01, c=.01, d=.01), H0=2, P0=2) %>% 
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+```
+
+
+## Exercise 2: Modifiying the model: Carrying capacity
+
+The above result looks like cycles, but are ultimately not stable.  This pattern is called "centers" in dynamical systems, and sits right at the edge between stable and unstable.  We now add more biology back into the system.  
+
+In the model of exercise 1, the only thing limiting the growth of hare was the presence predation by lynx. If the lynx population got too small, the hare population shot up without bound.  In reality, a lack of food and habitat would eventually stall an ever-expanding hare population.  To capture this, we will re-introduce the same "carrying capacity" concept we first saw last week.  
+
+1. re-define the function for hare population, `f(x,y)`, to reflect limits on growth due to a carrying capacity:
+
+
+$$f(x,y) = a  (1 - H/K) - b P $$
+For starters, we will use `K = 10` and the same initial conditions as before (`H0 = 1.1`, `P0 = 1.1`).  
+
+```{r}
+prey_DD <- function(H, P, pars){
+  pars$a*(1-H/pars$K) - pars$b*P
+}
+
+```
+
+2. Re-run your model and plot the results.  How have the results changed?  
+```{r}
+simDD <- sim(pars = list(a=.01, b=.01, c=.01, d=.01, K=10), f = prey_DD, time=10000)
+simDD %>% 
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+```
+
+*The cycles seem to be converging.*
+
+3. Plot the hare population size vs the linx population size, using `geom_path()`.  This is called a Phase Plane
+```{r}
+simDD %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+```
+
+3. Can you obtain stable long-term behavior?  What behavior do you see?
+
+*Yes, given current values, populations stabilize at 1.0 hares and .9 lynx respectively*
+
+4. Can you obtain stable long-term cycles? If so, how? If not, then why do you think that is?
+
+
+## Exercise 3: Limit Cycles
+
+Another limitation of our model is the ability of the Lynx population to consume hare at arbitrary effiency, regardless of how many hare we have.  Thus a very small initial number of lynx, `y` can almost immediately become as large as you like as long as there are enough hares. When prey is rare, we might well expect the survival and reproduction of a lynx to be directly proportional to the number of hare, $g(x,y) ~ c x y$, but beyond a certain point we expect additional hare not to matter so much.  Likewise, it may make sense to put an upper limit on how many hare a single lynx can catch.  We model this by introducing a "saturating" function:
+
+$$h(H) = \frac{1}{1 + s \cdot H}$$ to our equations for $f$ and $g$:  
+
+$$ f(H,P) = a (1 - H / K)  - b \cdot P \cdot h(H) $$
+$$ g(H,P) = c \cdot H \cdot h(H) - d $$
+
+Note that $h(x)$ is called a *functional response*, or handling time.  
+
+1.  Introduce the above definition into your simulation, creating both phase portrait and time series plot.  Begin with the following parameter set:
+
+```
+a = 0.01
+b = 0.01
+c = 0.01
+d = 0.01
+k = 10
+s = 1/5
+```
+```{r}
+h <- function(H, s){
+  1 / (1 + s*H)
+}
+
+prey3 <- function(H, P, pars){
+  pars$a * (1 - H / pars$k) -  pars$b * P * h(H, pars$s)
+}
+
+pred3 <- function(H, P, pars){
+  pars$c*H*h(H, pars$s) - pars$d
+}
+
+sim7 <- sim(f = prey3, g = pred3, time = 12000, H0=2, P0=2,
+            pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=.2))
+sim7 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+sim7 %>%
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+```
+2. You should now see that the population settles into a steady set of oscillations.  Try several different starting points for the initial conditions, (showing your results) and describe the resulting dynamics.  Try starting conditions that appear both inside and outside the "stable limit cycle" that emerges in your phase portrait plot.  
+
+```{r}
+sim8 <- sim(f = prey3, g = pred3, time = 10000, H0=28, P0=6,
+            pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=.2))
+sim8 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+sim8 %>%
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+
+sim9 <- sim(f = prey3, g = pred3, time = 10000, H0=1, P0=4,
+            pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=.2))
+sim9 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+sim9 %>%
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+
+sim10 <- sim(f = prey3, g = pred3, time = 10000, H0=10, P0=10,
+            pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=.2))
+sim10 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+sim10 %>%
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+```
+
+3. Vary the growth rate for hares, `a`.  Which species increases most do to `a` increasing?  Why?  Now vary `K` and compare.
+
+```{r}
+
+sim11 <- sim(f = prey3, g = pred3, time = 10000, H0=1.1, P0=1.1, 
+             pars=list(a=.08, b=.01, c=.01, d=.01, k=10, s=.2))
+sim11 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+sim11 %>%
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+  
+sim12 <- sim(f = prey3, g = pred3, time = 10000, H0=1.1, P0=1.1,
+          pars=list(a=.01, b=.01, c=.01, d=.01, k=25, s=.2))
+sim12 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+sim12 %>%
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+  
+```
+
+*The lynx increase fastest when the hare growth rate rate is increased, but hares grow more when the carrying capacity is changed*
+
+4.  Increase `s` to be closer to `K`.  What happens?  Can you pinpoint when the transition occurs?
+
+```{r}
+sim13 <- sim(f = prey3, g = pred3, time = 10000, H0=1.1, P0=1.1, 
+             pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=1.1))
+
+sim13 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+  
+sim14 <- sim(f = prey3, g = pred3, time = 10000, H0=1.1, P0=1.1, 
+             pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=.9))
+
+sim14 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+
+sim15 <- sim(f = prey3, g = pred3, time = 10000, H0=1.1, P0=1.1,
+             pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=.8))
+
+sim15 %>%
+  ggplot(aes(hare, lynx)) +
+  geom_path()
+  
+```
+
+*The lynx die off and the hares explode. This transition happens between .8 and .9.*
+
+5. Decrease `s` to smaller and smaller values.  What happens?  
+
+```{r}
+sim16 <- sim(f = prey3, g = pred3, time = 10000, H0=1.1, P0=1.1,
+             pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=.1))
+
+sim16 %>%
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+
+sim17 <- sim(f = prey3, g = pred3, time = 10000, H0=1.1, P0=1.1,
+             pars=list(a=.01, b=.01, c=.01, d=.01, k=10, s=.01))
+
+sim17 %>%
+  gather(species, pop, -time) %>% 
+  ggplot(aes(time, pop, col=species)) +
+  geom_line()
+```
+
+*As `s` gets smaller, the equillibrium between the two populations is reached quicker*
