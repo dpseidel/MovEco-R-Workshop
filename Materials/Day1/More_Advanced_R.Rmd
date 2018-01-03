@@ -2,7 +2,9 @@
 title: "Slighty More Advanced R"
 author: "Dana Seidel & Eric Dougherty"
 date: "1/4/2018"
-output: github_document
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
