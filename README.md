@@ -1,9 +1,9 @@
 # MovEco-R-Workshop
 Materials for the Movement Ecology &amp; R Workshop. Hong Kong University Jan 3-12, 2018
 
-*Note: during the workshop, the materials in this repository are likely to be updated 
+**Note: during the workshop, the materials in this repository are likely to be updated 
 daily. Once the workshop is complete and the materials finalized, we will publish 
-a webpage for easier navigation and dissemination of the polished materials*
+a webpage for easier navigation and dissemination of the polished materials**
 
 **If you want to download individual files during the workshop, We suggest you adapt and use the following code structure from R:**
 `download.file("rawgithub_hyperlink", "destination_file_name")`
@@ -24,8 +24,8 @@ Please make sure you have installed:
     - sp
     - ggplot2 (*developer's version)
     - mapview (*developer's version)
-    - rgdal**
-    - rgeos**
+    - rgdal
+    - rgeos
     - adehabitat
     - adehabitatLT
     - adehabitatHR
@@ -46,8 +46,6 @@ OR you can install multiple at one time using the `c()` function to combine all 
 This is very similar to the base `install.packages()` function except we have to give it more specific path names e.g.:
 - `devtools::install_github("tidyverse/ggplot2")`
 - `devtools::install_github("r-spatial/mapview")`
-
-**spatial packages across platforms rely on gdal, proj4 and geos. These should install correctly using the `install.packages` command in R when installing `rgdal` and `rgeos` but occassionally produce platform specific errors. If you have trouble, first begin by googling your error as many many users before you have likely encountered the same issue. If your install of these libraries fail - please see us during Day1's afternoon hands on activity and we can help you get properly set up. 
 
 # Additional R Resources: A (woefully incomplete) list 
 For those interested in further tutorials or resources for spatial data analysis and R more generally, please refer to:
