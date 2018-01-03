@@ -34,10 +34,10 @@ output: pdf_document
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
-| 9:00 – 10:30 | Lecture | ERD | Selection methods; Home ranges and utilization distributions |
-| 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 11:15 | Livecode | DPS | MCP, UD - home range estimation in R | 
-| 11:15 – 12:00 | Livecode | DPS | Creating Available Points for RSFs | 
+| 9:00 – 10:15 | Lecture | ERD | Selection methods; Home ranges and utilization distributions |
+| 10:15 – 10:30 | Morning Break | | |
+| 10:30 – 11:00 | Livecode | DPS | MCP, UD - home range estimation in R | 
+| 11:00 – 11:30 | Livecode | DPS | Creating Available Points for RSFs | 
 | 11:30 – 13:00 | Lunch | | |
 | 13:00 – 14:15 | Livecode| DPS | Habitat Selection Analysis in R |
 | 14:15 – 14:30 | Afternoon Break | | |
