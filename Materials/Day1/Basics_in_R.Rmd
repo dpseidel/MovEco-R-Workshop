@@ -74,6 +74,10 @@ This can be ignored when parsing by using the `comment` arg.
 ## Let's try:
 co2 <- read.table("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt", comment='#')
 head(co2)
+
+#or if the ftp causes problems, use local:
+#co2 <- read_csv("NOAA_CO2.csv")
+# parsing required may be slightly different
 ```
 
 

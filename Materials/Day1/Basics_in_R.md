@@ -35,14 +35,14 @@ Load the packages each time you open a new session:
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
     ## ✔ tibble  1.3.4          ✔ dplyr   0.7.4     
     ## ✔ tidyr   0.7.2          ✔ stringr 1.2.0     
     ## ✔ readr   1.1.1          ✔ forcats 0.2.0
 
-    ## ── Conflicts ────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -89,6 +89,12 @@ head(co2)
     ## 4 1958  6 1958.458 -99.99 317.10 314.85 -1
     ## 5 1958  7 1958.542 315.86 315.86 314.98 -1
     ## 6 1958  8 1958.625 314.93 314.93 315.94 -1
+
+``` r
+#or if the ftp causes problems, use local:
+#co2 <- read_csv("NOAA_CO2.csv")
+# parsing required may be slightly different
+```
 
 Almost there, but things are still a bit messy. Our first row is being interpreted as column names.
 The documentation also notes that certain values are used to indicate missing data, which we would be better off converting to explicitly missing so we don't get confused.
