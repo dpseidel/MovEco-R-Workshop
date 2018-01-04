@@ -57,7 +57,7 @@ such as country borders, land parcels, and streets.
 
 Often, vector data is stored as "shapefiles" (.shp)
 
-![GPS points from an albatross trajectory are an example of vector data](../../images/albatross.png)
+![GPS points from an albatross trajectory are an example of vector data](../../images/albatross2.png)
 
 ## Raster Data
 Raster models are a representation of the world as a surface divided 
