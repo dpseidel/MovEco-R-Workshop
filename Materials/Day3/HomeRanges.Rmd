@@ -1,5 +1,5 @@
 ---
-title: "Day 3 - MCP & Utilization Distributions"
+title: "Day 3 - MCP & Kernel Density estimatiopn"
 author: "Dana Seidel & Eric Dougherty"
 date: "January 5, 2018"
 output: github_document
@@ -16,33 +16,11 @@ library(adehabitatHR)
 library(move)
 ```
 
-Today we are going to explore 3 main methods for home range estimation in R. We 
+Today we are going to explore 2 of 3 main methods for home range estimation in R. Eric 
+will touch on the 3rd - convex hull methods - on Tuesday. Today, we 
 will again work primarily with the adehabitatHR library and the move library. Most of this code
 and text is an adaptation of the extensive adehabitatHR vignettes, which we encourange you
 to consult for further detail and references. 
-
-The adehabitatHR library contains methods to calculate: 
-
-1. The Minimum Convex Polygon (Mohr, 1947);
-2. Several kernel home range methods:
-  - The “classical” kernel method (Worton, 1989)
-  - the Brownian bridge kernel method (Bullard, 1999, Horne et al.
-2007);  
-  - The Biased random bridge kernel method, also called “movementbased
-kernel estimation” (Benhamou and Cornelis, 2010, Benhamou,
-2011);
-  - the product kernel algorithm (Keating and Cherry, 2009).
-3. Several home-range estimation methods relying on the calculation of convex
-hulls:
-  - The modification by Kenward et al. (2001) of the single-linkage clustering
-algorithm;
-  - The three LoCoH (Local Convex Hull) methods developed by Getz
-et al. (2007)
-  - The characteristic hull method of Downs and Horner (2009)
-  
-Today we will explore the MCP method, the classical and brownian kernal methods, and
-Getz's LoCoH methods. Code and comparison across methods are well described 
-in the adehabitat vignette and the cited literature. 
 
 # Minimum Convex Polygon 
 
@@ -66,8 +44,6 @@ has more options for you. The `mcp` function allows you to specify the percentag
 of coordinates to be included and works on any two column dataframe specifying the coordinates
 of animal relocations:
 ```{r}
-library(adehabitatHR)
-
 data(bear)
 xy <- SpatialPoints(na.omit(ld(bear)[,1:2]))
 
@@ -89,12 +65,14 @@ If you are curious to see, what's going on under the hood of the adehabitatHR
 mcp functions, I recommend checking out [this blog post](https://www.r-bloggers.com/home-range-estimation-mcp) 
 on the subject by Mitchell Gritts. 
          
-#  Worton Kernel UD
-https://www.r-bloggers.com/adehabitathr-visualization/
-https://www.r-bloggers.com/visualizing-utilization-distributions-again/
-adehabitatHR
+# Kernel Density Estimation 
+## Worton Kernel UD
+The "classical" utilization distribution:  Worton (1995)
+
+> The Utilization Distribution (UD) is the bivariate function giving the probability density that an animal is found at a point according to its geographical coordinates. Using this model, one can define the home range as the minimum area in which an animal has some specified probability of being located.
+
 ```{r}
-kud <- kernelUD(xy, h="href")
+kud <- kernelUD(xy)  # h = href is the default - ad hoc method for determining h
 image(kud) + title("Bear UD")
 
 ## Kernel home range
@@ -107,6 +85,29 @@ plot(ver95)  + plot(ver80, add=TRUE, col="green")  +  points(xy)   ## Plots cont
 ```
 
 
+# Additional Resources/Methods:
+The above is only one of the many methods adehabitatHR library contains to calculate home ranges, 
+complete list below: 
 
+1. The Minimum Convex Polygon (Mohr, 1947)
 
+2. Several kernel home range methods:
+  - The “classical” kernel method (Worton, 1989)
+  - the Brownian bridge kernel method (Bullard, 1999, Horne et al.
+2007)  **the only temporal kernel method included in adehabitatHR**
+  - The Biased random bridge kernel method, also called “movementbased
+kernel estimation” (Benhamou and Cornelis, 2010, Benhamou,
+2011)
+  - the product kernel algorithm (Keating and Cherry, 2009).
+  
+3. Several home-range estimation methods relying on the calculation of convex
+hulls:
+  - The modification by Kenward et al. (2001) of the single-linkage clustering
+algorithm
+  - The three LoCoH (Local Convex Hull) methods developed by Getz
+et al. (2007)
+  - The characteristic hull method of Downs and Horner (2009)
+
+## Temporal Kernel Methods
+- Autocorrelated Kernel Density Estimation https://cran.r-project.org/web/packages/ctmm/vignettes/akde.html
 
