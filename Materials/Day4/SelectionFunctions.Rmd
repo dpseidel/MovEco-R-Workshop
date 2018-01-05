@@ -1,0 +1,161 @@
+---
+title: "Day 3 - Preparing covariates for a basic RSF"
+author: "Dana Seidel"
+date: "January 5, 2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#install.packages("lme4")
+library(raster)
+library(lme4)
+library(sf)
+library(tidyverse)
+library(adehabitatHR)
+library(mapview)
+```
+
+# Building a RSF
+Manual of Applied Spatial Ecology, Chapter 8, Resource Selection. 
+http://ecosystems.psu.edu/research/labs/walter-lab/manual/chapter-8-resource-selection
+
+## Step 1: Read in, Clean, and project all your Data
+```{r}
+zebra <- read_csv("data_files/Zebra_Used_LatLong_Full.csv") %>% 
+  dplyr::select(ID = Name, 4:6) %>% 
+  st_as_sf(., coords = 3:4, crs = "+init=epsg:4326") %>% 
+  st_transform("+init=epsg:32733") %>% 
+  mutate(timestamp = lubridate::mdy_hm(Date))
+
+roads <- st_read("data_files/ENP shapefiles/enp roads.shp", crs = "+init=epsg:4326") %>% 
+  st_transform("+init=epsg:32733")
+ggplot(roads) + geom_sf()
+
+roads <- st_read("data_files/ENP shapefiles/enp roads.shp", crs = "+init=epsg:4326") %>% 
+  st_transform("+init=epsg:32733")
+ggplot(roads) + geom_sf()
+
+NDVI <- raster("data_files/NDVI_200903.tif") %>% 
+  projectRaster(crs="+proj=utm +zone=33 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0")
+```
+
+### Keep in mind temporal effects!
+RSF may be a spatial analysis but if we think selection or availability may 
+change over time, we must control for that in our models, either via appropriate 
+covariate inclusion, or simpky by limiting our scope. 
+
+```{r}
+# NDVI was collected in March 2009... perhaps we should limit to only the rainy season months. 
+# Jan, Feb, Mar
+
+zebra %>% 
+  filter(lubridate::month(timestamp) %in% 1:3) %>% 
+  sf::select.sf(-Date) %>% 
+  mutate(Used = 1) -> zebra
+```
+
+## Preparing Used v. Available
+```{r}
+# Choosing an available range. 
+# semiconservative option - 99% UD
+zebra_ud <- adehabitatHR::kernelUD(as(zebra, "Spatial"), 
+                                   grid = 450)
+#zebra_ud <- adehabitatHR::kernelUD(as(zebra, "Spatial")[1],  # add the id column and you get unique homeranges
+#                                   grid = 450)
+zebra_hr <- adehabitatHR::getverticeshr(zebra_ud, 99)
+
+# let's visualize to see
+homerange <- mapview(zebra_hr)
+
+# Note a couple things here: 
+# - the pan: is this really available?
+# - the park fence?
+# we could mask by these polygons."expert opinion"
+
+# For now we are going to use these to sample available points. 
+# First I need to know how many points to sample in each home range. 
+
+zebra_ids <- unique(zebra$ID)
+availables <- list()
+for(i in 1:length(zebra_ids)){
+  #st_sample(st_as_sf(zebra_hr[i]), 10*nrow(filter(zebra, ID == zebra_ids[i]))) # sample individual UDs
+  st_sample(st_as_sf(zebra_hr), 10*nrow(filter(zebra, ID == zebra_ids[i])))  %>%  # 1:10 ratio; population UD
+  st_sf(geometry = .) %>%
+  mutate(ID = zebra_ids[i], 
+         timestamp = NA, 
+         Used = 0) -> availables[[i]] 
+}
+
+availables %>% 
+  do.call(rbind,.) %>%
+  rbind(zebra, .) -> zebra_all
+
+```
+
+# Preparing linear measures
+```{r}
+head(roads)
+unique(roads$TYPE)
+
+mapview(roads, homerange)
+primary_roads <- filter(roads, TYPE %in% c("Tar", "Gravel"))
+mapview(primary_roads, homerange)
+
+# next step take 20 sec or so
+dist<- st_distance(y=zebra_all, x=primary_roads) # a units matrix dim =[nrow(x), nrow(y)]
+
+road_dist <- numeric()
+for (i in 1:nrow(zebra_all)){ 
+  road_dist[i] <- min(dist[,i]) # which.min(dist[,i]) # find road id of min dist 
+ }
+head(road_dist)
+```
+
+# Preparing raster covariates
+```{r}
+zebra_all %>% mutate(NDVI = raster::extract(NDVI, as(., "Spatial")), dist_rd = road_dist) -> zebra_full
+```
+
+# Building the RSF
+## Approaches
+From Spatil
+> There are several ways to to calculate RSFs in R using logistic functions that can assess population level or intra-population variation. The use of General Linear Models with various function using the `lme4` package is often used for estimating population-level models only. Alternatively, we can assess intra-population variation using the `glmer` function. Assessing intra-population variation is a mixed-model approach that provides a powerful and flexible tool for the analysis of balanced and unbalanced grouped data that are often common in wildlife studies that have correlation between observations within the same group or variation among individuals at the same site (Gillies et al. 2006).
+
+## A note on colinearity
+http://blog.minitab.com/blog/understanding-statistics/handling-multicollinearity-in-regression-analysis
+
+When preparing for a regression analysis we want to ensure that our covariates are not 
+overly correlated. If two variables are highly correlated with one another it makes it hard
+to distinguish their individual effects on the response variable - in this case, the use 
+of a habitat type. 
+
+Thankfully for us, productivity and distance to road do not seem to be especially
+correlated in our system:
+
+```{r}
+cor(zebra_full$NDVI, zebra_full$dist_rd)
+```
+
+People debate how to deal with multicollinearity but
+a standard rule of sum is to to drop variables that have a correlation coeffienct
+of over .7. 
+
+### Population Level - glm
+
+```{r}
+glm(Used ~ NDVI + dist_rd + water, data=zebra_full, family=binomial(link="logit"))
+```
+
+
+### Account for individual variation - glmer
+
+Note: It's useful to think about our availables
+
+# Procedure:
+Clearly this is a simplified example for trainings sake. Typically in a full RSF
+analysis you would 
+
