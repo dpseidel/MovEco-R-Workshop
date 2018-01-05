@@ -41,7 +41,7 @@ output: pdf_document
 | 11:30 – 13:00 | Lunch | | |
 | 13:00 – 14:15 | Livecode| DPS | Habitat Selection Analysis in R |
 | 14:15 – 14:30 | Afternoon Break | | |
-| 14:30 – 16:30 | Hands on | --- | From path to presence: transforming tracks into knowledge |
+| 14:30 – 16:30 | Hands on | --- | From path to preference: transforming tracks into knowledge |
 
 
 # Week 2
@@ -49,13 +49,13 @@ output: pdf_document
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
-| 9:00 – 10:30 | Hands on | --- | Selection projects: Our intention is to spend the day expanding from RSF to SSF to PathSF |
+| 9:00 – 10:30 | Hands on | --- | Selection & Spatial Analysis projects: Our intention is to spend the day expanding from RSF to SSF to PathSF |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Hands on | --- |  RSF/SSF projects |
+| 10:45 – 12:00 | Hands on | --- |  projects |
 | 12:00 – 13:30 | Lunch | --- | |
-| 13:30 – 14:45 | Hands on | --- |  RSF/SSF projects |
+| 13:30 – 14:45 | Hands on | --- |  projects |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | Wrap Up | --- |  RSF/SSF projects |
+| 15:00 – 16:30 | Hands on | --- | projects |
 
 ## Day 5, Jan 9
 
@@ -87,9 +87,9 @@ output: pdf_document
 | ------------- | --------------- | ------- | -------------------------------- |
 | 9:00 – 10:30 | Lecture | DPS | Simulating movement; why, when? |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Livecode | ERD | Coding principles of random walks, Levy flights, other movement types | 
+| 10:45 – 12:00 | Livecode | ERD | Simulating movement 1 | 
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 | Livecode| ERD | Implementing agent-based movement models |
+| 13:30 – 14:45 | Livecode| ERD | Simulating movement 2 |
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | --- | Personal projects |
 
@@ -97,13 +97,13 @@ output: pdf_document
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
-| 9:00 – 10:30 | Hands on | --- | More simulations |
+| 9:00 – 10:30 | Lecture | WMG | Epidemiological models |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Livecode | ERD | Adding disease transmission to agent-based movement models | 
+| 10:45 – 12:00 | LiveCode | WMG | Modeling Epidemics in Nova and fitting parameters |
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 | Lecture | WMG | Epidemiological models |
+| 13:30 – 14:45 |  |  |  |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | LiveCode | WMG | Modeling Epidemics in Nova and fitting parameters |
+| 15:00 – 16:30 |  |  |  |
 
 
 
