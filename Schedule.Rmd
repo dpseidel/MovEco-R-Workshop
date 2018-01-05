@@ -34,40 +34,39 @@ output: pdf_document
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
-| 9:00 – 10:15 | Lecture | ERD | Selection methods; Home ranges and utilization distributions |
-| 10:15 – 10:30 | Morning Break | | |
-| 10:30 – 11:00 | Livecode | DPS | MCP, UD - home range estimation in R | 
-| 11:00 – 11:30 | Livecode | DPS | Creating Available Points for RSFs | 
-| 11:30 – 13:00 | Lunch | | |
-| 13:00 – 14:15 | Livecode| DPS | Habitat Selection Analysis in R |
+| 9:00 – 11:00 | Lecture | ERD | Home ranges and utilization distributions |
+| 11:00 – 11:15 | Morning Break | | |
+| 11:30 – 12:00 | Livecode | DPS | MCP, KDE home range estimation in R | 
+| 12:00 – 13:30 | Lunch | | |
+| 13:00 – 14:15 | Livecode| ERD | From LoCoH to T-LoCoH (and a-LoCoH) |
 | 14:15 – 14:30 | Afternoon Break | | |
-| 14:30 – 16:30 | Hands on | --- | From path to preference: transforming tracks into knowledge |
+| 14:30 – 16:30 | Hands on | --- | Home Range Estimation Activity |
 
 
 # Week 2
-## Day 4, Jan 8 
-
-| Time | Activity | Speaker | Topic |
-| ------------- | --------------- | ------- | -------------------------------- |
-| 9:00 – 10:30 | Hands on | --- | Selection & Spatial Analysis projects: Our intention is to spend the day expanding from RSF to SSF to PathSF |
-| 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Hands on | --- |  projects |
-| 12:00 – 13:30 | Lunch | --- | |
-| 13:30 – 14:45 | Hands on | --- |  projects |
-| 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | Hands on | --- | projects |
-
-## Day 5, Jan 9
+## Day 4, Jan 8
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
 | 9:00 – 10:30 | Lecture | WMG | Space-time considerations |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Livecode | ERD | From LoCoH to T-LoCoH (and a-LoCoH) | 
+| 10:45 – 12:00 | Livecode | ERD | More Thoughts: LoCoh & BB | 
 | 12:00 – 13:30 | Lunch | | |
 | 13:30 – 14:45 | Livecode| ERD | T-LoCoH derived metrics; alternative methods (Brownian bridges, AKDE) |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | Hands on | --- | Personal projects |
+| 15:00 – 16:30 | Hands on | --- | Personal Projects |
+
+## Day 5, Jan 9 
+
+| Time | Activity | Speaker | Topic |
+| ------------- | --------------- | ------- | -------------------------------- |
+| 9:00 – 10:30 | Lecture | ERD | Modelling habitat selection: common selection models |
+| 10:30 – 10:45 | Morning Break | | |
+| 10:45 – 12:00 | LiveCode | DPS |  Habitat Selection Analysis in R  |
+| 12:00 – 13:30 | Lunch | --- | |
+| 13:30 – 14:45 | LiveCode | ERD/DPS |  Step Selection Functions and Beyond in R  |
+| 14:45 – 15:00 | Afternoon Break | | |
+| 15:00 – 16:30 | Hands on | --- | Selection Activity |
 
 ## Day 6, Jan 10
 
@@ -79,19 +78,19 @@ output: pdf_document
 | 12:00 – 13:30 | Lunch | | |
 | 13:30 – 14:45 | Livecode| DPS | Identifying movement syndromes; metrics for classification |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | Hands on | --- | Personal projects |
+| 15:00 – 16:30 | Hands on | --- | Behavioral State Activity |
 
 ## Day 7, Jan 11
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
-| 9:00 – 10:30 | Lecture | DPS | Simulating movement; why, when? |
+| 9:00 – 10:30 | Lecture | DPS | Simulating movement; when and why? |
 | 10:30 – 10:45 | Morning Break | | |
 | 10:45 – 12:00 | Livecode | ERD | Simulating movement 1 | 
 | 12:00 – 13:30 | Lunch | | |
 | 13:30 – 14:45 | Livecode| ERD | Simulating movement 2 |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | Hands on | --- | Personal projects |
+| 15:00 – 16:30 | Hands on | --- | Simulation Activity |
 
 ## Day 8, Jan 12
 
@@ -101,9 +100,9 @@ output: pdf_document
 | 10:30 – 10:45 | Morning Break | | |
 | 10:45 – 12:00 | LiveCode | WMG | Modeling Epidemics in Nova and fitting parameters |
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 |  |  |  |
+| 13:30 – 14:45 | Lecture | DPS/ERD | An brief introduction to hierarchical models in Ecology |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 |  |  |  |
+| 15:00 – 16:30 | Wrap Up | ---  | Questions and Final Discussion |
 
 
 
