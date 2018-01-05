@@ -1,8 +1,8 @@
 ---
-title: "Day 3 - MCP & Kernel Density estimatiopn"
+title: "Day 3 - MCP & Kernel Density estimation"
 author: "Dana Seidel & Eric Dougherty"
 date: "January 5, 2018"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
