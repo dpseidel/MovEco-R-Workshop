@@ -38,7 +38,7 @@ output: pdf_document
 | 11:00 – 11:15 | Morning Break | | |
 | 11:30 – 12:00 | Livecode | DPS | MCP, KDE home range estimation in R | 
 | 12:00 – 13:30 | Lunch | | |
-| 13:00 – 14:15 | Livecode| ERD | From LoCoH to T-LoCoH (and a-LoCoH) |
+| 13:00 – 14:15 | Livecode| ERD | Convex hull methods - LoCoH |
 | 14:15 – 14:30 | Afternoon Break | | |
 | 14:30 – 16:30 | Hands on | --- | Home Range Estimation Activity |
 
@@ -50,11 +50,11 @@ output: pdf_document
 | ------------- | --------------- | ------- | -------------------------------- |
 | 9:00 – 10:30 | Lecture | WMG | Space-time considerations |
 | 10:30 – 10:45 | Morning Break | | |
-| 10:45 – 12:00 | Livecode | ERD | More Thoughts: LoCoh & BB | 
+| 10:45 – 12:00 | Livecode | ERD | TLoCoh | 
 | 12:00 – 13:30 | Lunch | | |
 | 13:30 – 14:45 | Livecode| ERD | T-LoCoH derived metrics; alternative methods (Brownian bridges, AKDE) |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | Hands on | --- | Personal Projects |
+| 15:00 – 16:30 | Hands on | --- |  Activity |
 
 ## Day 5, Jan 9 
 
