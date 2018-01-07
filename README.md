@@ -19,23 +19,21 @@ use [DownGit](https://minhaskamal.github.io/DownGit/#/home) to download a specif
 # Instructions before the workshop
 Please make sure you have installed:
 
-- [R (version 3.4 or higher)](https://www.r-project.org/)
+- [R (version 3.3.0 or higher)](https://www.r-project.org/)
 - [Rstudio](https://www.rstudio.com/products/rstudio/download/#download) 
 - The following packages:
-    - devtools
     - tidyverse
+    - lubridate
     - sf
-    - sp
     - ggplot2 (*developer's version)
-    - mapview (*developer's version)
-    - rgdal
-    - rgeos
-    - adehabitat
+    - mapview 
+    - tlocoh **
     - adehabitatLT
     - adehabitatHR
     - move
     - raster
     - lme4
+    - glmer
   
 ## Installation Instructions:
 Inside the Rstudio console, you can install packages using the function `install.packages()`.
@@ -46,10 +44,11 @@ OR you can install multiple at one time using the `c()` function to combine all 
 
 **Keep an eye out for errors that may mean one or multiple packages are failing to load.**
 
-*For the developer's versions, you will need to use the devtools package to download the most up to date versions from github.
+*For the developer's versions, you will need to use the `devtools` package to download the most up to date versions from github.
 This is very similar to the base `install.packages()` function except we have to give it more specific path names e.g.:
 - `devtools::install_github("tidyverse/ggplot2")`
-- `devtools::install_github("r-spatial/mapview")`
+
+** The tlocoh package is found on R-forge so the installation function must be adapted to the following: `install.packages("tlocoh", dependencies=T, repos=c("http://R-Forge.R-project.org"))`
 
 # Additional R Resources: A (woefully incomplete) list 
 For those interested in further tutorials or resources for spatial data analysis and R more generally, please refer to:
@@ -58,6 +57,7 @@ For those interested in further tutorials or resources for spatial data analysis
 - Jamie Afflerbach's Spatial Analysis in R tutorials and [repo](https://github.com/jafflerbach/spatial-analysis-R)
 - the upcoming textbook [Geocomputation with R](http://robinlovelace.net/geocompr/)
 - the [vignettes](https://cran.r-project.org/web/packages/sf/) of the `sf` package
+- the vignettes of the [adehabitatLT](https://cran.r-project.org/web/packages/adehabitatLT/) & [adehabitatHR](https://cran.r-project.org/web/packages/sf/) packages
 - the [r-spatial blog & website](http://r-spatial.org/) for the latest news from the r-spatial community
 - the [Tidyverse website/blog](https://www.tidyverse.org/articles/) for the latest news from the tidyverse
 
