@@ -233,13 +233,13 @@ algo <- function(train.test, k.vals, s.max, num.s.vals, data.lxy, data) {
     
     #cat("iteration:", counter, "chain:", current.k_val, current.s_val, "likelihood:", new.postLike, "\n")
     
-    trace[k,1] <- current.s_val
-    trace[k,2] <- current.k_val
-    trace[k,3] <- hull.mean
-    trace[k,4] <- new.postLike
-    trace[k,5] <- new.lnLike
-    trace[k,6] <- new.AIC
-    trace[k,7] <- new.BIC
+    trace[((k-1)*(num.s.vals+1))+z,1] <- current.s_val
+    trace[((k-1)*(num.s.vals+1))+z,2] <- current.k_val
+    trace[((k-1)*(num.s.vals+1))+z,3] <- hull.mean
+    trace[((k-1)*(num.s.vals+1))+z,4] <- new.postLike
+    trace[((k-1)*(num.s.vals+1))+z,5] <- new.lnLike
+    trace[((k-1)*(num.s.vals+1))+z,6] <- new.AIC
+    trace[((k-1)*(num.s.vals+1))+z,7] <- new.BIC
     colnames(trace) <- c("s.val", "k.val", "hull.mean", "postLike", "lnLike", "AIC", "BIC")
     
     } # End of s loop
