@@ -31,9 +31,9 @@ zebra <- read_csv("data_files/Zebra_Used_LatLong_Full.csv") %>%
   st_transform("+init=epsg:32733") %>% 
   mutate(timestamp = lubridate::mdy_hm(Date))
 
-roads <- st_read("data_files/ENP shapefiles/enp roads.shp", crs = "+init=epsg:4326") %>% 
+water <- st_read("data_files/ENP shapefiles/functional water.shp") %>% 
   st_transform("+init=epsg:32733")
-ggplot(roads) + geom_sf()
+ggplot(water) + geom_sf()
 
 roads <- st_read("data_files/ENP shapefiles/enp roads.shp", crs = "+init=epsg:4326") %>% 
   st_transform("+init=epsg:32733")
@@ -62,15 +62,15 @@ zebra %>%
 ```{r}
 # Choosing an available range. 
 # semiconservative option - 99% UD
-zebra_ud <- adehabitatHR::kernelUD(as(zebra, "Spatial"), 
-                                   grid = 450)
-#zebra_ud <- adehabitatHR::kernelUD(as(zebra, "Spatial")[1],  # add the id column and you get unique homeranges
+#zebra_ud <- adehabitatHR::kernelUD(as(zebra, "Spatial"), 
 #                                   grid = 450)
+zebra_ud <- adehabitatHR::kernelUD(as(zebra, "Spatial")[1],  # add the id column and you get unique homeranges
+                                   grid = 450)
 zebra_hr <- adehabitatHR::getverticeshr(zebra_ud, 99)
 
 # let's visualize to see
 homerange <- mapview(zebra_hr)
-
+homerange
 # Note a couple things here: 
 # - the pan: is this really available?
 # - the park fence?
@@ -82,12 +82,12 @@ homerange <- mapview(zebra_hr)
 zebra_ids <- unique(zebra$ID)
 availables <- list()
 for(i in 1:length(zebra_ids)){
-  #st_sample(st_as_sf(zebra_hr[i]), 10*nrow(filter(zebra, ID == zebra_ids[i]))) # sample individual UDs
-  st_sample(st_as_sf(zebra_hr), 10*nrow(filter(zebra, ID == zebra_ids[i])))  %>%  # 1:10 ratio; population UD
+  st_sample(st_as_sf(zebra_hr)[i,], 10*nrow(filter(zebra, ID == zebra_ids[i]))) %>% # sample individual UDs
+  #st_sample(st_as_sf(zebra_hr), 10*nrow(filter(zebra, ID == zebra_ids[i])))  %>%  # 1:10 ratio; population UD
   st_sf(geometry = .) %>%
-  mutate(ID = zebra_ids[i], 
-         timestamp = NA, 
-         Used = 0) -> availables[[i]] 
+    mutate(ID = zebra_ids[i], 
+          timestamp = NA, 
+          Used = 0) -> availables[[i]] 
 }
 
 availables %>% 
@@ -107,25 +107,29 @@ mapview(primary_roads, homerange)
 
 # next step take 20 sec or so
 dist<- st_distance(y=zebra_all, x=primary_roads) # a units matrix dim =[nrow(x), nrow(y)]
-
-road_dist <- numeric()
-for (i in 1:nrow(zebra_all)){ 
-  road_dist[i] <- min(dist[,i]) # which.min(dist[,i]) # find road id of min dist 
- }
+road_dist <- apply(dist, 2, min)
 head(road_dist)
+
+#
+dist<- st_distance(y=zebra_all, x=water) # a units matrix dim =[nrow(x), nrow(y)]
+water_dist <- apply(dist, 2, min)
+head(water_dist)
 ```
 
 # Preparing raster covariates
 ```{r}
-zebra_all %>% mutate(NDVI = raster::extract(NDVI, as(., "Spatial")), dist_rd = road_dist) -> zebra_full
+zebra_all %>% mutate(NDVI = raster::extract(NDVI, as(., "Spatial")), 
+                     dist_rd = road_dist,
+                     dist_H2O = water_dist) %>% 
+  group_by(ID) -> zebra_full
 ```
 
 # Building the RSF
 ## Approaches
-From Spatil
+From Spatial Ecology 
 > There are several ways to to calculate RSFs in R using logistic functions that can assess population level or intra-population variation. The use of General Linear Models with various function using the `lme4` package is often used for estimating population-level models only. Alternatively, we can assess intra-population variation using the `glmer` function. Assessing intra-population variation is a mixed-model approach that provides a powerful and flexible tool for the analysis of balanced and unbalanced grouped data that are often common in wildlife studies that have correlation between observations within the same group or variation among individuals at the same site (Gillies et al. 2006).
 
-## A note on colinearity
+### A note on colinearity
 http://blog.minitab.com/blog/understanding-statistics/handling-multicollinearity-in-regression-analysis
 
 When preparing for a regression analysis we want to ensure that our covariates are not 
@@ -133,11 +137,12 @@ overly correlated. If two variables are highly correlated with one another it ma
 to distinguish their individual effects on the response variable - in this case, the use 
 of a habitat type. 
 
-Thankfully for us, productivity and distance to road do not seem to be especially
+Thankfully for us, productivity and distance to road and water do not seem to be especially
 correlated in our system:
 
 ```{r}
 cor(zebra_full$NDVI, zebra_full$dist_rd)
+cor(zebra_full$NDVI, zebra_full$dist_H2O)
 ```
 
 People debate how to deal with multicollinearity but
@@ -147,15 +152,98 @@ of over .7.
 ### Population Level - glm
 
 ```{r}
-glm(Used ~ NDVI + dist_rd + water, data=zebra_full, family=binomial(link="logit"))
+m <- glm(Used ~ NDVI + dist_rd + dist_H2O, data=zebra_full, family=binomial(link="logit"))
+
+stepAIC(m)
 ```
 
+##### A Note on Procedure:
+Clearly this is a simplified example for trainings sake. Typically in a full RSF
+analysis you would evaluate multiple candidate models and use model selection
+and averaging procedures to choose the one best supported by your data. Additionally
+one would expect to use some cross validation procedure to evaluate the predictive
+ability of your best model. 
 
 ### Account for individual variation - glmer
 
-Note: It's useful to think about our availables
+```{r}
+zebra_full$ID <- as_factor(zebra_full$ID)
 
-# Procedure:
-Clearly this is a simplified example for trainings sake. Typically in a full RSF
-analysis you would 
+mm <- glmer(Used ~ scale(dist_rd) + scale(dist_H2O) + (1|ID), 
+           data=zebra_full, family=binomial(link="logit"))
+
+mm
+```
+
+
+# Predicting from an RSF
+
+Often we want to interpolate a selection surface from our best model. To do this
+you must ensure first that you have complete data layers across you entire 
+area of interest. Since our NDVI layer covers our entire zone we need not recreate 
+that, but for our roads and water variables we need to create layers for
+distance to roads or distance to water across our entire regions. 
+We are going to show you below how to calculate this in the below
+chunk but as this takes a long time to process, we will pull in pre-calculated 
+geotiff in the next chunk for further mapping. 
+
+```{r, eval=FALSE}
+
+# bring in boundary of area of interest
+ENP <- st_read("data_files/ENP shapefiles/enp fence poly.shp") %>% 
+  st_union %>% st_transform("+init=epsg:32733")
+
+# Let's match the resolution of our NDVI layer
+# res(NDVI)
+
+# make a grid and calculate distances
+enp_grid <- st_make_grid(ENP, n = c(1266, 476), what= "centers") 
+#dist_road_grid <- st_distance(primary_roads, enp_grid)
+dist_water_grid <- st_distance(water, enp_grid)
+
+# convert to raster
+dist_raster <- raster(as(enp_grid, "Spatial"), ncol=1266, nrow= 476)
+#dist_raster[] = apply(dist_road_grid, 2, min)
+dist_raster[] = apply(dist_water_grid, 1, min))
+
+# alternative method using sp and regos libraries -- slower but comparable
+#require(rgeos)
+#dd = gDistance(as(primary_roads, "Spatial"), as(dist_raster,"SpatialPoints"), byid=TRUE)
+#dist_raster[] = apply(dd,1,min)
+
+plot(dist_raster)
+plot(water[1])
+```
+
+To do the above for both the water and road layers would take 5-10 mins, so instead
+let's read in the final rasters for processing:
+```{r}
+dist_road <- raster("data_files/Dist_PrimaryRoads.tif") %>% flip(2)
+dist_water <- raster("data_files/Dist_Water.tif") %>% flip(2)
+
+
+# make a dataframe of all variable points:
+# step 1 make ndvi points match in space to the dist variables
+ndvi <- resample(crop(NDVI, extent(dist_road)), dist_road)
+# stack them all
+rasters <- stack(ndvi, dist_road, dist_water)
+names(rasters) <- c("NDVI", "dist_rd", "dist_H2O")
+
+layers <- map(rasters, as.data.frame) %>% 
+  bind_cols %>% 
+  rename(dist_rd = layer,
+         dist_H2O = layer1)
+
+#predictions based on best model
+
+best_m <- glm(Used ~ dist_rd + dist_H2O, data=zebra_full, family=binomial(link="logit"))
+
+predictions = raster::predict(object = rasters, model=m, fun=predict) #based on the scale of the linear predictors
+predictions = exp(predictions)
+
+plot(predictions)
+```
+
+
+
 
