@@ -1,4 +1,4 @@
-Day 3 - Prepaing a a basic RSF
+Day 5 - Prepaing a a basic RSF
 ================
 Dana Seidel & Eric Dougherty
 January 5, 2018

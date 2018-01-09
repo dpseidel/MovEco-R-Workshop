@@ -1,5 +1,5 @@
 ---
-title: "Day 3 - Prepaing a a basic RSF"
+title: "Day 5 - Prepaing a a basic RSF"
 author: "Dana Seidel & Eric Dougherty"
 date: "January 5, 2018"
 output: github_document
