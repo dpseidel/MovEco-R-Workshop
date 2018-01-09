@@ -198,14 +198,13 @@ ENP <- st_read("data_files/ENP shapefiles/enp fence poly.shp") %>%
 # res(NDVI)
 
 # make a grid and calculate distances
-enp_grid <- st_make_grid(water, n = c(1266, 476), what= "centers") 
+enp_grid <- st_make_grid(ENP, n = c(1266, 476), what= "centers") 
 # convert to raster
 dist_raster <- raster(as(enp_grid, "Spatial"), ncol=1266, nrow= 476)
 
-
-#dist_road_grid <- st_distance(primary_roads, enp_grid)
+# dist_road_grid <- st_distance(primary_roads, enp_grid)
 dist_water_grid <- st_distance(water, enp_grid)
-#dist_raster[] = apply(dist_road_grid, 2, min)
+# dist_raster[] = apply(dist_road_grid, 2, min)
 dist_raster[] = apply(dist_water_grid, 2, min)
 
 
