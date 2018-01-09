@@ -1,6 +1,6 @@
-Day 3 - Preparing covariates for a basic RSF
+Day 3 - Prepaing a a basic RSF
 ================
-Dana Seidel
+Dana Seidel & Eric Dougherty
 January 5, 2018
 
 ``` r
@@ -16,7 +16,7 @@ library(mapview)
 Building a RSF
 ==============
 
-Manual of Applied Spatial Ecology, Chapter 8, Resource Selection. <http://ecosystems.psu.edu/research/labs/walter-lab/manual/chapter-8-resource-selection>
+For another, more thourough example of building an RSF in R, see the Manual of Applied Spatial Ecology, Chapter 8, Resource Selection. <http://ecosystems.psu.edu/research/labs/walter-lab/manual/chapter-8-resource-selection>
 
 Step 1: Read in, Clean, and project all your Data
 -------------------------------------------------
@@ -331,22 +331,22 @@ ENP <- st_read("data_files/ENP shapefiles/enp fence poly.shp") %>%
 # res(NDVI)
 
 # make a grid and calculate distances
-enp_grid <- st_make_grid(water, n = c(1266, 476), what= "centers") 
+enp_grid <- st_make_grid(ENP, n = c(1266, 476), what= "centers") 
 # convert to raster
 dist_raster <- raster(as(enp_grid, "Spatial"), ncol=1266, nrow= 476)
 
-
-#dist_road_grid <- st_distance(primary_roads, enp_grid)
+# dist_road_grid <- st_distance(primary_roads, enp_grid)
 dist_water_grid <- st_distance(water, enp_grid)
-#dist_raster[] = apply(dist_road_grid, 2, min)
+# dist_raster[] = apply(dist_road_grid, 2, min)
 dist_raster[] = apply(dist_water_grid, 2, min)
 
-plot(dist_raster)
-plot(water[1])
 
-# alternative method using sp and regos libraries -- slower but comparable
+plot(dist_raster)
+plot(st_geometry(water), add=TRUE)
+
+# alternative method using sp and regos libraries -- comparable, doesn't require flip
 #require(rgeos)
-#dd = gDistance(as(primary_roads, "Spatial"), as(dist_raster,"SpatialPoints"), byid=TRUE)
+#dd = gDistance(as(water, "Spatial"), as(dist_raster,"SpatialPoints"), byid=TRUE)
 #dist_raster[] = apply(dd,1,min)
 ```
 
@@ -355,6 +355,13 @@ To do the above for both the water and road layers would take 5-10 mins, so inst
 ``` r
 dist_road <- raster("data_files/Dist_PrimaryRoads.tif") %>% flip(2)
 dist_water <- raster("data_files/Dist_Water.tif") %>% flip(2)
+
+# why are we using flip?
+# these files were created with st_distance function. gDistance would not require this. 
+# http://rspatial.org/spatial/rst/8-rastermanip.html
+# "flip lets you flip the data (reverse order) in horizontal or vertical direction – typically to correct for a ‘communication problem’ between different R packages or a misinterpreted file."
+# sf and raster have a "communication problem", in the way the distance is calculated in st_distance. 
+
 
 
 # make a dataframe of all variable points:

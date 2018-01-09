@@ -1,6 +1,6 @@
 ---
-title: "Day 3 - Preparing covariates for a basic RSF"
-author: "Dana Seidel"
+title: "Day 3 - Prepaing a a basic RSF"
+author: "Dana Seidel & Eric Dougherty"
 date: "January 5, 2018"
 output: github_document
 ---
@@ -20,7 +20,7 @@ library(mapview)
 ```
 
 # Building a RSF
-Manual of Applied Spatial Ecology, Chapter 8, Resource Selection. 
+For another, more thourough example of building an RSF in R, see the Manual of Applied Spatial Ecology, Chapter 8, Resource Selection. 
 http://ecosystems.psu.edu/research/labs/walter-lab/manual/chapter-8-resource-selection
 
 ## Step 1: Read in, Clean, and project all your Data
