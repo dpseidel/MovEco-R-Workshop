@@ -209,11 +209,11 @@ dist_raster[] = apply(dist_water_grid, 2, min)
 
 
 plot(dist_raster)
-plot(water[1])
+plot(st_geometry(water), add=TRUE)
 
-# alternative method using sp and regos libraries -- slower but comparable
+# alternative method using sp and regos libraries -- comparable, doesn't require flip
 #require(rgeos)
-#dd = gDistance(as(primary_roads, "Spatial"), as(dist_raster,"SpatialPoints"), byid=TRUE)
+#dd = gDistance(as(water, "Spatial"), as(dist_raster,"SpatialPoints"), byid=TRUE)
 #dist_raster[] = apply(dd,1,min)
 ```
 
@@ -222,6 +222,13 @@ let's read in the final rasters for processing:
 ```{r}
 dist_road <- raster("data_files/Dist_PrimaryRoads.tif") %>% flip(2)
 dist_water <- raster("data_files/Dist_Water.tif") %>% flip(2)
+
+# why are we using flip?
+# these files were created with st_distance function. gDistance would not require this. 
+# http://rspatial.org/spatial/rst/8-rastermanip.html
+# "flip lets you flip the data (reverse order) in horizontal or vertical direction – typically to correct for a ‘communication problem’ between different R packages or a misinterpreted file."
+# sf and raster have a "communication problem", in the way the distance is calculated in st_distance. 
+
 
 
 # make a dataframe of all variable points:
