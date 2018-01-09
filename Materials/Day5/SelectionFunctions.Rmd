@@ -6,10 +6,10 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 ```
 
-```{r}
+```{r, warnings=FALSE, message=FALSE}
 #install.packages("lme4")
 library(raster)
 library(lme4)
@@ -59,7 +59,7 @@ zebra %>%
 ```
 
 ## Preparing Used v. Available
-```{r}
+```{r, screenshot.force=TRUE}
 # Choosing an available range. 
 # semiconservative option - 99% UD
 #zebra_ud <- adehabitatHR::kernelUD(as(zebra, "Spatial"), 
@@ -71,6 +71,7 @@ zebra_hr <- adehabitatHR::getverticeshr(zebra_ud, 99)
 # let's visualize to see
 homerange <- mapview(zebra_hr)
 homerange
+
 # Note a couple things here: 
 # - the pan: is this really available?
 # - the park fence?
@@ -97,7 +98,7 @@ availables %>%
 ```
 
 # Preparing linear measures
-```{r}
+```{r, screenshot.force=TRUE}
 head(roads)
 unique(roads$TYPE)
 
@@ -197,22 +198,23 @@ ENP <- st_read("data_files/ENP shapefiles/enp fence poly.shp") %>%
 # res(NDVI)
 
 # make a grid and calculate distances
-enp_grid <- st_make_grid(ENP, n = c(1266, 476), what= "centers") 
-#dist_road_grid <- st_distance(primary_roads, enp_grid)
-dist_water_grid <- st_distance(water, enp_grid)
-
+enp_grid <- st_make_grid(water, n = c(1266, 476), what= "centers") 
 # convert to raster
 dist_raster <- raster(as(enp_grid, "Spatial"), ncol=1266, nrow= 476)
+
+
+#dist_road_grid <- st_distance(primary_roads, enp_grid)
+dist_water_grid <- st_distance(water, enp_grid)
 #dist_raster[] = apply(dist_road_grid, 2, min)
-dist_raster[] = apply(dist_water_grid, 1, min))
+dist_raster[] = apply(dist_water_grid, 2, min)
+
+plot(dist_raster)
+plot(water[1])
 
 # alternative method using sp and regos libraries -- slower but comparable
 #require(rgeos)
 #dd = gDistance(as(primary_roads, "Spatial"), as(dist_raster,"SpatialPoints"), byid=TRUE)
 #dist_raster[] = apply(dd,1,min)
-
-plot(dist_raster)
-plot(water[1])
 ```
 
 To do the above for both the water and road layers would take 5-10 mins, so instead
@@ -229,16 +231,11 @@ ndvi <- resample(crop(NDVI, extent(dist_road)), dist_road)
 rasters <- stack(ndvi, dist_road, dist_water)
 names(rasters) <- c("NDVI", "dist_rd", "dist_H2O")
 
-layers <- map(rasters, as.data.frame) %>% 
-  bind_cols %>% 
-  rename(dist_rd = layer,
-         dist_H2O = layer1)
-
 #predictions based on best model
-
 best_m <- glm(Used ~ dist_rd + dist_H2O, data=zebra_full, family=binomial(link="logit"))
 
-predictions = raster::predict(object = rasters, model=m, fun=predict) #based on the scale of the linear predictors
+# make a predicted raster layer based upon glm
+predictions = raster::predict(object = rasters, model=m, fun=predict)
 predictions = exp(predictions)
 
 plot(predictions)
