@@ -208,6 +208,7 @@ dist_water_grid <- st_distance(water, enp_grid)
 #dist_raster[] = apply(dist_road_grid, 2, min)
 dist_raster[] = apply(dist_water_grid, 2, min)
 
+
 plot(dist_raster)
 plot(water[1])
 
