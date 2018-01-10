@@ -29,6 +29,7 @@ Thus, small chord distances resulting in low S A values correspond to high turn 
  
 5. Maximum net squared displacement (MNSD). Maximum net squared displacement was calculated as the maximum squared Euclidean displacement from the first relocation of the trajectory over the full course of the trajectory [45]. To make comparisons among individuals across species that have orders of magnitude different motion capacities, we scaled this parameter for each individual by dividing by the smallest MNSD observed for its species.
 
+```{r}
 #' Calculation of Animal Movement Statistics #######
 #' From: Abrahms et al. 2017, Movement Ecology #####
 #' DOI: 10.1186/s40462-017-0104-2 ##################
@@ -46,13 +47,52 @@ Thus, small chord distances resulting in low S A values correspond to high turn 
 library(adehabitatLT)
 library(adehabitatHR)
 library(lubridate)
+library(tidyverse)
+library(sf)
+
+# load dataframe
+argos_data <- read_csv("Abrahms-argos.csv")
+ids <- unique(argos_data$`individual-local-identifier`)
+ids
+names(argos_data)
+
+argos_data %>% 
+  select(long = `location-long`,
+         lat = `location-lat`,
+         timestamp,
+         id = `individual-local-identifier`) %>% 
+  filter(id %in% c("sea lion 1", 
+                   "sea lion 8", 
+                   "sea lion 9", 
+                   "seal 2004001", 
+                   "seal 2004028")) %>%
+  st_as_sf(coords = 1:2, crs = "+proj=longlat") %>%
+  st_transform("+proj=aea") -> Data
+
+
 
 # Convert dataframe to ltraj object
-ltraj <- as.ltraj(xy=Data[,c("lon", "lat")], 
-                  date=as.POSIXct(Data$Timestamp, format="%Y-%m-%d %H:%M:%S", tz="UTC"), 
-                  id=Data$id)
+ltraj <- as.ltraj(xy = st_coordinates(Data), 
+                  date = pull(Data, timestamp), 
+                  id = pull(Data, id))
 
+# regularize traj
+for(i in 1:5){print(median(ltraj[[i]]$dt, na.rm = TRUE))}
+# all should be 1 hour interval
 
+for(i in 1:5){
+  ref <- round(ltraj[[i]]$date[1], "hours")
+  ltraj[i] %>% 
+    setNA(ltraj = ., date.ref = ref, dt = 1, units = "hour") %>%
+    sett0(ltraj = ., date.ref = ref, dt = 1, units = "hour") -> ltraj[i]
+}
+
+# let's just drop sealion 8 .. too many NAs
+ltraj <- ltraj[c(1,3:5)]
+
+```
+
+```{r}
 ############################## CALCULATE METRICS ############################
 
 #################################
@@ -62,7 +102,7 @@ ltraj <- as.ltraj(xy=Data[,c("lon", "lat")],
 # for-loop for calculating TAC for multiple individuals
 # NB: a) all trajectories in the ltraj object must be 'regular'
 
-TAC<-matrix(ncol=1, nrow=length(ltraj)) # create empty data frame to populate with for-loop
+TAC <- matrix(ncol=1, nrow=length(ltraj)) # create empty data frame to populate with for-loop
 
 for (i in 1:length(ltraj)){
   SA <- adehabitatLT::acfang.ltraj(ltraj[i], which = "relative") 
@@ -71,7 +111,9 @@ for (i in 1:length(ltraj)){
 
 View(TAC)
 
+```
 
+```{r}
 ######################################################
 # 2-3. Residence Times (RT) and Times to Return (T2R)
 ######################################################
@@ -126,8 +168,9 @@ for (j in 1:length(ltraj)){
 # Produce a mean statistic for each individual
 meanRTs <- sapply(lapply(lres, "[[", 4), function(x) mean(x, na.rm=T)); View(meanRTs)
 meanT2Rs <- sapply(lapply(lres, "[[", 5), function(x) mean(x, na.rm=T)); View(meanT2Rs)
+```
 
-
+```{r}
 #####################################
 # 4. Mean Volume of Intersection (VI)
 #####################################
@@ -150,8 +193,9 @@ for (i in 1:length(ltraj)){
 }
 
 VI_monthly<-data.frame(VI_monthly); View(VI_monthly)
+```
 
-
+```{r}
 ############################################
 # 5. Maximum Net Squared Displacement (MNSD)
 ############################################
@@ -167,7 +211,7 @@ for (i in 1:length(id)){
 }
 
 View(maxNSD)
-
+```
 
 # Principle Component Analysis
 > To elucidate any underlying structure in our dataset, we performed a principal components analysis (PCA) for the above metrics calculated from our empirical datasets using the prcomp function in the R stats library [29]. PCA is a widely used technique for summarizing a multivariate dataset into a reduced number of uncorrelated dimensions, or principal components, while minimizing the loss of information in the original dataset [48]. We used the Broken-stick criterion to retain important composite (PC) axes, in which components are retained if their eigenvalues exceed those expected by random data [43]. Comparative analyses of component retention methods have shown the Broken-stick model to be among the most reliable techniques [48, 49]. To normalize the dataset for this analysis we first log-transformed the data, followed by centering around the mean and dividing by the variance [50].
