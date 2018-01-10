@@ -1,31 +1,22 @@
-Day 5 - Clustering Movement Syndromes
+Day 6 - Clustering Movement Syndromes
 ================
-Dana Seidel
-January 9, 2018
+Dana Seidel & Eric Dougherty
+January 10, 2018
 
-Theory
-======
-
-Abrahms B, Seidel DP, Dougherty E, Hazen EL, Bograd SJ, Wilson AM, McNutt JW, Costa DP, Blake S, Brashares JS, Getz WM (2017) Suite of simple metrics reveals common movement syndromes across vertebrate taxa. Movement Ecology 5:12. <doi:10.1186/s40462-017-0104-2>
-
-Abrahms B (2017) Data from: Suite of simple metrics reveals common movement syndromes across vertebrate taxa. Movebank Data Repository. <doi:10.5441/001/1.hm5nk220>
+Today we will explore code used in Abrahms et al. 2017 for 5 secondary metrics on movement paths. Although we will spend most of our time exploring the individual metrics and what they tell us about different trajectorties but at the end we will touch on the final steps of the paper which used the results from these metrics together to cluster movement "syndromes"across species.
 
 Metrics
 =======
 
-1.  Mean turn angle correlation (TAC). Following Dray et al. (2010), we calculated angular autocorrelation SA as the sum of squares of chord distances between N successive turn angles ρ:
+1.  Mean turn angle correlation (TAC). Following Dray et al. (2010), Abrahms et al. 2017 calculated angular autocorrelation as the sum of squares of chord distances between successive turn angles.
 
-SA=1N ∑n=1N−1\[(cosρn+1−cosρn)2+(sinρn+1−sinρn)2\]
+2.  Mean residence time (RT). Residence time was measured as the number of hours the animal spends inside a circle of a given radius centered on each location without leaving the radius for more than a specified cut-off time. Abrahms et al. 2017 used a radius of mean step length (SL) and a 12-h cut-off time.
 
-Thus, small chord distances resulting in low S A values correspond to high turn angle correlation \[42\].
+3.  Mean time-to-return (T2R). Time-to-return was measured as the number of hours the animal spends beyond a specified cut-off time before its return to a circle of a given radius centered on each location. Abrahms et al. 2017 again used a radius of mean SL and a 12-h cut-off time.
 
-1.  Mean residence time (RT). Residence time was measured as the number of hours the animal spends inside a circle of a given radius centered on each location without leaving the radius for more than a specified cut-off time \[38\]. We tested the sensitivity of a subset of our dataset to radii of mean step length (SL), 2 x mean SL, 4 x mean SL, and 8 x mean SL, where SL was calculated as the mean Euclidean distance between successive relocations, and cut-off times of 12 and 24 h. Consistent time-use patterns were observed across these thresholds, so following van Moorter et al. (2015), we used a radius of mean SL and a 12-h cut-off time.
+4.  Mean volume of intersection (VI). Volume of intersection was measured by the overlap between monthly 95% kernel density home ranges. Volume of intersection varies between 0 and 1, with increasing values corresponding to increasing overlap between monthly home ranges. VI is thus a measure of home range stability.
 
-2.  Mean time-to-return (T2R). Time-to-return was measured as the number of hours the animal spends beyond a specified cut-off time before its return to a circle of a given radius centered on each location \[38\]. We conducted the same sensitivity analysis for this metric as above, and finding consistent patterns across thresholds, we again used a radius of mean SL and a 12-h cut-off time.
-
-3.  Mean volume of intersection (VI). Volume of intersection was measured by the overlap between monthly 95% kernel density home ranges \[43, 44\]. Volume of intersection varies between 0 and 1, with increasing values corresponding to increasing overlap between monthly home ranges. VI is thus a measure of home range stability.
-
-4.  Maximum net squared displacement (MNSD). Maximum net squared displacement was calculated as the maximum squared Euclidean displacement from the first relocation of the trajectory over the full course of the trajectory \[45\]. To make comparisons among individuals across species that have orders of magnitude different motion capacities, we scaled this parameter for each individual by dividing by the smallest MNSD observed for its species.
+5.  Maximum net squared displacement (MNSD). Maximum net squared displacement was calculated as the maximum squared Euclidean displacement from the first relocation of the trajectory over the full course of the trajectory. To make comparisons among individuals across species that have orders of magnitude different motion capacities, Abrahms et al. 2017 scaled this parameter for each individual by dividing by the smallest MNSD observed for its species.
 
 ``` r
 #' Calculation of Animal Movement Statistics #######
@@ -43,88 +34,13 @@ Thus, small chord distances resulting in low S A values correspond to high turn 
 
 # load libraries
 library(adehabitatLT)
-```
-
-    ## Loading required package: sp
-
-    ## Loading required package: ade4
-
-    ## Loading required package: adehabitatMA
-
-    ## Loading required package: CircStats
-
-    ## Loading required package: MASS
-
-    ## Loading required package: boot
-
-``` r
 library(adehabitatHR)
-```
-
-    ## Loading required package: deldir
-
-    ## deldir 0.1-14
-
-``` r
 library(lubridate)
-```
-
-    ## 
-    ## Attaching package: 'lubridate'
-
-    ## The following object is masked from 'package:base':
-    ## 
-    ##     date
-
-``` r
 library(tidyverse)
-```
-
-    ## ── Attaching packages ─────────────────────────────────────────────────── tidyverse 1.2.1 ──
-
-    ## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
-    ## ✔ tibble  1.3.4          ✔ dplyr   0.7.4     
-    ## ✔ tidyr   0.7.2          ✔ stringr 1.2.0     
-    ## ✔ readr   1.1.1          ✔ forcats 0.2.0
-
-    ## ── Conflicts ────────────────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ lubridate::as.difftime() masks base::as.difftime()
-    ## ✖ lubridate::date()        masks base::date()
-    ## ✖ dplyr::filter()          masks stats::filter()
-    ## ✖ dplyr::id()              masks adehabitatLT::id()
-    ## ✖ lubridate::intersect()   masks base::intersect()
-    ## ✖ dplyr::lag()             masks stats::lag()
-    ## ✖ dplyr::select()          masks MASS::select()
-    ## ✖ lubridate::setdiff()     masks base::setdiff()
-    ## ✖ lubridate::union()       masks base::union()
-
-``` r
 library(sf)
-```
 
-    ## Linking to GEOS 3.6.2, GDAL 2.2.3, proj.4 4.9.3
-
-``` r
 # load dataframe
 argos_data <- read_csv("Abrahms-argos.csv")
-```
-
-    ## Parsed with column specification:
-    ## cols(
-    ##   `event-id` = col_double(),
-    ##   visible = col_character(),
-    ##   timestamp = col_datetime(format = ""),
-    ##   `location-long` = col_double(),
-    ##   `location-lat` = col_double(),
-    ##   modelled = col_character(),
-    ##   `sensor-type` = col_character(),
-    ##   `individual-taxon-canonical-name` = col_character(),
-    ##   `tag-local-identifier` = col_character(),
-    ##   `individual-local-identifier` = col_character(),
-    ##   `study-name` = col_character()
-    ## )
-
-``` r
 ids <- unique(argos_data$`individual-local-identifier`)
 ids
 ```
@@ -190,7 +106,7 @@ for(i in 1:5){
     sett0(ltraj = ., date.ref = ref, dt = 1, units = "hour") -> ltraj[i]
 }
 
-# let's just drop sealion 8 .. too many NAs
+# for todays example, let's just drop sealion 8 .. too many NAs
 ltraj <- ltraj[c(1,3:5)]
 ```
 
@@ -207,14 +123,10 @@ ltraj <- ltraj[c(1,3:5)]
 TAC <- matrix(ncol=1, nrow=length(ltraj)) # create empty data frame to populate with for-loop
 
 for (i in 1:length(ltraj)){
-  SA <- adehabitatLT::acfang.ltraj(ltraj[i], which = "relative") 
+  SA <- adehabitatLT::acfang.ltraj(ltraj[i], which = "relative", plot = FALSE) 
   TAC[i,] <- 1/(SA[[1]][1,])
 }
-```
 
-![](Syndromes_files/figure-markdown_github/unnamed-chunk-2-1.png)![](Syndromes_files/figure-markdown_github/unnamed-chunk-2-2.png)![](Syndromes_files/figure-markdown_github/unnamed-chunk-2-3.png)![](Syndromes_files/figure-markdown_github/unnamed-chunk-2-4.png)
-
-``` r
 TAC
 ```
 
@@ -346,12 +258,37 @@ maxNSD
     ## [3,] 2.745718e+12
     ## [4,] 1.142633e+13
 
+Post-Processing
+===============
+
+Although today we have focused on the metrics themselves and what they individually can tell us about movement trajectories, if we would like to explore the syndromic behaviors overall we might consider the final steps of Abrahms et al. 2017: a principle components and cluster analysis
+
+See [supplementary data file 2](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5452391/bin/40462_2017_104_MOESM2_ESM.r) from Abrahms et al. 2017 for code for simulated movement archetypes, necessary for interpretting and assigning movement syndromes.
+
 Principle Component Analysis
-============================
+----------------------------
 
 > To elucidate any underlying structure in our dataset, we performed a principal components analysis (PCA) for the above metrics calculated from our empirical datasets using the prcomp function in the R stats library \[29\]. PCA is a widely used technique for summarizing a multivariate dataset into a reduced number of uncorrelated dimensions, or principal components, while minimizing the loss of information in the original dataset \[48\]. We used the Broken-stick criterion to retain important composite (PC) axes, in which components are retained if their eigenvalues exceed those expected by random data \[43\]. Comparative analyses of component retention methods have shown the Broken-stick model to be among the most reliable techniques \[48, 49\]. To normalize the dataset for this analysis we first log-transformed the data, followed by centering around the mean and dividing by the variance \[50\].
 
+Example R commands:
+
+    pca <- prcomp(data,
+                     center = TRUE,
+                     scale. = TRUE) 
+    #explore via print() and plot()
+
 Clustering
-==========
+----------
 
 > Finally, we applied Ward’s agglomerative hierarchical clustering algorithm to the resulting PCA values \[51\] using the hclust function in the R stats library \[29\]. This approach clusters the most similar pair of points based on their squared Euclidean distance at each stage of the algorithm, and is an efficient method to identify clusters based on minimum within-cluster variance without making an a priori determination of the number of clusters to generate \[52\]. These clusters can be viewed as functional movement groups, analogous to functional types first theorized for plant communities, which provide a non-phylogenetic classification based on shared responses to environmental conditions \[53\]. To determine the significance of the resulting cluster arrangement, we calculated p-values for each cluster via multi-scale bootstrap resampling with 1000 bootstrap replications using the R package Pvclust \[54, 55\]. By simulating the following idealized movers and determining their cluster assignments, we were able to identify these clusters by movement syndrome.
+
+Example R commands:
+
+    hclust(pca, method="ward.D")
+
+References
+==========
+
+Abrahms B, Seidel DP, Dougherty E, Hazen EL, Bograd SJ, Wilson AM, McNutt JW, Costa DP, Blake S, Brashares JS, Getz WM (2017) Suite of simple metrics reveals common movement syndromes across vertebrate taxa. Movement Ecology 5:12. <doi:10.1186/s40462-017-0104-2>
+
+Abrahms B (2017) Data from: Suite of simple metrics reveals common movement syndromes across vertebrate taxa. Movebank Data Repository. <doi:10.5441/001/1.hm5nk220>
