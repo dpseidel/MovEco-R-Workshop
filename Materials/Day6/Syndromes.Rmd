@@ -109,7 +109,7 @@ for (i in 1:length(ltraj)){
   TAC[i,] <- 1/(SA[[1]][1,])
 }
 
-View(TAC)
+TAC
 
 ```
 
@@ -166,8 +166,10 @@ for (j in 1:length(ltraj)){
 }
 
 # Produce a mean statistic for each individual
-meanRTs <- sapply(lapply(lres, "[[", 4), function(x) mean(x, na.rm=T)); View(meanRTs)
-meanT2Rs <- sapply(lapply(lres, "[[", 5), function(x) mean(x, na.rm=T)); View(meanT2Rs)
+meanRTs <- sapply(lapply(lres, "[[", 4), function(x) mean(x, na.rm=T))
+meanRTs
+meanT2Rs <- sapply(lapply(lres, "[[", 5), function(x) mean(x, na.rm=T))
+meanT2Rs
 ```
 
 ```{r}
@@ -192,7 +194,8 @@ for (i in 1:length(ltraj)){
   VI_monthly[i,]<-c(avg_kudoverlap_monthly) 
 }
 
-VI_monthly<-data.frame(VI_monthly); View(VI_monthly)
+VI_monthly<-data.frame(VI_monthly)
+VI_monthly
 ```
 
 ```{r}
@@ -210,11 +213,20 @@ for (i in 1:length(id)){
   maxNSD[i,] <- sapply(NSD, function(x) max(NSD$maxNSD, na.rm=TRUE)) # calculate max NSD
 }
 
-View(maxNSD)
+maxNSD
 ```
 
 # Principle Component Analysis
 > To elucidate any underlying structure in our dataset, we performed a principal components analysis (PCA) for the above metrics calculated from our empirical datasets using the prcomp function in the R stats library [29]. PCA is a widely used technique for summarizing a multivariate dataset into a reduced number of uncorrelated dimensions, or principal components, while minimizing the loss of information in the original dataset [48]. We used the Broken-stick criterion to retain important composite (PC) axes, in which components are retained if their eigenvalues exceed those expected by random data [43]. Comparative analyses of component retention methods have shown the Broken-stick model to be among the most reliable techniques [48, 49]. To normalize the dataset for this analysis we first log-transformed the data, followed by centering around the mean and dividing by the variance [50].
 
+```{r}
+
+```
+
+
 # Clustering
 > Finally, we applied Ward’s agglomerative hierarchical clustering algorithm to the resulting PCA values [51] using the hclust function in the R stats library [29]. This approach clusters the most similar pair of points based on their squared Euclidean distance at each stage of the algorithm, and is an efficient method to identify clusters based on minimum within-cluster variance without making an a priori determination of the number of clusters to generate [52]. These clusters can be viewed as functional movement groups, analogous to functional types first theorized for plant communities, which provide a non-phylogenetic classification based on shared responses to environmental conditions [53]. To determine the significance of the resulting cluster arrangement, we calculated p-values for each cluster via multi-scale bootstrap resampling with 1000 bootstrap replications using the R package Pvclust [54, 55]. By simulating the following idealized movers and determining their cluster assignments, we were able to identify these clusters by movement syndrome.
+```{r}
+
+```
+
