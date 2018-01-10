@@ -78,7 +78,7 @@ output: pdf_document
 | 12:00 – 13:30 | Lunch | | |
 | 13:30 – 14:45 | Livecode| DPS | Identifying movement syndromes; metrics for classification |
 | 14:45 – 15:00 | Afternoon Break | | |
-| 15:00 – 16:30 | Hands on | --- | Behavioral State Activity |
+| 15:00 – 16:30 | Hands on | --- | Continuing Activities... |
 
 ## Day 7, Jan 11
 
@@ -100,7 +100,7 @@ output: pdf_document
 | 10:30 – 10:45 | Morning Break | | |
 | 10:45 – 12:00 | LiveCode | WMG | Modeling Epidemics in Nova and fitting parameters |
 | 12:00 – 13:30 | Lunch | | |
-| 13:30 – 14:45 | Lecture | DPS/ERD | An brief introduction to hierarchical models in Ecology |
+| 13:30 – 14:45 | Wrap Up | DPS/ERD | Additional Topics and Resources |
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Wrap Up | ---  | Questions and Final Discussion |
 
