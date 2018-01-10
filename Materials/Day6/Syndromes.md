@@ -3,7 +3,7 @@ Day 6 - Clustering Movement Syndromes
 Dana Seidel & Eric Dougherty
 January 10, 2018
 
-Today we will explore code used in Abrahms et al. 2017 for 5 secondary metrics on movement paths. Although we will spend most of our time exploring the individual metrics and what they tell us about different trajectorties but at the end we will touch on the final steps of the paper which used the results from these metrics together to cluster movement "syndromes"across species.
+Today we will explore code used in Abrahms et al. 2017 for 5 secondary metrics on movement paths. Although we will spend most of our time exploring the individual metrics and what they tell us about different trajectorties, at the end of this section we will briefly touch on the final steps of the paper which used the results from these metrics together to cluster movement "syndromes" across species.
 
 Metrics
 =======
@@ -274,7 +274,7 @@ Example R commands:
 
     pca <- prcomp(data,
                      center = TRUE,
-                     scale. = TRUE) 
+                     scale = TRUE) 
     #explore via print() and plot()
 
 Clustering
