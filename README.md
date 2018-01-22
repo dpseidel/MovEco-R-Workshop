@@ -4,7 +4,7 @@ Materials for the Movement Ecology &amp; R Workshop. Hong Kong University Jan 3-
 # Files
 - The workshop schedule is found in the [Schedule.pdf](https://github.com/dpseidel/MovEco-R-Workshop/blob/master/Schedule.pdf), produced by the `Schedule.Rmd`, both found in the main directory. 
 - All files, including slides, live coding scripts, and activities are found sorted into directories according to workshop day in the `Materials/` directory.
-- The [Extra Materials](https://github.com/dpseidel/MovEco-R-Workshop/tree/master/Materials/Extra Materials/) directory contains additional scripts and resources that we did not get to cover fully in the course of the workshop but may be of interest. 
+- The [Extra Materials](https://github.com/dpseidel/MovEco-R-Workshop/tree/master/Materials/Extra\ Materials/) directory contains additional scripts and resources that we did not get to cover fully in the course of the workshop but may be of interest. 
 
 # Acknowledgements
 Eric & I stand on the shoulders of giants and still have much to learn.
