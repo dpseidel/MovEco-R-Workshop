@@ -1,5 +1,5 @@
 # MovEco-R-Workshop
-Materials for the Movement Ecology &amp; R Workshop. Hong Kong University Jan 3-12, 2018
+Materials for the Movement Ecology &amp; R Workshop. Hong Kong University Jan 3-12, 2018. Searchable on our [website](http://dpseidel.github.io/MovEco-R-Workshop) for the repo.
 
 # Contributors
 - Dana Paige Seidel, @dpseidel
@@ -13,6 +13,5 @@ Materials for the Movement Ecology &amp; R Workshop. Hong Kong University Jan 3-
 - The [Extra Materials](https://github.com/dpseidel/MovEco-R-Workshop/tree/master/Materials/Extra%20Materials/) directory contains additional scripts and resources that we did not get to cover fully in the course of the workshop but may be of interest. 
 
 # Acknowledgements
-Eric & I stand on the shoulders of giants and still have much to learn.
 Much of this code is adapted from other resources produced by the [#Rstats](https://twitter.com/search?q=%23rstats&src=typd) community at large. We make an effort to cite these resources throughout our materials where appropriate but would like to specifically acknowledge the contributions of Andy Lyons, Brianna Abrahms, Clement Calenge, Hadley Wickham, Garrett Grolemund, Carl Boettiger, and Jamie Afflerbach that have influenced this workshop. 
 
