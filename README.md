@@ -2,9 +2,9 @@
 Materials for the Movement Ecology &amp; R Workshop. Hong Kong University Jan 3-12, 2018
 
 # Contributors
-Dana Paige Seidel, @dpseidel
-Eric Dougherty, @doughertyeric
-Dr. Wayne M. Getz, @wmgetz
+- Dana Paige Seidel, @dpseidel
+- Eric Dougherty, @doughertyeric
+- Dr. Wayne M. Getz, @wmgetz
 
 # Files
 - The workshop schedule is found in the [Schedule.pdf](https://github.com/dpseidel/MovEco-R-Workshop/blob/master/Schedule.pdf), produced by the `Schedule.Rmd`, both found in the main directory. 
