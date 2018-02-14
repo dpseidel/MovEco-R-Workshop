@@ -29,7 +29,11 @@ navbar-links:
     - Introduction and Goals: "Materials/Day1/HongKongMovement2018Lec1.pdf"
     - Movement Ecology - An Overview: "Materials/Day2/HongKongMovement2018Lec2.pdf"
     - Home Range Estimation: "Materials/Day3/HongKongMovement2018Lec3.pdf"  
-  By Topic:
+    - Space Time Considerations: "Materials/Day4/HongKongMovement2018Lec4.pdf"  
+    - Modelling Habitat Selection: "Materials/Day5/HongKongMovement2018Lec5.pdf" 
+    - Behavioral Aanlaysis: "Materials/Day6/HongKongMovement2018Lec6.pdf"  
+    - Simulating Movement: "Materials/Day7/HongKongMovement2018Lec7.pdf"  
+  Topic:
     - Basics in R: "Materials/Day1/Basics_in_R"
     - Basics 2 in R: "Materials/Day1/More_Advanced_R" 
     - Spatial Data in R: "Materials/Day2/Spatial_Data_in_R"
@@ -56,7 +60,7 @@ title-img: "/MovEco-R-Workshop/img/banner.png"
 
 navbar-col: "#FFFFFF"
 navbar-text-col: "#9ebcda"
-navbar-children-col: "#660033"
+navbar-children-col: "#9ecae1"
 page-col: "#FFFFFF"
 link-col: "#810f7c"
 hover-col: "#0085A1"
