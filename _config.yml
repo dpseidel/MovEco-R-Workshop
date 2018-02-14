@@ -54,13 +54,13 @@ title-img: "/MovEco-R-Workshop/img/banner.png"
 
 # Personalize the colors in your website. Colour values can be any valid CSS colour
 
-navbar-col: "#660033"
-navbar-text-col: "#777777"
+navbar-col: "#FFFFFF"
+navbar-text-col: "#9ebcda"
 navbar-children-col: "#660033"
 page-col: "#FFFFFF"
-link-col: "#ff1a8c"
+link-col: "#810f7c"
 hover-col: "#0085A1"
-footer-col: "#660033"
+footer-col: "#FFFFFF"
 footer-text-col: "#777777"
 footer-link-col: "#595959"
 
