@@ -25,22 +25,25 @@ description: The homepage for the Movement Ecology in R Workshop hosted at Hong 
 navbar-links:
   Logistics & Prep: "Logistics_Prep"
   Schedule: "Schedule.pdf"
-  Workshop Days:
-    - Day 1: "day1"
-    - Day 2: "day2"
-    - Day 3: "day3"
-    - Day 4: "day4"
-    - Day 5: "day5"
-    - Day 6: "day6"
-    - Day 7: "day7"
-    - Day 8: "day8"
+  Lectures:
+    - Introduction and Goals: "Materials/Day1/HongKongMovement2018Lec1"
+    - Movement Ecology - An Overview: "Materials/Day2/HongKongMovement2018Lec2"
+    - Home Range Estimation: "Materials/Day3/HongKongMovement2018Lec3"
   By Topic:
-    - Intro to R:
-    - Intro to Spatial data in R:
-    - Home Ranges:
-    - Kriging:
-  Search: "search"
-
+    - Intro to R: 
+        - Basics: "Materials/Day1/Basics_in_R"
+        - Next Steps: "Materials/Day1/More_Advanced_R" 
+        - Spatial Data in R: "Materials/Day2/Spatial_Data_in_R"
+    -  Analysing Movement Data: 
+        - Path Metrics: "Materials/Day2/Movement_Data_Path_Metrics"
+        - Home Ranges: 
+            - MCP & KDE: "Materials/Day3/HomeRanges"
+            - LoCoH: "Materials/Day3/LoCoH"    
+  Activities:
+    - Day 1: "Materials/Day1/Day1_Activities"
+    - Day 2: "Materials/Day2/Day2_Activity"
+    - Day 3: "Materials/Day3/Day3_Activity"
+  #Search: "search"
 
 # Image to show in the navigation bar - image must be a square (width = height)
 # Remove this parameter if you don't want an image in the navbar

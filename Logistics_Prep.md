@@ -1,8 +1,8 @@
-Preparation & Installation Instructions
-================
-
-Instructions before the workshop
---------------------------------
+---
+layout: page
+title: Instructions before the workshop
+use-site-title: true
+---
 
 Please make sure you have installed:
 
