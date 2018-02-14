@@ -40,22 +40,15 @@ navbar-links:
     - Intro to Spatial data in R:
     - Home Ranges:
     - Kriging:
-    
-  #Teaching: "teaching"
-  #CV & Resume: "resumes"
-  #Resources:
-  #  - Beautiful Jekyll: "http://deanattali.com/beautiful-jekyll/"
-  #  - Learn markdown: "http://www.markdowntutorial.com/"
-  #  - GitHub Pages: "https://pages.github.com/"
-  #Author's home: "http://dpseidel.github.io"
+
 
 # Image to show in the navigation bar - image must be a square (width = height)
 # Remove this parameter if you don't want an image in the navbar
-#avatar: "/img/avatar-icon.png"
+avatar: "/img/logo.png"
 
 # If you want to have an image logo in the top-left corner instead of the title text,
 # then specify the following parameter
-# title-img: /path/to/image
+title-img: "/img/banner.png"
 
 # --- Background colour/image options --- #
 
@@ -93,7 +86,7 @@ social-network-links:
   #rss: true
   email: "dpseidel@berkeley.edu"
   #facebook: 
-#  github: dpseidel
+  github: dpseidel/MovEco-R-workshop
 #  twitter: VLSB5048
 #  reddit: yourname
 #  google-plus: +DeanAttali
