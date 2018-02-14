@@ -31,9 +31,9 @@ navbar-links:
     - Home Range Estimation: "Materials/Day3/HongKongMovement2018Lec3.pdf"  
     - Space Time Considerations: "Materials/Day4/HongKongMovement2018Lec4.pdf"  
     - Modelling Habitat Selection: "Materials/Day5/HongKongMovement2018Lec5.pdf" 
-    - Behavioral Aanlaysis: "Materials/Day6/HongKongMovement2018Lec6.pdf"  
+    - Behavioral Analysis: "Materials/Day6/HongKongMovement2018Lec6.pdf"  
     - Simulating Movement: "Materials/Day7/HongKongMovement2018Lec7.pdf"  
-  Topic:
+  Live Code Tutorials:
     - Basics in R: "Materials/Day1/Basics_in_R"
     - Basics 2 in R: "Materials/Day1/More_Advanced_R" 
     - Spatial Data in R: "Materials/Day2/Spatial_Data_in_R"
