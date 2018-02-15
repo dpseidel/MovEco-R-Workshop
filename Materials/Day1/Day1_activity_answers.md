@@ -5,6 +5,8 @@ In our first hands-on activity we are going to ask you to import, clean, and vis
 
 This activity and code was adapted from Module 2 of the Fall 2017 ESPM 157 Data Science for Global Change course taught at UC Berkeley by Carl Boettiger & Dana Seidel.
 
+For the answers, find the completed file `Day1_Activity_answers` in out github repo. 
+
 Task 1: Import Data
 ===================
 
