@@ -24,7 +24,7 @@ description: The homepage for the Movement Ecology in R Workshop hosted at Hong 
 # List of links in the navigation bar
 navbar-links:
   Logistics & Prep: "Logistics_Prep"
-  Schedule: "Schedule.pdf"
+  Schedule: "Schedule"
   Lectures:
     - Introduction and Goals: "Materials/Day1/HongKongMovement2018Lec1.pdf"
     - Movement Ecology - An Overview: "Materials/Day2/HongKongMovement2018Lec2.pdf"
