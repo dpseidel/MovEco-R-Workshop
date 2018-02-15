@@ -1,5 +1,5 @@
 ---
-title: "Simulating_Movement_part2"
+title: "Simulating Movement Part 2"
 output: github_document
 ---
 

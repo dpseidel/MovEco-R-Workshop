@@ -12,10 +12,10 @@ Day 2 Activity
 -   <https://earthworks.stanford.edu/>
 -   <http://gisgeography.com/best-free-gis-data-sources-raster-vector/>
 
-1.  Load and project raster into R. Remember you may need to crop, or transform your raster to match your vector data.
+4.  Load and project raster into R. Remember you may need to crop, or transform your raster to match your vector data.
 
-2.  Extract, intersect, or spatially join your raster values to your movement data points and form a clean data.frame.
+5.  Extract, intersect, or spatially join your raster values to your movement data points and form a clean data.frame.
 
-3.  Using dpylr verbs, filter those points based upon some interesting limits of your extracted values. For instance, if your raster is elevation, filter points above or below, or between certain elevation levels.
+6.  Using dpylr verbs, filter those points based upon some interesting limits of your extracted values. For instance, if your raster is elevation, filter points above or below, or between certain elevation levels.
 
-4.  Visualize the movement points with a custom map using ggplot with geom\_sf or mapview
+7.  Visualize the movement points with a custom map using ggplot with geom\_sf or mapview

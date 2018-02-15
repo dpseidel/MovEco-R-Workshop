@@ -66,10 +66,6 @@ Our first task is to read this data into our R environment. To this, we will use
 
 #### So what do we need to know about this file in order to read it into R?
 
-``` r
-library("tidyverse")
-```
-
 [First let's take a look at it](ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt)
 
 The first thing we should notice is that there is a large comment block of documentation. This can be ignored when parsing by using the `comment` arg.
@@ -777,7 +773,7 @@ Plotting Data with `ggplot`
 ggplot(co2, aes(decimal_date, average)) + geom_line()
 ```
 
-![](Basics_in_R_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](Materials/Day1/Basics_in_R_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 Plotting multiple series
 ------------------------
@@ -828,7 +824,7 @@ We often would like to plot several data values together for comparison, for exa
       geom_line()
     ```
 
-    ![](Basics_in_R_files/figure-markdown_github/unnamed-chunk-17-1.png)
+    ![](Materials/Day1/Basics_in_R_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 Plotting multiple series
 ------------------------
@@ -842,7 +838,7 @@ co2 %>%
   ggplot(aes(decimal_date, ppmv, col = series)) +  geom_line()
 ```
 
-![](Basics_in_R_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](Materials/Day1/Basics_in_R_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Writing out Data or objects
 ===========================

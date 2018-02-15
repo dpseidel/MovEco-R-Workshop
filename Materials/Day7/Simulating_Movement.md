@@ -1,4 +1,4 @@
-Simulating\_Movement
+Simulating Movement in R
 ================
 
 Today we're going to build our own functions to simulate movement on landscape. This may be a slow process at first, but once you get the hang of building and using functions, you'll see how powerful they can be. Ultimately, we'll actually implement the functions we develop here on a landscape that we will also be simulating (later in the day). Throughout these exercises, I am going to use a code\_folding option that will hide the code in the blocks below (at least in the HTML output) until you click on it to expand. I have chosen to do this because I will have a few challenges for you to try as we develop some of these functions. I don't want to give away all the answers in case you want to try to solve them independently, so they will be hidden until you choose to see them!
@@ -11,7 +11,7 @@ We can very easily use R's built-in capabilities of selecting a random number fr
 hist(rnorm(n=10000, mean=500, sd=100))
 ```
 
-![](Simulating_Movement_files/figure-markdown_github/unnamed-chunk-1-1.png)
+![](Materials/Day7/Simulating_Movement_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
 Alright, it may not reflect and empirical movement path precisely, but it will do the job. Now lets use a uniform distribution to represent the turning angle. This angle can range from -pi to pi (-3.14 to 3.14), and if we take a look at 10000 draws from this uniform distribution, this is what it will look like:
 
@@ -20,7 +20,7 @@ pi = 3.141593
 hist(runif(n=10000, min=-pi, max=pi))
 ```
 
-![](Simulating_Movement_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](Materials/Day7/Simulating_Movement_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
 This suggests that our animal is completely unaffected by the previous direction it came from (i.e., its movements do not exhibit persistence in a given direction), so it is not entirely accurate, but it will do for now.
 
@@ -97,7 +97,7 @@ plot(steps.df$x, steps.df$y, pch=19, type='b')
 points(steps.df$x[1], steps.df$y[1], pch=19, col='red', cex=1.5)
 ```
 
-![](Simulating_Movement_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](Materials/Day7/Simulating_Movement_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 Look at that! We've got ourselves an output. We can see that the movement tends to be pretty random in terms of the turning angles. Every once in a while, you may have a few consecutive points that lead the animal in one direction, but these are purely stochastic, and the animal doubles back on itself with approximately the same frequency.
 
@@ -139,7 +139,7 @@ points(multi.paths[[2]]$x, multi.paths[[2]]$y, pch=19, type='b', col='red')
 points(multi.paths[[3]]$x, multi.paths[[3]]$y, pch=19, type='b', col='blue')
 ```
 
-![](Simulating_Movement_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](Materials/Day7/Simulating_Movement_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 Now we can see that the second path in our new `multi.paths` object has 110 points because we told it to generate 110 points! How might you augment the `multi.move` function to allow the user to pass the starting coordinates of each individual to the function, rather than making all of them (0,0)? We can use the following points as our starting points:
 

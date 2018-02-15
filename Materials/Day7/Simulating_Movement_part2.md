@@ -1,4 +1,4 @@
-Simulating\_Movement\_part2
+Simulating Movement in R, Part 2
 ================
 
 I think you've seen some of the flexibility of functions. Before we move on with this session, we're going to reload that `movement` function.
@@ -108,7 +108,7 @@ dim(multi.states[[1]])
 plot(multi.states[[1]]$x, multi.states[[1]]$y, pch=19, type='b')
 ```
 
-![](Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](Materials/Day7/Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 Now you'll notice that these paths cover a smaller area than when we used the normal distribution with a mean of 500 and an SD of 100 even though we transformed the values from kilometers to meters. We can take a look at what the gamma distributions of the steps from our different beahvioral states look like to illustrate the relative magnitude of the steps we're defining now:
 
@@ -116,13 +116,13 @@ Now you'll notice that these paths cover a smaller area than when we used the no
 hist(rgamma(10000, shape=((55.610^2)/(101.017^2)), rate=((55.610)/(101.017^2))))
 ```
 
-![](Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](Materials/Day7/Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ``` r
 hist(rgamma(10000, shape=((332.775^2)/(578.086^2)), rate=((332.775)/(578.086^2))))
 ```
 
-![](Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](Materials/Day7/Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-4-2.png)
 
 It is not especailly surprising that, even over twice as long of a path, our animal doesn't cover quite as much space. Our longest steps (which are the only ones that are at the same order of magnitude as our previous normal distribution) only occur about one-fifth of the time. The other ~80% of points are much smaller step sizes. But, but incorporating these behavioral states, we have simulated a much more realistic trajectory than what we had with our arbitrary distributions earlier.
 
@@ -205,7 +205,7 @@ multi.states2 <- multi.state2(1, c(200))
 plot(multi.states2[[1]]$x, multi.states2[[1]]$y, pch=19, type='b')
 ```
 
-![](Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](Materials/Day7/Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 Alright, it appears to do what we want it to do! So the first thing I did was come up with a way of calculating what time it was (assuming that the simulation began at hour 0) at the start of each step. The `%/%` operator is a helpful tool for dividing two values and eliminating the remainder (i.e., rounding down to the nearest whole value). Because the time in our HMM was only integer value ranging from 0 to 23, this was the best way to transform our 20 minute fixes into hourly values. The next complication was the fact that 200 points would result in values greater than 23, at which point we wanted the counter to reset to 0. I used a day counter which only kicked in after the time value went over 23, and it would calculate the number of days after that point and we could subtract 24\*days from the time.
 
@@ -312,7 +312,7 @@ multi.states3 <- multi.state.user(1, c(200), step.in, angle.in, trans.in)
 plot(multi.states3[[1]]$x, multi.states3[[1]]$y, pch=19, type='b')
 ```
 
-![](Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](Materials/Day7/Simulating_Movement_part2_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ``` r
 table(multi.states3[[1]]$behav.state)
