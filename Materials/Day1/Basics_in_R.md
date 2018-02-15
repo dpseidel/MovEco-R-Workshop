@@ -1,7 +1,5 @@
 Basics in R
 ================
-Dana Seidel & Eric Dougherty
-1/3/2018
 
 Introducing Rstudio (live demo)
 ===============================

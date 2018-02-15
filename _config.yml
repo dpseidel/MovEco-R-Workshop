@@ -39,11 +39,21 @@ navbar-links:
     - Spatial Data in R: "Materials/Day2/Spatial_Data_in_R"
     - Analysing Movement Data: "Materials/Day2/Movement_Data_Path_Metrics"
     - HomeRanges - MCP & KDE: "Materials/Day3/HomeRanges"
-    - HomeRanges - LoCoH: "Materials/Day3/LoCoH"    
+    - HomeRanges - LoCoH: "Materials/Day3/LoCoH" 
+    - HomeRanges - LoCoh2 & BB: "Materials/Day4/MoreThoughts_LoCoh_BB"
+    - SpaceTime - t-LoCoH: "Materials/Day5/TLoCoH"
+    - SpaceTime - t-LoCoH 2: "Materials/Day5/TLoCoH_and_Beyond"
+    - Behavioral Analysis: "Materials/Day6/Behavioral_Analysis"
+    - Movement Syndromes: "Materials/Day6/Syndromes"
+    - Simulating Movement Part 1: "Materials/Day7/Simulating_Movement"
+    - Simulating Movement Part 2: "Materials/Day7/Simulating_Movement_part2"
   Activities:
     - Day 1: "Materials/Day1/Day1_Activities"
     - Day 2: "Materials/Day2/Day2_Activity"
     - Day 3: "Materials/Day3/Day3_Activity"
+    - Day 4: "Materials/Day3/Day4_Activity"
+    - Day 5: "Materials/Day3/Day5_Activity"
+  Extra Materials: "extra"
   #Search: "search"
 
 # Image to show in the navigation bar - image must be a square (width = height)

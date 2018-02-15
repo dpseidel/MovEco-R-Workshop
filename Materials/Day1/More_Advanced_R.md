@@ -1,7 +1,5 @@
 Slighty More Advanced R
 ================
-Dana Seidel & Eric Dougherty
-1/4/2018
 
 In our earlier section, we discussed the basics of importing, manipulating, and visualizing vector data in R, specifically focused on using the "tidyverse". In this section we want to review some additional powerful tools that we will need as we dive into simulations in R later in the week. Fundamentals in coding such as functions, loops, creating/representing data in a `data.frame` / `tibble` objects, and random number generation will be covered here.
 
