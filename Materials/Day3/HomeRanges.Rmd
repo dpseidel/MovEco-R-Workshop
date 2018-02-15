@@ -96,8 +96,7 @@ complete list below:
   - the Brownian bridge kernel method (Bullard, 1999, Horne et al.
 2007)  **the only temporal kernel method included in adehabitatHR**
   - The Biased random bridge kernel method, also called “movementbased
-kernel estimation” (Benhamou and Cornelis, 2010, Benhamou,
-2011)
+kernel estimation” (Benhamou and Cornelis, 2010, Benhamou, 2011)
   - the product kernel algorithm (Keating and Cherry, 2009).
   
 3. Several home-range estimation methods relying on the calculation of convex
