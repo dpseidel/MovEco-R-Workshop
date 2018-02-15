@@ -29,7 +29,7 @@ For those interested in further tutorials or resources for spatial data analysis
 
 - Introduction to State Space Time Series Analysis, by Commandeur & Koopman
 
-#### Please refer to the [Extra Materials Folder](https://github.com/dpseidel/MovEco-R-Workshop/tree/gh-pages/Materials/Extra%20Materials) to explore other materials we were unable to cover in depth including:
+## Please refer to the [Extra Materials Folder](https://github.com/dpseidel/MovEco-R-Workshop/tree/gh-pages/Materials/Extra%20Materials) to explore other materials we were unable to cover in depth including:
 
 - A Lecture on Epidemiological Models by Wayne Getz
 - An additional live code on Agent Based Models by Eric Dougherty

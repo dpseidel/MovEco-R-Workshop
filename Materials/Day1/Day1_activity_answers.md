@@ -1,3 +1,9 @@
+---
+layout: page
+title: Additional Resources and Materials
+use-site-title: true
+---
+
 Day 1 Activity Answers
 ================
 
