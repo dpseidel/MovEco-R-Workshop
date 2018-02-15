@@ -1,8 +1,6 @@
 ---
 title: "T-LoCoH"
-author: "Eric Dougherty & Dana Seidel"
-date: "January 7, 2018"
-output: html_document
+output: github_document
 ---
 
 ```{r}

@@ -1,7 +1,5 @@
 Additional LoCoh & BB code
 ================
-Dana Seidel
-1/8/2018
 
 Here are some additional notes and code for about Local Covenx Hull and Brownian Bridge methods for home range analysis in the `move` and `adehabitatHR` packages.
 

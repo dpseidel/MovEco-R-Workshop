@@ -1,8 +1,6 @@
 ---
 title: "Day 4 Activity"
-author: "Eric Dougherty & Dana Seidel"
-date: "January 7, 2018"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -11,9 +9,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 We are going to explore some of the functionality that we have demonstrated on example paths:
 
-- 1. Select s and k (or a or r) values and build a T-LoCoH home range from your data or another data source. Why/how did you select those parameters?
+1. Select s and k (or a or r) values and build a T-LoCoH home range from your data or another data source. Why/how did you select those parameters?
 
-- 2. Plot the revisitation and duration values. What biological explanation can you offer to explain the pattern visible in this plot?
+2. Plot the revisitation and duration values. What biological explanation can you offer to explain the pattern visible in this plot?
 
-- 3. Use the T-LoCoH documentation to find the function for exporting a shapefile based on your isopleths or hulls. Bring that object back into your environment using the appropriate `sf` command. Then sample 100 points (once again using the `sf` package) from within the home range you defined earlier.
+3. Use the T-LoCoH documentation to find the function for exporting a shapefile based on your isopleths or hulls. Bring that object back into your environment using the appropriate `sf` command. Then sample 100 points (once again using the `sf` package) from within the home range you defined earlier.
 

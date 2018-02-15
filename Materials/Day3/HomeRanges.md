@@ -133,7 +133,7 @@ plot(ver95)  + plot(ver80, add=TRUE, col="green")  +  points(xy)   ## Plots cont
 ```
 
 ![](HomeRanges_files/figure-markdown_github/unnamed-chunk-5-3.png)
-
+    ## integer(0)
 
 Additional Resources/Methods:
 =============================
