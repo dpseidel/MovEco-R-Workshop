@@ -55,6 +55,7 @@ navbar-links:
     - Day 4: "Materials/Day4/Day4_Activity"
     - Day 5: "Materials/Day5/Day5_Activity"
   Extra Materials: "extra"
+  REPO: "https://www.github.com/dpseidel/MovEco-R-Workshop"
   #Search: "search"
 
 # Image to show in the navigation bar - image must be a square (width = height)
