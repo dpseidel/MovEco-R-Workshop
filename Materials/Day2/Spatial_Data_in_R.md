@@ -33,18 +33,18 @@ Vector models are a representation of the world using points, lines, and polygon
 
 Often, vector data is stored as "shapefiles" (.shp)
 
-![GPS points from an albatross trajectory are an example of vector data](../../images/albatross.png)
+![GPS points from an albatross trajectory are an example of vector data](../../../images/albatross2.png)
 
 Raster Data
 -----------
 
 Raster models are a representation of the world as a surface divided into a regular grid of cells.
 
-![Rasters divide the world into a regular grid](../../images/raster_concept.png)
+![Rasters divide the world into a regular grid](../../../images/raster_concept.png)
 
 These are useful for storing data that varies continuously, as in an aerial photograph, a satellite image, a surface of chemical concentrations, or an elevation surface
 
-![Rasters are better used for continuous data like temperature, elevation, or landcover type](../../images/examples.png)
+![Rasters are better used for continuous data like temperature, elevation, or landcover type](../../../images/examples.png)
 
 Often, Rasters are stored as "GeoTIFFs" (.tif)
 
@@ -189,27 +189,27 @@ HK_districts %>% plot
 
     ## Warning in max(x): no non-missing arguments to max; returning -Inf
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 ``` r
 # pull just the geometry
 HK_boundary %>% st_geometry() %>% plot
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-6-2.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-6-2.png)
 
 ``` r
 HK_districts %>% st_geometry() %>% plot
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-6-3.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-6-3.png)
 
 ``` r
 # or pull just one column
 plot(HK_districts["NAME_1"])
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-6-4.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-6-4.png)
 
 ### With ggplot
 
@@ -220,7 +220,7 @@ plot(HK_districts["NAME_1"])
 ggplot(HK_districts) + geom_sf()
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 This is useful to make sure your file looks correct but doesn't display any information about the data. We can plot these regions and fill each polygon based on the rgn\_id.
 
@@ -228,7 +228,7 @@ This is useful to make sure your file looks correct but doesn't display any info
 ggplot(HK_districts) + geom_sf(aes(fill = NAME_1))
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ggplot gives us useful defaults like Latitude and Longitude labels and cleaner legends but there are even fancier things we can do with maps... we'll introduce you to one in the `mapview` library below.
 
@@ -251,7 +251,7 @@ st_sample(HK_districts, 25) -> points
 mapview(points, map, cex=3, color="red")
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 Step 3: Mainuplate!
 -------------------
@@ -317,7 +317,7 @@ HK_districts %>%
   ggplot(.) + geom_sf(aes(fill = NAME_1))
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/filter-1.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/filter-1.png)
 
 Spatial operations
 ------------------
@@ -332,7 +332,7 @@ full_rgn  <- st_union(HK_districts)
 plot(full_rgn)
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/st_union-1.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/st_union-1.png)
 
 ### Joins
 
@@ -437,7 +437,7 @@ This has to do with our coordinate system. Geographic coordinate systems give co
 
 Above, all our vector data have been in the WGS84 spherical coordinate reference system, which uses longitude and latitude with units in degrees. An example of this projection can be seen in the lower right depication of the US in the image below.
 
-![](../../images/crs.png)
+![](../../../images/crs.png)
 
 It is crucial when doing spatial analyses to know and match the coordinate systems across all of your datasets and ensure everything is properly projected, or your results may be incorrect or your analysis may fail. This is true whether you are working with raster or vector data.
 
@@ -471,7 +471,7 @@ land_cover <- raster("data_files/LCType.tif")
 plot(land_cover)
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ``` r
 crs(land_cover)
@@ -500,13 +500,13 @@ By plotting these side by side, you can really see how different projections can
 plot(HK_landcover)
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 ``` r
 plot(HK_lc_proj)
 ```
 
-![](Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-14-2.png)
+![](../Spatial_Data_in_R_files/figure-markdown_github/unnamed-chunk-14-2.png)
 
 ### Intersections & Extractions
 

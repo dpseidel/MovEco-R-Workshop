@@ -1,8 +1,9 @@
-Day 5 Activity
-================
-
-A true challenge!
------------------
+---
+layout: page
+title: Day 5 Activity
+subtitle: A true challenge!
+use-site-title: true
+---
 
 A SSF goes through much of the same statistical theory as an RSF however requires one to calculate available steps (not simply points), often time pulling from the unique distribution of steps and turning angles observed in the empirical movement path. An additional complication is extracting covariate values along the length of the step not simply at points in space.
 
@@ -25,4 +26,4 @@ Be sure to go through all steps:
 5.  model selection
 6.  prediction
 
-If you're stumped, take a look at the code in `SSF_function.R` in Day 5 of the  Github repo.
+If you're stumped, take a look at the code in `SSF_function.R` in Day 5 of the Github repo.

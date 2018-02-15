@@ -1,5 +1,8 @@
-Behavioral Analysis in R
-================
+---
+layout: page
+title: Behavioral Analysis in R
+use-site-title: true
+---
 
 Behavioral analysis has become one of the most important new ideas in the movement ecology literature. Due to the importance of the internal state in individual movement decisions, analyses such as the ones we will go through today offer an opportunity to understand the motivations underlying space-use more clearly than most of the broader scale analyses we've seen thus far. We are going to begin by considering Hidden Markov Models (HMM) as a means of exploring the behavioral states of our focal animals. Then, we will explore some methods in behavioral change point analysis (BCPA), before ending with a quick survey of some other novel methods in this space.
 
@@ -51,13 +54,13 @@ Now we have an object (`data`) with 6 variables instead of 4. The two new variab
 hist(data$step)
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ``` r
 hist(data$angle)
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-4-2.png)
 
 Note that these histograms include all four elk. We can also take a look at a summary of our newly created dataset to see the number of observations associated with each elk as well as a distbution of our covariate (distance to water):
 
@@ -82,7 +85,7 @@ We can also visualize the paths using the plot command. This will give us the pa
 plot(data[data$ID == "elk-115",])
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-6-1.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-6-2.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-6-1.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-6-2.png)
 
 Now it is time to fit an HMM to the data. To do this, we will use the `moveHMM::fitHMM` command. This is a pretty complex function, however, that requires quite a few inputs to make it run smoothly. Ultimately, our goal is to build a two-state model that relates the behavioral state to the distance from water covariate.
 
@@ -152,7 +155,7 @@ plot(m)
 
     ## Decoding states sequence... DONE
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-1.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-2.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-3.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-4.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-5.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-6.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-7.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-1.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-2.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-3.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-4.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-5.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-6.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-11-7.png)
 
 We've officially built our first hidden Markov model! That was pretty exciting. Let's see some ways that we can use the model outputs. The first is to 'decode' the behavioral states along the paths. This was done for us when we plotted each track above, but if we wanted to see the most likley states for each point, we could use the `moveHMM::viterbi` command, which uses the Viterbi algorithm to predict the most likely sequence of states that generated these paths:
 
@@ -219,7 +222,7 @@ plotStates(m, animals="elk-115")
     ## Decoding states sequence... DONE
     ## Computing states probabilities... DONE
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 Now you may be wondering why we chose a two-state model rather than a three- or four-state model. Well, there was no great reason, so let's evaluate whether this was a decent decision for us to have made and determine whether we want to move forward with this particular HMM.
 
@@ -253,7 +256,7 @@ plot(m3)
 
     ## Decoding states sequence... DONE
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-1.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-2.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-3.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-4.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-5.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-6.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-7.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-1.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-2.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-3.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-4.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-5.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-6.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-17-7.png)
 
 One other cool feature of the `moveHMM` package is the ability to plot it on satelite data using the `moveHMM::plotSat` command. In order to do this, we need the coordinates to be in LatLong rather than UTM. Remember, we'll also need to multiply our UTM coordinates by 1000 to make sure the elk are plotted in the right place:
 
@@ -354,7 +357,7 @@ summary(dataHMM)
 plot(dataHMM,compact=T)
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-23-1.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-23-2.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-23-1.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-23-2.png)
 
 ``` r
 mu0 <- c(0.05, 0.5) # step mean (two parameters: one for each state)
@@ -429,7 +432,7 @@ plot(z3)
 
     ## Decoding states sequence... DONE
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-1.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-2.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-3.png)![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-4.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-1.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-2.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-3.png)![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-4.png)
 
 ``` r
 plotStates(z3)
@@ -438,7 +441,7 @@ plotStates(z3)
     ## Decoding states sequence... DONE
     ## Computing states probabilities... DONE
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-5.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-25-5.png)
 
 ``` r
 states <- viterbi(z3)
@@ -513,7 +516,7 @@ mytrack <- MakeTrack(X,Y,Time)
 plot(mytrack)
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 To obtain the step length and turning angles, use the `bcpa::GetVT` command, which decomposes the data into single steps and calculates all the statistics:
 
@@ -570,7 +573,7 @@ We can take a look at these suggested breakpoints by looking at the smoothed plo
 plot(zebra.ws, type="smooth")
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 That doesnt offer the clearest picture. We can see that there are about 6 separate change points that have some support. We could, however, add a `threshold` parameter, which indicates how many of the windows that were swept over the data must have selected a particular changepoint for it to be considered significant. Here, we will use 5 and see what it looks like:
 
@@ -578,7 +581,7 @@ That doesnt offer the clearest picture. We can see that there are about 6 separa
 plot(zebra.ws, type="smooth", threshold=5)
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 This reduces our number of change points from 6 to 4, and all of them appear to signify reasonable shifts in our response variable (which combines velocity and angle).
 
@@ -588,7 +591,7 @@ An alternative way to search for change points is to use the 'flat' rather than 
 plot(zebra.ws, type="flat")
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 Once again, if we don't set an equivalent to the threshold parameter (in the case of the 'flat' approach, its called `clusterwidth`), we get quite a few change points. If we set this parameter to 5, we get the following:
 
@@ -596,7 +599,7 @@ Once again, if we don't set an equivalent to the threshold parameter (in the cas
 plot(zebra.ws, type="flat", clusterwidth=5)
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 This fairly conservative approach results in only two significant change points in our time series. A visual inspection suggests that these points lead to divisions that appear fairly homogenous within and heterogeneous between segments, so perhaps this is a reasonable set of change points. A summary of these change points can be obtained using the `bcpa::ChangePointSummary` command:
 
@@ -621,13 +624,13 @@ This summmary suggests three phases, with each phase consisting progressively hi
 PathPlot(mytrack, zebra.ws, type="flat", clusterwidth = 5, main="Flat BCPA", xlim=c(580000,600000), ylim=c(7862000, 7870000))
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 ``` r
 PhasePlot(zebra.ws, clusterwidth = 5)
 ```
 
-![](Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-36-2.png)
+![](../Behavioral_Analysis_files/figure-markdown_github/unnamed-chunk-36-2.png)
 
 Now, let's recall the first 100 values of our HMM predictions from the three-state model and see if they align with these results:
 

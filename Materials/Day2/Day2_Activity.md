@@ -1,6 +1,8 @@
-Day 2 Activity
-================
-
+---
+layout: page
+title: Day 2 Activity
+use-site-title: true
+---
 1.  Find and load unique movement data. This can be some of your own, or some pulled from movebank, any other online source, or example data pulled from R packages.
 
 2.  Build a regular ltraj object and plot distributions of turning angles and step lengths for each individual in your dataset

@@ -1,8 +1,10 @@
-Day 6 - Clustering Movement Syndromes
-================
+---
+layout: page
+title: Clustering Movement Syndromes
+use-site-title: true
+---
 
-
-Today we will explore code used in Abrahms et al. 2017 for 5 secondary metrics on movement paths. Although we will spend most of our time exploring the individual metrics and what they tell us about different trajectorties, at the end of this section we will briefly touch on the final steps of the paper which used the results from these metrics together to cluster movement "syndromes" across species.
+Today we will explore code used in [Abrahms et al. 2017](https://movementecologyjournal.biomedcentral.com/articles/10.1186/s40462-017-0104-2) for 5 secondary metrics on movement paths. Although we will spend most of our time exploring the individual metrics and what they tell us about different trajectorties, at the end of this section we will briefly touch on the final steps of the paper which used the results from these metrics together to cluster movement "syndromes" across species.
 
 Metrics
 =======

@@ -1,5 +1,8 @@
-Day 3 - MCP & Kernel Density estimation
-================
+---
+layout: page
+title: MCP & Kernel Density estimation
+use-site-title: true
+---
 
 ``` r
 library(tidyverse)
@@ -24,7 +27,7 @@ hrBootstrap(x=leroy, rep=25, unin='km', unout='km2')
 
     ## 5 6 8 10 13 16 20 25 32 40 50 63 79 100 126 158 199 251 315 397 500 629 792
 
-![](HomeRanges_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](../HomeRanges_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
     ##               0%          25%          50%          75%         100%
     ## 5   2.856609e-05 7.884089e-05 0.0001588235 0.0003846557 0.0007238132
@@ -64,7 +67,7 @@ mcp <- mcp(xy, percent=90)
 ggplot() + geom_sf(data = st_as_sf(mcp)) + geom_sf(data=st_as_sf(xy))
 ```
 
-![](HomeRanges_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](../HomeRanges_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 Yikes! look at all that "unused" space contained within even a 90% mcp!
 
@@ -76,7 +79,7 @@ mcp.area(xy, percent = seq(20,100, by = 5),
          unout = c("ha", "km2", "m2"), plotit = TRUE)
 ```
 
-![](HomeRanges_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](../HomeRanges_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
     ##             a
     ## 20   103.1981
@@ -114,9 +117,8 @@ kud <- kernelUD(xy)  # h = href is the default - ad hoc method for determining h
 image(kud) + title("Bear UD")
 ```
 
-![](HomeRanges_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](../HomeRanges_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-    ## integer(0)
 
 ``` r
 ## Kernel home range
@@ -124,7 +126,7 @@ jj <- kernel.area(kud)                  ## home range size
 plot(jj)                                   ## Plots home range size
 ```
 
-![](HomeRanges_files/figure-markdown_github/unnamed-chunk-5-2.png)
+![](../HomeRanges_files/figure-markdown_github/unnamed-chunk-5-2.png)
 
 ``` r
 ver95 <- getverticeshr(kud) ## home-range contours
@@ -132,8 +134,8 @@ ver80  <- getverticeshr(kud, percent = 80)
 plot(ver95)  + plot(ver80, add=TRUE, col="green")  +  points(xy)   ## Plots contours
 ```
 
-![](HomeRanges_files/figure-markdown_github/unnamed-chunk-5-3.png)
-    ## integer(0)
+![](../HomeRanges_files/figure-markdown_github/unnamed-chunk-5-3.png)
+
 
 Additional Resources/Methods:
 =============================

@@ -1,5 +1,8 @@
-LoCoH
-================
+---
+layout: page
+title: LoCoH
+use-site-title: true
+---
 
 Our walkthrough today will generally follow the guideline laid out by Andy Lyons (an alum of the Getz lab) when he first published his T-LoCoH paper in Movement Ecology. The PDF of that tutorial can be found in our Day 4 folder and also at: [T-LoCoH Tutorial](http://tlocoh.r-forge.r-project.org/tlocoh_tutorial_2014-08-17.pdf)
 
@@ -154,7 +157,7 @@ This illustrates the number of points, the length of the movement trajectory, th
 plot(toni.lxy)
 ```
 
-![](LoCoH_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](../LoCoH_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 This unique plot function colors the points by the timestamp so that you can get an idea of the recursion in the path (i.e., the way the animal covers the same space at different times). This really helps demonstrate the need for T-LoCoH, but we will get to that in a bit more detail soon. One other feature that we can determine from this plot, which is much more difficult to ascertain when staring at a list of numbers, is that there do not appear to be any significant outliers. This suggests that there are no erroneous points, such as those obtained before the collar was deployed.
 
@@ -164,7 +167,7 @@ Yet another summary of the data can be seen using the `tlocoh::hist` command, wh
 hist(toni.lxy)
 ```
 
-![](LoCoH_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](../LoCoH_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 The left two panels (Num Locations Over Time and Time Interval) illustrate that the sampling throughout the period was relatively uniform; it does not look like there were too many missed points during the sampling (though there were a few, particualry towards the end). One normally looks for these gaps because we know that missing data is a problem, but in the case of movement trajectories, the opposite (too many points in a short period) may also be a problem. These are called 'bursts', and the tlocoh package uses the `tlocoh::lxy.plot.freq` command to determine whether there are points that were obtained at too high a frequency relative to the expected sampling frequency.
 
@@ -172,7 +175,7 @@ The left two panels (Num Locations Over Time and Time Interval) illustrate that 
 lxy.plot.freq(toni.lxy, cp=T)
 ```
 
-![](LoCoH_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](../LoCoH_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 This dataset appears to have one little burst of points (the little dot in the lower left corner), so we'll thin it out. Setting a threshold of 0.2 (meaning that any group of points that are less than 0.2 times the median sampling interval) will be considered a cluster and thinned down to one location.
 
@@ -299,7 +302,7 @@ What we are doing here is creating 6 different hullsets with *k* values of 9, 12
 plot(toni.lhs, hulls=TRUE, figs.per.page=6)
 ```
 
-![](LoCoH_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](../LoCoH_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 That looks pretty good, but it doesn't tell us too much just yet. Let's create isopleths for our hullset. Isopleths are aggregations of hulls sorted in such a way as to reveal something about space use. The default settings for `tlocoh::lhs.iso.add` sorts hulls according to density, so the isopleths reflect the likelihood of occurrence, which is a proxy for intensity of use. Then we can plot these (using the iso=TRUE specification instead of hulls=TRUE) to see how they compare to one another and to the hullset plots.
 
@@ -414,7 +417,7 @@ toni.lhs <- lhs.iso.add(toni.lhs)
 plot(toni.lhs, iso=TRUE, figs.per.page=6)
 ```
 
-![](LoCoH_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](../LoCoH_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 According to the tutorial, we are looking to select the k value that leads to a set of hulls where the heavily used area doesn't look like Swiss cheese, but also doesn't cut across unused areas. This is essentially finding a balance between Type I error (including area that isn't part of the home range) and Type II error (omitting area the animal used). This is a somewhat subjective choice and it will depend on the particular research question. Once we select one that we think satisfies those criteria, we can take a closer look at our choice before moving forward with our analyses. Using the `allpts=TRUE` argument, we can take a look at what the points are included in our selected home range.
 
@@ -422,7 +425,7 @@ According to the tutorial, we are looking to select the k value that leads to a 
 plot(toni.lhs, iso=T, k=15, allpts=T, cex.allpts=0.1, col.allpts="gray30", ufipt=F)
 ```
 
-![](LoCoH_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](../LoCoH_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 In addition to the isopleth plots, we can use two other metrics to verify that our choice of *k* value is sufficient. The first is the isopleth area curves, which will plot the area included in a set of different isopleth levels (ranging from 0.15 to 0.95 by 0.10). We want to check these plots to make sure that there are no sharp jumps between *k* values that indicate that a relatively small change in *k* results in a large increase in included area (likely a false commission). To look at this plot, we use the `tlocoh::lhs.plot.isoarea` command:
 
@@ -430,7 +433,7 @@ In addition to the isopleth plots, we can use two other metrics to verify that o
 lhs.plot.isoarea(toni.lhs)
 ```
 
-![](LoCoH_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](../LoCoH_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 There don't appear to be any major jump (i.e., the curves are all resonably smooth, no matter the *k* value). This means we shouldn't rule out any of the *k* values we have tested. The next metric we could look at is the edge to area ratio. A simple plot of this measure across the same set of isopleths can be created using the `tlocoh::lhs.plot.isoear` command. We are looking to exclude *k* values that result in very high edge:area ratios, which are indicative of the Swiss cheese pattern (i.e., many small holes). This is particularly important at some of the isopleths associated with the core area (0.35, 0.45, 0.55) where we would expect relatively few holes.
 
@@ -438,7 +441,7 @@ There don't appear to be any major jump (i.e., the curves are all resonably smoo
 lhs.plot.isoear(toni.lhs)
 ```
 
-![](LoCoH_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](../LoCoH_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 We can see that a *k* of 9 results in some pretty Swiss-cheesy looking isopleths at the lower end of the spectrum, but by *k*=15, these are largely filled in. So, if *k*=15 still looks sufficient based on these metrics and the isopleth map, we can use the `tlocoh::lhs.select` command to select this value for subsequent analyses:
 

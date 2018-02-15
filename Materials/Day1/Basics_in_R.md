@@ -773,7 +773,7 @@ Plotting Data with `ggplot`
 ggplot(co2, aes(decimal_date, average)) + geom_line()
 ```
 
-![](Materials/Day1/Basics_in_R_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](../Basics_in_R_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 Plotting multiple series
 ------------------------
@@ -824,7 +824,7 @@ We often would like to plot several data values together for comparison, for exa
       geom_line()
     ```
 
-    ![](Materials/Day1/Basics_in_R_files/figure-markdown_github/unnamed-chunk-17-1.png)
+    ![](../Basics_in_R_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 Plotting multiple series
 ------------------------
@@ -838,7 +838,7 @@ co2 %>%
   ggplot(aes(decimal_date, ppmv, col = series)) +  geom_line()
 ```
 
-![](Materials/Day1/Basics_in_R_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](../Basics_in_R_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Writing out Data or objects
 ===========================

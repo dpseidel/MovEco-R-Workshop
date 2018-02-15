@@ -1,5 +1,9 @@
-T-LoCoH and Beyond
-================
+---
+layout: page
+subtitle: T-LoCoH, Part 2
+title: T-LoCoH and Beyond
+use-site-title: true
+---
 
 Let's continue where we left off with our earlier exercise by loading in one of our existing hullsets. We've already done the hard work of selecting parameters, so we'll bring in the temporally-dependent hullset using a simple `base::file.choose` command, which lets you select a file via a browser window. We'll want to click on the one that has an *s* of 0.03 in the file name rather than 0. I have the `file.choose` command commented out for the sake of 'knitting' this document (where you cannot interact with the code, so user-based commands will cause it to spit an error. You may see a few more instances of commented out code; just remove the '\#' from the front to run them):
 
@@ -38,7 +42,7 @@ That's all very nice in theory, but let's see what it looks like in practice. Fi
 plot(toni.lhs.time.k15, ellipses=TRUE)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 That looks pretty neat! We can see ellipses of all different shapes and sizes, but its a bit difficult to make out what is happening with any specfic hull. We can get a bit better resolution on exactly what is happeneing here using a few additional arguments in our `plot` call:
 
@@ -46,7 +50,7 @@ That looks pretty neat! We can see ellipses of all different shapes and sizes, b
 plot(toni.lhs.time.k15, hulls=T, ellipses=T, allpts=T, nn=T, ptid="auto")
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 Here we can see the parent point around which the hull is built, the hull itself, and the ellipse that is contructed around it. The circle points that are within the hull are the nearest neighbor points of this particular parent point. One thing you can see is that the hull is clearly not built around only the closest points in terms of spatial proximity (there are a bunch a much closer points). If we call the same line of code again, we will (almost definitely) see a different parent point and its associated neighbors, hull, and ellipse (the `ptid="auto"` argument leads to the selection of a random point to look at up close).
 
@@ -111,7 +115,7 @@ toni.lhs.time.k15 <- lhs.iso.add(toni.lhs.time.k15, sort.metric="ecc")
 plot(toni.lhs.time.k15, iso=T, iso.sort.metric="ecc")
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 This plot shows some of the areas where Toni moved in the most directed fashion. These could represent efficient routes through the home range (i.e., areas with the least resistance). It should be noted that these home ranges look a bit different from the ones we created earlier because we are sorting by a different metric. Often, this will result in core areas looking a bit more like Swiss cheese than they did when sorting by density. That is to be expected because we are looking, once again, at only the 95-percent isopleth. The 5 percent of points with the lowest eccentricity (which are likely portions of the core area where the animal was not moving in a directional manner) are excluded from this isopleth plot.
 
@@ -121,13 +125,13 @@ Next, lets look at the spatial patterns of revisitation. Let's look at both the 
 hist(toni.lhs.time.k15, metric="nsv")
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 plot(toni.lhs.time.k15, hpp=T, hpp.classify="nsv", ivg=3600*12, col.ramp="rainbow")
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-8-2.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
 The histogram shows that the majority of hulls were revisted fewer than 10 times, though there are some hulls that are visited almost 30 times! When we look at the plot of the movement track colored by the revistation rate, we can see where these areas of high revisitation are. Unexpectedly, these points are located in the core area, whereas the parent points of hulls with relatively few revisitations are along the periphery. These core areas likely represent regions that contain resources that Toni needed repeatedly. If we wanted to zoom in on a certain portion of the plot, we could use the area of interest command (`tlocoh::aoi`). Once we type this, we need to click on two points that represent the corners of the box we want to zoom in on (once again, these are commented out because they require active user input, so for the sake of 'knitting' they have been removed):
 
@@ -144,13 +148,13 @@ Let's take a look at duration of each visit now.
 hist(toni.lhs.time.k15, metric="mnlv", ivg=3600*12)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ``` r
 plot(toni.lhs.time.k15, hpp=T, hpp.classify="mnlv", col.ramp="rainbow")
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-10-2.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-10-2.png)
 
 This plot is almost the inverse of the previous. The points that were in the vicinity of the high revisitation areas exhibit lower durations of visit. The latter pattern is often associated with the presence of a watering hole in the home range. The higher values of duration appear to occur along the periphery, but this is a bit misleading; it may actually be an artefact of the fact that we used the *k* method. Because we used *k*=15, every hull is constructed from 15 nearest neighors. Furthermore if there are no repeat visits to the area, the hull will consist of 15 temporally contiguous points -- a single 'visit' with 15 locations. This indicates that the *a* method may have been better, as it may have accounted for these outlying areas more effectively (i.e., there would be fewer neighbors for those points, and thus, lower durations of visits).
 
@@ -160,13 +164,13 @@ The last thing we'll look at is a scatterplot of the hull revisitation and durat
 hull.scatter <- lhs.plot.scatter(toni.lhs.time.k15, x="nsv", y="mnlv", col="spiral", bg="black")
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 ``` r
 plot(toni.lhs.time.k15, hpp=T, hsp=hull.scatter, hpp.classify="hsp")
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-11-2.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-11-2.png)
 
 This map illustrates that the measures of time use are not randomly distributed. Rather, these two dimensions of time use do a pretty good job of dividing the landscape into discrete areas.
 
@@ -209,7 +213,7 @@ summary(pepper.lhs.k15)
 plot(pepper.lhs.k15, iso=TRUE)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 You'll notice that this object does not have the eccentricity, revisitation, or duration metrics saves like our more complete hullset for Toni, but we could easily add these (though it wont be necessary for this particular analysis):
 
@@ -247,7 +251,7 @@ plot(pepper.hr, border="blue")
 plot(pepper.core, border="red", add=T)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Now we'll go through the same steps to extract the core area and home range from the Toni lhs that we created:
 
@@ -261,7 +265,7 @@ plot(toni.hr, border="green", add=T)
 plot(toni.core, border="purple", add=T)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 Now we can see there is some potential overlap between these two individuals. We'll want to be able to quantify that, though, so let's see if we can extract a value for that region of overlap. We'll start with the core areas, as these are the areas that both individual use most frequently, which means contact would be most likely in these portions of the ranges. First we'll plot just these core areas to see if there's any evidence of overlap at all:
 
@@ -270,7 +274,7 @@ plot(pepper.core, border="red")
 plot(toni.core, border="purple", add=T)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 Next, we’ll find the area of intersection of the core areas of Toni and Pepper using the `gIntersection` function from the `rgeos` package. Then we can visualize these regions on the plot we just made:
 
@@ -290,7 +294,7 @@ plot(toni.core, border="purple", add=T)
 plot(tp.core.common, col="black", add=T)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 But we wanted an actual metric that we could use to describe this area. Though there is no simple function to determine the polygon area, we can delve into the SpatialPolygon object to get such a value:
 
@@ -309,7 +313,7 @@ tp.hr.common <- gIntersection(pepper.hr, toni.hr)
 plot(tp.hr.common, col="black", add=T)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 ``` r
 tp.hr.common@polygons[[1]]@area
@@ -366,7 +370,7 @@ toni.BBMM <- raster('Toni.BBMM.tif')
 plot(toni.BBMM)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ``` r
 toni.vals <- getValues(toni.BBMM)
@@ -440,7 +444,7 @@ map.core <- SpatialPolygonsDataFrame(map.core, data = data.core)
 plot(map.core)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ``` r
 bbmm.95 = data.frame(x = toni.df$x, y = toni.df$y, probability = toni.df$probability)
@@ -466,7 +470,7 @@ plot(map.hr)
 plot(map.core, col='black', add=TRUE)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-29-2.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-29-2.png)
 
 Now we are going to look into one other aspect of the T-LoCoH package that may make various analyses more straightforward or directly comparable. We have seen other forms of utilization distribution (like the BBMM) that take the form of a raster surface, and we can rasterize the isopleths we made earlier in order to compare the T-LoCoH-based UDs to the outputs from alternative methods.
 
@@ -495,7 +499,7 @@ plot(queen.lhs, allpts=T, gmap="hybrid", cex.allpts=0.2)
 
     ## Downloading common background image...Done
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 Next, we will build a set of isopleths for Queen, but unlike previous calls, we are going to specify the isopleth levels that we want, and we will select every percentile from 1 to 100 in order to create a near-continuous UD:
 
@@ -504,7 +508,7 @@ queen.lhs <- lhs.iso.add(queen.lhs, iso.levels=1:100/100, status=FALSE)
 plot(queen.lhs, iso=TRUE)
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 Now, we will rasterize this set of isopleths (this may take a while). We define the resolution of the underlying raster cells using the `cell.size` argument within the `tlocoh::lhs.iso.rast` command:
 
@@ -527,6 +531,6 @@ Once we know that the rasterization was successful, we can plot it:
 plot(queen.lhs, rast=T, iso.legend=FALSE, desc=0, title="queen UD")
 ```
 
-![](TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](../TLoCoH_and_Beyond_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 This layer can now be used in any function that requires a raster input (e.g., `adehabitatHR::kerneloverlap` which calculates the utilization distribution overlap index ('UDOI') or volume of intersection ('VI') between home ranges)

@@ -1,6 +1,9 @@
-Day 5 - Prepaing a a basic RSF
-================
-
+---
+layout: page
+title: Habitat Selection Analysis in R
+subtitle: Prepping a basic RSF
+use-site-title: true
+---
 ``` r
 #install.packages("lme4")
 library(raster)
@@ -65,7 +68,7 @@ water <- st_read("data_files/ENP shapefiles/functional water.shp") %>%
 ggplot(water) + geom_sf()
 ```
 
-![](SelectionFunctions_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](../SelectionFunctions_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
 ``` r
 roads <- st_read("data_files/ENP shapefiles/enp roads.shp", crs = "+init=epsg:4326") %>% 
@@ -84,7 +87,7 @@ roads <- st_read("data_files/ENP shapefiles/enp roads.shp", crs = "+init=epsg:43
 ggplot(roads) + geom_sf()
 ```
 
-![](SelectionFunctions_files/figure-markdown_github/unnamed-chunk-2-2.png)
+![](../SelectionFunctions_files/figure-markdown_github/unnamed-chunk-2-2.png)
 
 ``` r
 NDVI <- raster("data_files/NDVI_200903.tif") %>% 
@@ -122,7 +125,7 @@ homerange <- mapview(zebra_hr)
 homerange
 ```
 
-![](SelectionFunctions_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](../SelectionFunctions_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ``` r
 # Note a couple things here: 
@@ -181,14 +184,14 @@ unique(roads$TYPE)
 mapview(roads, homerange)
 ```
 
-![](SelectionFunctions_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](../SelectionFunctions_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 ``` r
 primary_roads <- filter(roads, TYPE %in% c("Tar", "Gravel"))
 mapview(primary_roads, homerange)
 ```
 
-![](SelectionFunctions_files/figure-markdown_github/unnamed-chunk-5-2.png)
+![](../SelectionFunctions_files/figure-markdown_github/unnamed-chunk-5-2.png)
 
 ``` r
 # next step take 20 sec or so
@@ -379,4 +382,4 @@ predictions = exp(predictions)
 plot(predictions)
 ```
 
-![](SelectionFunctions_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](../SelectionFunctions_files/figure-markdown_github/unnamed-chunk-11-1.png)

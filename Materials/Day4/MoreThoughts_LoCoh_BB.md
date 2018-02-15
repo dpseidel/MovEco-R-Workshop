@@ -1,6 +1,8 @@
-Additional LoCoh & BB code
-================
-
+---
+layout: page
+title: Additional LoCoH and Brownian Bridge code
+use-site-title: true
+---
 Here are some additional notes and code for about Local Covenx Hull and Brownian Bridge methods for home range analysis in the `move` and `adehabitatHR` packages.
 
 ``` r
@@ -28,7 +30,7 @@ Kernel BB
 liker(bear, sig2 = 30, rangesig1 = c(1, 10))
 ```
 
-![](MoreThoughts_LoCoh_BB_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](../MoreThoughts_LoCoh_BB_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
     ## *****************************************
     ## 
@@ -42,9 +44,9 @@ kud <- kernelbb(bear, sig1 = 3.3153, sig2 = 30)
 image(kud) + title("Bear bb_UD")
 ```
 
-![](MoreThoughts_LoCoh_BB_files/figure-markdown_github/unnamed-chunk-2-2.png)
+![](../MoreThoughts_LoCoh_BB_files/figure-markdown_github/unnamed-chunk-2-2.png)
 
-    ## integer(0)
+
 
 ``` r
 ## Kernel home range
@@ -65,9 +67,9 @@ ver80  <- getverticeshr(kud, percent = 80)
 plot(ver95)  + plot(ver80, add=TRUE, col="green")  +  points(xy)   ## Plots contours
 ```
 
-![](MoreThoughts_LoCoh_BB_files/figure-markdown_github/unnamed-chunk-2-3.png)
+![](../MoreThoughts_LoCoh_BB_files/figure-markdown_github/unnamed-chunk-2-3.png)
 
-    ## integer(0)
+
 
 Dynamic Brownian Bridge UD
 --------------------------
@@ -103,9 +105,9 @@ contour(udbear, levels=c(0.5, 0.95), add=TRUE, lwd=c(2, 1), lty=c(2,1), col = c(
   title("Dynamic brownian bridge")
 ```
 
-![](MoreThoughts_LoCoh_BB_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](../MoreThoughts_LoCoh_BB_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-    ## integer(0)
+
 
 Much much much tighter contours than kUD and MCP methods!
 

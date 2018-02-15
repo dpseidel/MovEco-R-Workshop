@@ -1,6 +1,9 @@
-T-LoCoH
-================
-
+---
+layout: page
+title: T-LoCoH
+subtitle: Part 1
+use-site-title: true
+---
 ``` r
 library(tlocoh)
 ```
@@ -48,7 +51,7 @@ toni.lxy <- lxy.ptsh.add(toni.lxy)
     ##   
     ## Done with toni
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
 This creates a set of 200 sample points, each with 10 nearest neighbors. This algorithm goes through a set of different *s* values and determines what proportion of hulls are time-selected. Though this is a somewhat stochastic process, we can see that *s* values between approximiately 0.01 and 0.035 fall between proportions of time-selected hulls ranging from about 40-80%. For simplicity, there is also a nice plot that shows the change in the proportion of time selected hulls over various *s* values to find an optimal point. It seems like 0.03 is a reasonable choice.
 
@@ -58,7 +61,7 @@ The second method is a little more involved. First we need to select a time inte
 lxy.plot.pt2ctr(toni.lxy)
 ```
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 Looking at that, it is a little difficult to pick out especially notable patterns, but depending on your data, something may jump out. Even without using that, we can call the \``tlocoh::lxy.plot.sfinder` command:
 
@@ -66,7 +69,7 @@ Looking at that, it is a little difficult to pick out especially notable pattern
 lxy.plot.sfinder(toni.lxy)
 ```
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 This shows that approximately half of all pairs of points will be time-selected at the scale of 24 hours when *s* is somewhere around 0.005 to 0.01. We can get a closer look by defining a specific set of *delta.t* values:
 
@@ -74,7 +77,7 @@ This shows that approximately half of all pairs of points will be time-selected 
 lxy.plot.sfinder(toni.lxy, delta.t=3600*c(12,24,36,48,54,60))
 ```
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 That's better! It looks like the results here support the use of 0.03 as our *s* value. It would not be especially surprising if the two methods did not converge on a single *s* value, though. They are approaching the selection of *s* in very different ways. The fact of the matter is that there is not perfect *s* value. Changes in that parameter will result in different hullsets that tell us different things. Fortunately, we've landed on a value of 0.03 using both methods!
 
@@ -174,7 +177,7 @@ lxy.plot.mtdr(toni.lxy, k=10)
       |                                                                       
       |=================================================================| 100%
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 lxy.plot.tspan(toni.lxy, k=10)
@@ -195,7 +198,7 @@ lxy.plot.tspan(toni.lxy, k=10)
       |                                                                       
       |=================================================================| 100%
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-8-2.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
 These methods still leave a great deal up to the researcher, which has its pros and cons, but at least you've got quite a few alternatives for selecting an ideal *s* value for your particular purposes. We'll stick with our 0.03 value for now, but we'll need to create a new lhs object using this parameter:
 
@@ -370,7 +373,7 @@ toni.lhs.time <- lhs.iso.add(toni.lhs.time)
 plot(toni.lhs.time, iso=TRUE, figs.per.page=6)
 ```
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 Once again, it looks like k=15 meets the eyeball-test, even when we incorporate the temporal component. We can take one last look to see what the old isopleths (without time) look like in comparison to these (with time).
 
@@ -379,13 +382,13 @@ toni.lhs.time.k15 <- lhs.select(toni.lhs.time, k=15)
 plot(toni.lhs.k15, iso=TRUE, figs.per.page=1)
 ```
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ``` r
 plot(toni.lhs.time.k15, iso=TRUE, figs.per.page=1)
 ```
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-10-2.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-10-2.png)
 
 Before we finish up this segment, let's make sure we save our new hullset so that we can use it in the next lesson!
 
@@ -575,10 +578,10 @@ my.palette <- c("#FFF5F0", "#FEE0D2", "#FEE0D2", "#FCBBA1", "#FCBBA1", "#FC9272"
 levelplot(-trace$X7 ~ trace$X2 * trace$X3, xlab="k value", ylab="s value", zlab="IC", screen = list(z = -30, x=-60), regions=TRUE, cuts=15, col.regions=my.palette)
 ```
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ``` r
 wireframe(-trace$X7 ~ trace$X2 * trace$X3, xlab="k value", ylab="s value", zlab="IC", screen = list(z = -30, x=-60), drape=TRUE, cuts=15, col.regions=my.palette)
 ```
 
-![](T-LoCoH_files/figure-markdown_github/unnamed-chunk-13-2.png)
+![](../T-LoCoH_files/figure-markdown_github/unnamed-chunk-13-2.png)

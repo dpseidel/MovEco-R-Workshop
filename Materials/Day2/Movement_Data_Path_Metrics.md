@@ -94,7 +94,7 @@ We've created our own MoveStack. We can plot it using the move::plot command and
 plot(albatross, type="l") # all of them
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 If we are curious to compare behaviors across individuals, we can split the moveStack, into separte move objects with the command `split`
 
@@ -108,13 +108,13 @@ This allows us to plot and manipulate the individuals separately:
 plot(ids[[1]], type='l')
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 ``` r
 plot(ids[[28]], type='l')
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-6-2.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-6-2.png)
 
 ``` r
 par(mfrow=c(2,2))
@@ -124,7 +124,7 @@ plot(ids[[3]], type='l', main= names(ids[3]))
 plot(ids[[4]], type='l', main= names(ids[4]))
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-6-3.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-6-3.png)
 
 ``` r
 par(mfrow=c(1,1))
@@ -190,7 +190,7 @@ albatross_sf %>%
   mapview(zcol="individual_id")
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 and easily convert it back to a `movestack` as needed.
 
@@ -332,7 +332,7 @@ From a simple histogram on the first individual of raw data, we can see there ar
 hist(ibexraw[1], "dt", freq = TRUE)
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 Looking at this rawibex data, we can see that the median `dt` is:
 
@@ -397,7 +397,7 @@ ibex[[1]]$dist
 hist(ibex[[1]]$dist)
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 -   Turning Angle (`rel.angle` v. `abs.angle`)
 
@@ -451,7 +451,7 @@ ibex[[1]]$rel.angle
 hist(ibex[[1]]$rel.angle)
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 -   Net Squared Displacement, i.e R2n,the squared distance between the first relocation of the trajectory and the current relocation is often used to test some movements models (e.g. the correlated random walk, see the seminal paper of Kareiva and Shigesada, 1983).
 
@@ -476,7 +476,7 @@ ibex[[1]]$R2n
 hist(ibex[[1]]$R2n)
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Note these distributions plotted above as they often form the basis for accurate simulations of animal movemnt paths.
 
@@ -519,14 +519,14 @@ ibex_fpt <- fpt(ibex153, radii = seq(1000, 5000, 1000), units="hours")
 plot(ibex_fpt, scale=1000)
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ``` r
 # plot mean fpt across scales
 meanfpt(fpt(ibex153, radii = seq(1000, 5000, 1000), units="hours"))
 ```
 
-![](Materials/Day2/Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-20-2.png)
+![](../Movement_Data_Path_Metrics_files/figure-markdown_github/unnamed-chunk-20-2.png)
 
 These are just a few of the metrics you might want to derive from your paths. Additional secondary characteristics include *straightness*, *sinuosity*, *directional persistence*, *persistence velocity*, *residence time*, *time to return*, and more. We will encounter many of these on later days of this workshop.
 

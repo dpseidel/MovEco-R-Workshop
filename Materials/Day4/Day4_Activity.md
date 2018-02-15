@@ -1,5 +1,8 @@
-Day 4 Activity
-================
+---
+layout: page
+title: Day 4 Activity
+use-site-title: true
+---
 
 We are going to explore some of the functionality that we have demonstrated on example paths:
 

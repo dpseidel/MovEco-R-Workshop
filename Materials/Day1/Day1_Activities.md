@@ -1,5 +1,8 @@
-Day 1 Activity
-================
+---
+layout: page
+title: Day 1 Activities
+use-site-title: true
+---
 
 In our first hands-on activity we are going to ask you to import, clean, and visualize a novel data set and finally to build a simple simulation to try to reproduce the patterns obvserved.
 
