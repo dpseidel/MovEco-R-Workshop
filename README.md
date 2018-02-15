@@ -1,5 +1,5 @@
 # MovEco-R-Workshop
-Materials for the Movement Ecology &amp; R Workshop. Hong Kong University Jan 3-12, 2018. Searchable on our [website](http://dpseidel.github.io/MovEco-R-Workshop) for the repo.
+Materials for the Movement Ecology &amp; R Workshop. Hong Kong University Jan 3-12, 2018. Please see our [workshop website](http://dpseidel.github.io/MovEco-R-Workshop).
 
 # Contributors
 - Dana Paige Seidel, @dpseidel
