@@ -1,6 +1,9 @@
-Basics in R
-================
-
+---
+layout: page
+title: Basics in R
+subtitle: Part 1
+use-site-title: true
+---
 Introducing Rstudio (live demo)
 ===============================
 

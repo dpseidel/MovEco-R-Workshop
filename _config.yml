@@ -34,15 +34,15 @@ navbar-links:
     - Behavioral Analysis: "Materials/Day6/HongKongMovement2018Lec6.pdf"  
     - Simulating Movement: "Materials/Day7/HongKongMovement2018Lec7.pdf"  
   Live Code Tutorials:
-    - Basics in R: "Materials/Day1/Basics_in_R"
-    - Basics 2 in R: "Materials/Day1/More_Advanced_R" 
+    - Basics in R - Part 1: "Materials/Day1/Basics_in_R"
+    - Basics in R - Part 2: "Materials/Day1/More_Advanced_R" 
     - Spatial Data in R: "Materials/Day2/Spatial_Data_in_R"
     - Analysing Movement Data: "Materials/Day2/Movement_Data_Path_Metrics"
     - HomeRanges - MCP & KDE: "Materials/Day3/HomeRanges"
     - HomeRanges - LoCoH: "Materials/Day3/LoCoH" 
     - HomeRanges - Additional Code: "Materials/Day4/MoreThoughts_LoCoh_BB"
-    - SpaceTime - t-LoCoH Part 1: "Materials/Day4/T-LoCoH"
-    - SpaceTime - t-LoCoH Part 2: "Materials/Day4/TLoCoH_and_Beyond"
+    - SpaceTime - T-LoCoH Part 1: "Materials/Day4/T-LoCoH"
+    - SpaceTime - T-LoCoH Part 2: "Materials/Day4/TLoCoH_and_Beyond"
     - Habitat Selection: "Materials/Day5/SelectionFunctions"
     - Behavioral Analysis: "Materials/Day6/Behavioral_Analysis"
     - Movement Syndromes: "Materials/Day6/Syndromes"
@@ -55,7 +55,7 @@ navbar-links:
     - Day 4: "Materials/Day4/Day4_Activity"
     - Day 5: "Materials/Day5/Day5_Activity"
   Extra Materials: "extra"
-  REPO: "https://www.github.com/dpseidel/MovEco-R-Workshop"
+  GitHub Repo: "https://www.github.com/dpseidel/MovEco-R-Workshop"
   #Search: "search"
 
 # Image to show in the navigation bar - image must be a square (width = height)

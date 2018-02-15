@@ -1,5 +1,8 @@
-Introduction to working with Spatial Data in R
-================
+---
+layout: page
+title: Introduction to working with Spatial Data in R
+use-site-title: true
+---
 
 Today we are going to get our first taste of working with movement data in R, but we will begin by introducing you to spatial data analysis in R more generally. In this section we will review some of the R packages available for handling spatial data, discuss the format of different spatial data types, and explore how we can manipulate and visualize these in R.
 

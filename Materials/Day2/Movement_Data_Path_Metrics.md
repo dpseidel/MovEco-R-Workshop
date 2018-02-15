@@ -1,5 +1,8 @@
-Exploring Movement Data in R
-================
+---
+layout: page
+title: Exploring Movement Data in R
+use-site-title: true
+---
 
 ``` r
 library(tidyverse)
