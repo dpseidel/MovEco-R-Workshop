@@ -1,113 +1,13 @@
 Exploring Movement Data in R
 ================
-Dana Seidel & Eric Dougherty
-January 4, 2018
 
 ``` r
 library(tidyverse)
-```
-
-    ## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-
-    ## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
-    ## ✔ tibble  1.3.4          ✔ dplyr   0.7.4     
-    ## ✔ tidyr   0.7.2          ✔ stringr 1.2.0     
-    ## ✔ readr   1.1.1          ✔ forcats 0.2.0
-
-    ## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-
-``` r
 library(sf)
-```
-
-    ## Linking to GEOS 3.6.2, GDAL 2.2.3, proj.4 4.9.3
-
-``` r
 library(mapview)
-```
-
-    ## Loading required package: leaflet
-
-``` r
 library(move)
-```
-
-    ## Loading required package: geosphere
-
-    ## Loading required package: sp
-
-    ## Loading required package: raster
-
-    ## 
-    ## Attaching package: 'raster'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     select
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     extract
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     calc
-
-    ## Loading required package: rgdal
-
-    ## rgdal: version: 1.2-16, (SVN revision 701)
-    ##  Geospatial Data Abstraction Library extensions to R successfully loaded
-    ##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
-    ##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/gdal
-    ##  GDAL binary built with GEOS: FALSE 
-    ##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
-    ##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/proj
-    ##  Linking to sp version: 1.2-5
-
-``` r
 library(adehabitatLT)
 ```
-
-    ## Loading required package: ade4
-
-    ## Loading required package: adehabitatMA
-
-    ## 
-    ## Attaching package: 'adehabitatMA'
-
-    ## The following object is masked from 'package:raster':
-    ## 
-    ##     buffer
-
-    ## Loading required package: CircStats
-
-    ## Loading required package: MASS
-
-    ## 
-    ## Attaching package: 'MASS'
-
-    ## The following objects are masked from 'package:raster':
-    ## 
-    ##     area, select
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     select
-
-    ## Loading required package: boot
-
-    ## 
-    ## Attaching package: 'adehabitatLT'
-
-    ## The following object is masked from 'package:move':
-    ## 
-    ##     burst
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     id
 
 Movement data
 =============
