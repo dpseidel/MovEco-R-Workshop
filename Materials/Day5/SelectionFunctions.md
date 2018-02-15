@@ -1,7 +1,5 @@
 Day 5 - Prepaing a a basic RSF
 ================
-Dana Seidel & Eric Dougherty
-January 5, 2018
 
 ``` r
 #install.packages("lme4")

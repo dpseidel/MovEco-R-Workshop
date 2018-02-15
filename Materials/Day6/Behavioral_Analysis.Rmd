@@ -1,8 +1,6 @@
 ---
 title: "Behavioral_Analysis"
-author: "Eric Dougherty & Dana Seidel"
-date: "December 5, 2017"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}

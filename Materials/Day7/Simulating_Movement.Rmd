@@ -1,10 +1,6 @@
 ---
 title: "Simulating_Movement"
-author: "Eric Dougherty & Dana Seidel"
-date: "December 5, 2017"
-output:
-  html_document:
-    code_folding: hide
+output: github_document
 ---
 
 ```{r setup, include=FALSE}

@@ -1,8 +1,6 @@
 ---
 title: "Day 5 Activity"
-author: "Dana Seidel"
-date: "1/1/2018"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -18,6 +16,7 @@ movement path. An additional complication is extracting covariate values along
 the length of the step not simply at points in space. 
 
 Using the skills you have learned this week including:
+
 - random number generation
 - custom function writing
 - path characteristic extraction
@@ -29,6 +28,7 @@ When considering variables, try and use at least one continuous and one
 categorical variable as covariates.
 
 Be sure to go through all steps:
+
 1. estimation of range
 2. selection of available points
 3. extraction of covariates
