@@ -5,8 +5,8 @@ subtitle: The general schedule followed January 3-12, 2018
 use-site-title: true
 ---
 
-# Week 1
-## Day 1,  Jan 3
+<h2 align="center">Day 1: January 3, 2018</h2>
+
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
@@ -18,7 +18,9 @@ use-site-title: true
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | --- | Practice manipulating raw data |
 
-## Day 2, Jan 4
+
+<h2 align="center">Day 2: January 4, 2018</h2>
+
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
@@ -31,7 +33,8 @@ use-site-title: true
 | 15:00 – 16:30 | Hands on | --- | Practice plotting tracks and extracting path metrics |
 
 
-## Day 3, Jan 5
+<h2 align="center">Day 3: January 5, 2018</h2>
+
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
@@ -44,8 +47,8 @@ use-site-title: true
 | 14:30 – 16:30 | Hands on | --- | Home Range Estimation Activity |
 
 
-# Week 2
-## Day 4, Jan 8
+<h2 align="center">Day 4: January 8, 2018</h2>
+
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
@@ -57,7 +60,9 @@ use-site-title: true
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | --- |  Activity |
 
-## Day 5, Jan 9 
+
+<h2 align="center">Day 5: January 9, 2018</h2>
+
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
@@ -69,7 +74,9 @@ use-site-title: true
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | --- | Selection Activity |
 
-## Day 6, Jan 10
+
+<h2 align="center">Day 6: January 10, 2018</h2>
+
 
 | Time | Activity | Speaker | Topic |
 | ------------- | ----------- | ------- | ------------------------------------ |
@@ -81,7 +88,9 @@ use-site-title: true
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | --- | Continuing Activities... |
 
-## Day 7, Jan 11
+
+<h2 align="center">Day 7: January 11, 2018</h2>
+
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
@@ -93,7 +102,9 @@ use-site-title: true
 | 14:45 – 15:00 | Afternoon Break | | |
 | 15:00 – 16:30 | Hands on | --- | Simulation Activity |
 
-## Day 8, Jan 12
+
+<h2 align="center">Day 8: January 12, 2018</h2>
+
 
 | Time | Activity | Speaker | Topic |
 | ------------- | --------------- | ------- | -------------------------------- |
