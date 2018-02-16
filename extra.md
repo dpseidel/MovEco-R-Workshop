@@ -15,6 +15,7 @@ For those interested in further tutorials or resources for spatial data analysis
 - the vignettes of the [adehabitatLT](https://cran.r-project.org/web/packages/adehabitatLT/) & [adehabitatHR](https://cran.r-project.org/web/packages/sf/) packages
 - the [r-spatial blog & website](http://r-spatial.org/) for the latest news from the r-spatial community
 - the [Tidyverse website/blog](https://www.tidyverse.org/articles/) for the latest news from the tidyverse
+- Data Carpentry [Geospatial Analysis in R curriculum](http://www.datacarpentry.org/R-spatial-raster-vector-lesson/)
 
 
 ## Resources for Kriging 
